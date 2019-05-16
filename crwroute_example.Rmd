@@ -1,0 +1,327 @@
+---
+title: "Routing Seals Around Land with PostGIS/pgRouting"
+author: "Josh M London"
+date: "5/6/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+library(tidyverse)
+library(crawl)
+library(ptolemy)
+library(sf)
+library(ggspatial)
+library(mapview)
+library(RPostgres)
+library(here)
+```
+
+
+## Installing PostgreSQL, PostGIS, and pgRouting
+
+This approach relies on the pgRouting extension to PostgreSQL. You'll need to 
+have access to a properly configured database server. The easiest option on macOS
+is to install with homebrew
+
+```sh
+brew install postgresql
+brew install postgis
+brew install pgrouting
+```
+
+At this point, you'll need to do some additional setup on your macOS machine
+to get postgres up and running. If you manage homebrew with the same user
+account as you do all your R work, then you can skip this first part (you can
+just run `initdb` and your database cluster will be created in the default
+location). Otherwise, you need to make sure the postgres database is initiated 
+into a directory that you have full read/write access to.
+
+```sh
+mkdir ~/postgres
+initdb -D /Users/$(whoami)/postgres
+pg_ctl -D /Users/$(whoami)/postgres -l /Users/$(whoami)/logfile start
+createdb
+pg_ctl -D /Users/$(whoami)/postgres -l /Users/$(whoami)/logfile stop
+```
+
+The above steps initiated the database cluster and then calls `pg_ctl` to start
+the cluster. Then, `createdb` creates a database (the name of the database 
+defaults to $(whoami). You can specify another name if you like). The last
+statement stops the server.
+
+To make things a bit easier on ourselves, we'll create a few aliases in our
+`.bash_profile` for the start and stop commands. Open up `.bash_profile` in an
+editor and add the following lines
+
+```sh 
+alias pg_start='pg_ctl -D /Users/$(whoami)/postgres -l /Users/$(whoami)/logfile start'
+alias pg_stop='pg_ctl -D /Users/$(whoami)/postgres -l /Users/$(whoami)/logfile stop'
+```
+
+lastly, let's start up our posgres server by typing `pg_start` in the terminal
+
+Now, you need to install the `PostGIS` and `pgRouting` extensions into your
+postgres database. We can do this from the command line. If you provided a name
+for your database, you'll want to include it after the `psql`.
+
+```sql
+psql
+CREATE EXTENSION postgis;
+CREATE EXTENSION pgrouting;
+SELECT PostGIS_Version();
+SELECT pgr_version();
+exit
+```
+
+It is also a good idea to change some of the default configurations for your
+postgres/postgis server to optimize performance for some of the complicated
+spatial operations and queries. These are settings I chose for a relatively new
+Macbook Pro.
+
+```sql 
+ALTER SYSTEM SET work_mem = '1500MB';
+ALTER SYSTEM SET shared_buffers = '4GB';
+ALTER SYSTEM SET maintenance_work_mem = '1GB';
+ALTER SYSTEM SET max_parallel_workers_per_gather = 4;
+ALTER SYSTEM SET synchronous_commit = 'off';
+ALTER SYSTEM SET fsync = 'off';
+ALTER SYSTEM SET random_page_cost = 1.1;
+ALTER SYSTEM SET wal_buffers = '16MB';
+ALTER SYSTEM SET effective_cache_size = '10GB';
+ALTER SYSTEM SET checkpoint_segments = 1600;
+
+SELECT pg_reload_conf();
+```
+
+## Getting Started with Routing Seal Paths Around Land
+
+First, we will load in a seal track from the `crawl` package we'll use as our 
+demonstration. While we're at it, let's also go ahead and load up our land
+barrier layer by pulling the Alaska data from the `ptolemy` package and crop
+it to our study area. The final `sf::st_union()` is important because we need
+`land_barrier` to be a multipolygon geometry type
+
+```{r}
+data("harborSeal_sf")
+harborSeal_sf <- harborSeal_sf %>% 
+  st_transform(3338)
+
+ak <- ptolemy::alaska()
+
+land_barrier <- ak %>%
+  st_crop(harborSeal_sf %>% st_transform(3338)) %>%
+  sf::st_collection_extract('POLYGON') %>%
+  sf::st_cast('POLYGON') %>% 
+  sf::st_union()
+```
+
+The next thing we need to do is connect our R session to the database so we
+can push up some data and run some commands. You'll need the `RPostgres`
+package installed.
+
+```{r con-pg}
+con <- dbConnect(RPostgres::Postgres())
+```
+
+And, we'll push up our `land_barrier` and `harborSeal_sf` objects. Since these
+are `sf` objects, the `sf::st_write()` function allows us to push them to the
+database while maintaining all of the spatial features. 
+
+```{r initial-upload}
+sf::st_write(land_barrier, con, "land_barrier", overwrite = TRUE)
+sf::st_write(harborSeal_sf, con, "harbor_seal", overwrite = TRUE)
+```
+
+Next, we'll start passing along some SQL statements. These just make sure
+we drop any tables that might already exist. Be careful here. You'll soon learn
+that creating the `vis_graph` table can take a very very very very long time.
+
+```{r sql1, eval=FALSE}
+dbExecute(con,"drop table if exists vis_graph")
+dbExecute(con,"drop table if exists land_barrier_buffer")
+dbExecute(con,"drop table if exists coastal_corridor")
+dbExecute(con,"drop table if exists coastal_pts")
+dbExecute(con,"drop table if exists vis_graph")
+```
+
+Next, we are going to create a coastline buffer/corridor that
+will constrain our network graph.
+
+Let's first buffer our `land_barrier` table by 3 kilometers
+
+```{r create-land_buffer, eval=FALSE}
+dbExecute(con,
+"create table land_barrier_buffer as
+select ST_Union(ST_Buffer(land_barrier.geom,3000)) geometry
+from land_barrier"
+)
+```
+
+```{r, eval=FALSE}
+dbExecute(con, 
+"alter table land_barrier_buffer add column gid serial primary key"
+)
+```
+
+now, we create the coastal corridor where we will focus our network
+
+```{r create-coastal-corridor, eval=FALSE}
+dbExecute(con,
+"create table coastal_corridor as
+select ST_Difference(land_barrier_buffer.geometry,land_barrier.geom) geometry
+from land_barrier, land_barrier_buffer"
+)
+```
+
+and, then, we'll create a grid of points within the coastal corridor at 1km spacing
+
+```{r, eval=FALSE}
+dbExecute(con, 
+"create table coastal_pts as 
+select (ST_PixelAsCentroids(ST_AsRaster(geometry,1000.0,1000.0))).geom geometry 
+from coastal_corridor"
+)
+dbExecute(con,
+"alter table coastal_pts add column gid serial primary key"
+)
+```
+
+Now, we are ready to start building our visiblity graph. First, we'll create
+lines from every coastal point to every other coastal point.
+
+```{r, eval=FALSE}
+dbExecute(con,
+"create table vis_graph as
+select id, source, target, ll.geometry the_geom from 
+(select
+  row_number() over () as id,
+  p1.gid as source,
+  p2.gid as target,
+  st_makeline(p1.geometry, p2.geometry)::geometry(LINESTRING) as geometry
+from coastal_pts p1
+join coastal_pts p2 on p1.gid < p2.gid) ll,
+coastal_corridor
+where st_within(ll.geometry, coastal_corridor.geometry)"
+)
+```
+
+now, we'll create the topology for our network
+
+```{r, eval=FALSE}
+dbSendQuery(con,"select pgr_createTopology('vis_graph',0.01,clean:=true)")
+```
+
+at this point, we are ready to calculate shortest path distances through our 
+network graph. to do this, we'll create a custom `psql` function
+
+```sql
+`r paste(readLines(here::here('sql/wrk_fromAtoB.sql')), collapse = '\n')`
+```
+
+To load this function into your PostgreSQL session, we'll need to execute
+the following step
+
+```{r}
+stmt <- paste(readLines(here::here('sql/wrk_fromAtoB.sql')), collapse = '\n')
+dbExecute(con, "DROP FUNCTION wrk_fromAtoB(text, text, integer, integer)")
+dbExecute(con, stmt)
+
+```
+
+let's load up our harbor seal example included in `crawl`
+
+```{r}
+data(harborSeal_sf)
+
+harborSeal_sf <- harborSeal_sf %>% sf::st_transform(3338)
+
+##Fit model as given in Johnson et al. (2008) Ecology 89:1208-1215
+## Start values for theta come from the estimates in Johnson et al. (2008)
+fixPar = c(log(250), log(500), log(1500), rep(NA,5), 0)
+displayPar( mov.model=~1, err.model=list(x=~Argos_loc_class-1),data=harborSeal_sf, 
+            activity=~I(1-DryTime),fixPar=fixPar)
+constr=list(
+  lower=c(rep(log(1500),3), rep(-Inf,2)),
+  upper=rep(Inf,5)
+)
+
+set.seed(123)
+fit1 <- crwMLE(
+  mov.model=~1, err.model=list(x=~Argos_loc_class-1), activity=~I(1-DryTime),
+  data=harborSeal_sf,  Time.name="Time", 
+  fixPar=fixPar, theta=c(rep(log(5000),3),log(3*3600), 0),
+  constr=constr, method="L-BFGS-B",
+  control=list(maxit=2000, trace=1, REPORT=1)
+)
+
+print(fit1)
+pred1 = crwPredict(fit1, predTime = '1 hour')
+pred1_sf <- pred1 %>% crw_as_sf("POINT","p")
+```
+
+we'll create a `get_land_segments()` function to return a data.frame of
+all the track points that fall wihtin our provided `land_mask`.
+
+```{r}
+
+get_land_segments = function(crw_sf, land_mask) {
+  on_mask <- sf::st_intersects(crw_sf, land_mask) %>% 
+    purrr::map_lgl(~ length(.x) > 0)
+  
+  in.segment <- (on_mask == TRUE)
+  
+  start_idx <- which(c(FALSE, in.segment) == TRUE &
+                       dplyr::lag(c(FALSE, in.segment) == FALSE)) - 2
+  end_idx <- which(c(in.segment, FALSE) == TRUE & 
+                     dplyr::lead(c(in.segment, FALSE) == FALSE)) + 1
+  on_mask_segments <- data.frame(sid = 1:length(start_idx),
+                                 start_idx, end_idx) %>%
+    dplyr::mutate(n_pts = end_idx-start_idx-1) %>% 
+    rowwise() %>% 
+    dplyr::mutate(start_pt = crw_sf[start_idx, ] %>% st_geometry() %>% 
+                    sf::st_as_text(EWKT = TRUE),
+                  end_pt = crw_sf[end_idx, ] %>% st_geometry() %>% 
+                    sf::st_as_text(EWKT = TRUE)) %>% 
+    dplyr::ungroup()
+  
+  return(on_mask_segments)
+}
+```
+
+`segs_tbl` is a data.frame of all our on-land segments. we will need access
+to this data within our database, so we'll push it up as a temporary table 
+(it will only be available for this database connection/session).
+
+```{r}
+segs_tbl <- get_land_segments(pred1_sf,land_barrier)
+dbWriteTable(con,"segs_tbl",segs_tbl,temporary = TRUE, overwrite = TRUE)
+```
+
+
+Now, we'll finish up by using our `wrk_fromAtoB()` function on the database
+to calculate the shortest path through our network (in-water corridor). To speed
+things up, we'll limit the network search area to a 50km buffer around a
+bounding box that includes our start and end points. This can be adjusted if
+needed. But, 50km seemed a good default value.
+
+```{r}
+stmt <- "select (wrk_fromAtoB(s.start_pt, s.end_pt, s.sid, 50000)).* from
+(select start_pt, end_pt, sid from segs_tbl) s"
+# bench::mark(
+segs_tbl <- sf::st_read(con,query = stmt) %>% 
+  dplyr::inner_join(segs_tbl, by = c("sid" = "sid"))
+# )
+```
+
+We can use the `mapview` package to view and zoom in on each of these re-routed
+segments.
+
+```{r}
+mapview::mapview(segs_tbl)
+```
+
+
