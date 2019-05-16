@@ -321,7 +321,9 @@ We can use the `mapview` package to view and zoom in on each of these re-routed
 segments.
 
 ```{r}
-mapview::mapview(segs_tbl)
+mapview::mapview(pred1 %>% crw_as_sf("LINESTRING","p"), 
+                 color = "grey", layer.name = "predicted track") +
+  mapview::mapview(segs_tbl, layer.name = "re-routed segments")
 ```
 
 
