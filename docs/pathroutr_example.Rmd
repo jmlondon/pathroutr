@@ -1,12 +1,42 @@
 ---
-title: "Routing Seals Around Land with PostGIS/pgRouting"
+title: "pathroutr: Routing Seals Around Land with PostGIS/pgRouting"
 author: "Josh M London"
-date: "5/6/2019"
+date: "5/16/2019"
 output: html_document
 ---
 
+## Summary
+
+Routing marine mammal (and other marine taxa) telemetry tracks around water
+has been an issue on the wish list of bio-loggers for many years now. A
+number of approaches have been pursued over the years. But, many have either
+required censoring/cherry-picking of data OR extensive computational time. 
+Here, we rely on routing technologies that many of us use daily when we
+query our phones for directions from point A to point B. In brief, a network
+of nodes and edges are created that represent possible paths through water
+(and, around land) within the study area. Creation of this feature can take
+many hours. However, once the network is created, it does not need to be
+repeated for that study area. This graph is then used to determine the
+shortest path between two points through the network. This step is fast so
+hundreds of tracks can be re-routed around land in just a few minutes.
+To our knowledge, this network/graph approach has not been applied to the 
+movement of marine animals. The approach we outline here 
+(and implement within the 'pathroutr' package) is intended to be used in 
+conjunction with a predicted track output from a movement model (e.g. from the 
+R package `crawl`). To reduce computational time, we only focus on *fixing* 
+the portions of the predicted track that cross land.
+
+The package does rely on the availability of a PostgreSQL databse with both the
+PostGIS and pgRouting extensions installed. This database could be running 
+locally or within your enterprise/academic IT infrastructure, or on a cloud
+service. While detailed knowledge of PostgreSQl, PostGIS, and pgRouting are
+not a requirement, the large size and computational requirements of the network
+means you will likely benefit from some investment in optimization of the server
+configuration (i.e., you might need a lot of memory! and more than a few CPUs)
+if your study are is large or includes complicated land structures.
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
 ```{r libraries}
@@ -24,7 +54,8 @@ library(here)
 ## Installing PostgreSQL, PostGIS, and pgRouting
 
 This approach relies on the pgRouting extension to PostgreSQL. You'll need to 
-have access to a properly configured database server. The easiest option on macOS
+have access to a properly configured database server. This initial example
+is based on a local installation on macOS. The easiest option on macOS
 is to install with homebrew
 
 ```sh
@@ -50,8 +81,8 @@ pg_ctl -D /Users/$(whoami)/postgres -l /Users/$(whoami)/logfile stop
 
 The above steps initiated the database cluster and then calls `pg_ctl` to start
 the cluster. Then, `createdb` creates a database (the name of the database 
-defaults to $(whoami). You can specify another name if you like). The last
-statement stops the server.
+defaults to $(whoami), but you may want to give your database a name that is
+relevant to your study area). The last statement stops the server.
 
 To make things a bit easier on ourselves, we'll create a few aliases in our
 `.bash_profile` for the start and stop commands. Open up `.bash_profile` in an
@@ -62,11 +93,15 @@ alias pg_start='pg_ctl -D /Users/$(whoami)/postgres -l /Users/$(whoami)/logfile 
 alias pg_stop='pg_ctl -D /Users/$(whoami)/postgres -l /Users/$(whoami)/logfile stop'
 ```
 
-lastly, let's start up our posgres server by typing `pg_start` in the terminal
+Lastly, let's start up our posgres server by typing `pg_start` in the terminal. Note,
+this will not start your server automatically after a restart. There are ways to make
+this an option and a few minutes searching the internet will likely guide you to
+success.
 
 Now, you need to install the `PostGIS` and `pgRouting` extensions into your
 postgres database. We can do this from the command line. If you provided a name
-for your database, you'll want to include it after the `psql`.
+for your database, you'll want to include it after the `psql`. This will not
+work if your `brew install` steps above were not successful.
 
 ```sql
 psql
@@ -103,7 +138,8 @@ First, we will load in a seal track from the `crawl` package we'll use as our
 demonstration. While we're at it, let's also go ahead and load up our land
 barrier layer by pulling the Alaska data from the `ptolemy` package and crop
 it to our study area. The final `sf::st_union()` is important because we need
-`land_barrier` to be a multipolygon geometry type
+`land_barrier` to be a multipolygon geometry type. Also, note we are transforming
+everything into *epsg:3338 projection.
 
 ```{r}
 data("harborSeal_sf")
@@ -120,8 +156,10 @@ land_barrier <- ak %>%
 ```
 
 The next thing we need to do is connect our R session to the database so we
-can push up some data and run some commands. You'll need the `RPostgres`
-package installed.
+can push up some data and run some commands. You'll need the `RPostgres()`
+package installed. If you chose a different name for your database you'll want
+to include it as an argument to the `dbConnect()` function 
+(e.g. `dbname = 'my_db'`)
 
 ```{r con-pg}
 con <- dbConnect(RPostgres::Postgres())
@@ -136,9 +174,19 @@ sf::st_write(land_barrier, con, "land_barrier", overwrite = TRUE)
 sf::st_write(harborSeal_sf, con, "harbor_seal", overwrite = TRUE)
 ```
 
+Before we move on, let's go ahead an plot our spatial objects with `mapview()`.
+
+```{r initial-plots}
+mapview::mapview(list(land_barrier, harborSeal_sf))
+```
+
+
 Next, we'll start passing along some SQL statements. These just make sure
 we drop any tables that might already exist. Be careful here. You'll soon learn
-that creating the `vis_graph` table can take a very very very very long time.
+that creating the `vis_graph` table can take a very very very very long time. So,
+don't inadvertently drop it unless you have the time to re-create it. The last
+step creates a spatial index for our `land_barrier` to, hopefully, speed up
+some of our spatial query operations.
 
 ```{r sql1, eval=FALSE}
 dbExecute(con,"drop table if exists vis_graph")
@@ -146,6 +194,10 @@ dbExecute(con,"drop table if exists land_barrier_buffer")
 dbExecute(con,"drop table if exists coastal_corridor")
 dbExecute(con,"drop table if exists coastal_pts")
 dbExecute(con,"drop table if exists vis_graph")
+
+dbExecute(con,
+"CREATE INDEX land_barier_gist 
+ON land_barrier USING GIST (geom)")
 ```
 
 Next, we are going to create a coastline buffer/corridor that
@@ -161,10 +213,16 @@ from land_barrier"
 )
 ```
 
+and, make sure we have a primary key established as well as a spatial index
+
 ```{r, eval=FALSE}
 dbExecute(con, 
 "alter table land_barrier_buffer add column gid serial primary key"
 )
+
+dbExecute(con,
+"CREATE INDEX land_barier_buffer_gist 
+ON land_barrier_buffer USING GIST ( geometry )")
 ```
 
 now, we create the coastal corridor where we will focus our network
@@ -177,7 +235,10 @@ from land_barrier, land_barrier_buffer"
 )
 ```
 
-and, then, we'll create a grid of points within the coastal corridor at 1km spacing
+and, then, we'll create a grid of points within the coastal corridor at 1km 
+spacing. You can choose a different grid resolution for your study area. The main
+cost is that more grid points means a larger network which adds to your initial
+network creation time and, later, the time it takes to find the shortest path.
 
 ```{r, eval=FALSE}
 dbExecute(con, 
@@ -188,10 +249,17 @@ from coastal_corridor"
 dbExecute(con,
 "alter table coastal_pts add column gid serial primary key"
 )
+dbExecute(con,
+"CREATE INDEX coastal_pts_gist 
+ON coastal_pts USING GIST ( geometry )")
 ```
 
 Now, we are ready to start building our visiblity graph. First, we'll create
-lines from every coastal point to every other coastal point.
+lines from every coastal point to every other coastal point. And, then, we'll
+select out only those lines that fall completely within the coastal corridor.
+This is the key step that insures our network only includes routes that pass
+through water. This is also the step that takes the longest (in this example,
+~4 hours).
 
 ```{r, eval=FALSE}
 dbExecute(con,
@@ -207,16 +275,25 @@ join coastal_pts p2 on p1.gid < p2.gid) ll,
 coastal_corridor
 where st_within(ll.geometry, coastal_corridor.geometry)"
 )
+
+dbExecute(con,
+"alter table vis_graph add primary key (id)"
+)
 ```
 
-now, we'll create the topology for our network
+Now, we'll create the topology for our network. This is our first use of the
+`pgRouting` extension. This step creates a `vis_graph_vertices_pgr` table
+that includes all of our network nodes. This step also creates spatial indexes
 
 ```{r, eval=FALSE}
 dbSendQuery(con,"select pgr_createTopology('vis_graph',0.01,clean:=true)")
 ```
 
-at this point, we are ready to calculate shortest path distances through our 
-network graph. to do this, we'll create a custom `psql` function
+At this point, we are ready to calculate shortest path distances through our 
+network graph. to do this, we'll create a custom `psql` function. You don't
+really need to know what's going on within this function. It is here to 
+document the code for those who are interested (and, those who might offer
+suggestions for improvement).
 
 ```sql
 `r paste(readLines(here::here('sql/wrk_fromAtoB.sql')), collapse = '\n')`
@@ -232,7 +309,8 @@ dbExecute(con, stmt)
 
 ```
 
-let's load up our harbor seal example included in `crawl`
+Now, let's load up our harbor seal example included in `crawl` and put all of
+our work into action.
 
 ```{r}
 data(harborSeal_sf)
@@ -263,7 +341,7 @@ pred1 = crwPredict(fit1, predTime = '1 hour')
 pred1_sf <- pred1 %>% crw_as_sf("POINT","p")
 ```
 
-we'll create a `get_land_segments()` function to return a data.frame of
+We'll create a `get_land_segments()` function to return a data.frame of
 all the track points that fall wihtin our provided `land_mask`.
 
 ```{r}
@@ -292,7 +370,7 @@ get_land_segments = function(crw_sf, land_mask) {
 }
 ```
 
-`segs_tbl` is a data.frame of all our on-land segments. we will need access
+Here, `segs_tbl` is a data.frame of all our on-land segments. We will need access
 to this data within our database, so we'll push it up as a temporary table 
 (it will only be available for this database connection/session).
 
@@ -300,7 +378,6 @@ to this data within our database, so we'll push it up as a temporary table
 segs_tbl <- get_land_segments(pred1_sf,land_barrier)
 dbWriteTable(con,"segs_tbl",segs_tbl,temporary = TRUE, overwrite = TRUE)
 ```
-
 
 Now, we'll finish up by using our `wrk_fromAtoB()` function on the database
 to calculate the shortest path through our network (in-water corridor). To speed
