@@ -1,3 +1,4 @@
-# pathroutr 0.0.0.9000
+# pathroutr 0.0.1
 
-* Added a `NEWS.md` file to track changes to the package.
+* Intial creation of the package and draft implementation ideas
+* `pathroutr_example.Rmd` created to demonstrate workflow

@@ -1,24 +1,24 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 # pathroutr
 
 <!-- badges: start -->
+
 <!-- badges: end -->
 
-The goal of pathroutr is to ...
+The goal of pathroutr is to provide an R package interface to
+PostgreSQL’s pgRouting extension for creation of movement paths in
+water that route around land.
 
 ## Installation
 
-You can install the released version of pathroutr from [CRAN](https://CRAN.R-project.org) with:
+pathroutr is currently not available on CRAN
+
+The development version is available from
+[GitHub](https://github.com/jmlondon/pathroutr) with:
 
 ``` r
-install.packages("pathroutr")
+# install.packages("devtools")
+devtools::install_github("jmlondon/pathroutr")
 ```
-
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-``` r
-library(pathroutr)
-## basic example code
-```
-
