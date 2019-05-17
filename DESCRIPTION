@@ -1,0 +1,15 @@
+Package: pathroutr
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Josh",
+           family = "London",
+           role = c("aut", "cre"),
+           email = "josh.london@noaa.gov",
+           comment = c(ORCID = "0000-0002-3647-5046"))
+Description: What the package does (one paragraph).
+License: CC0
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
