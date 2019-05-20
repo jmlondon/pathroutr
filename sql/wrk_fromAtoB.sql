@@ -25,7 +25,7 @@ BEGIN
                       id,
                       source,
                       target,
-                      1 as cost
+                      st_length(the_geom) as cost
                     FROM vis_graph
                     WHERE the_geom && ST_Expand(
                       (ST_Collect(ST_GeomFromEWKT(''%1$s''),ST_GeomFromEWKT(''%2$s'')) ) ,

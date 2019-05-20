@@ -44,7 +44,7 @@ library(tidyverse)
 library(crawl)
 library(ptolemy)
 library(sf)
-library(ggspatial)
+library(tictoc)
 library(mapview)
 library(RPostgres)
 library(here)
@@ -188,12 +188,13 @@ don't inadvertently drop it unless you have the time to re-create it. The last
 step creates a spatial index for our `land_barrier` to, hopefully, speed up
 some of our spatial query operations.
 
-```{r sql1, eval=FALSE}
+```{r sql1}
+dbExecute(con,"drop table if exists graph_lines")
 dbExecute(con,"drop table if exists vis_graph")
+dbExecute(con,"drop table if exists vis_graph_vertices_pgr")
 dbExecute(con,"drop table if exists land_barrier_buffer")
 dbExecute(con,"drop table if exists coastal_corridor")
 dbExecute(con,"drop table if exists coastal_pts")
-dbExecute(con,"drop table if exists vis_graph")
 
 dbExecute(con,
 "CREATE INDEX land_barier_gist 
@@ -205,7 +206,7 @@ will constrain our network graph.
 
 Let's first buffer our `land_barrier` table by 3 kilometers
 
-```{r create-land_buffer, eval=FALSE}
+```{r create-land_buffer}
 dbExecute(con,
 "create table land_barrier_buffer as
 select ST_Union(ST_Buffer(land_barrier.geom,3000)) geometry
@@ -215,7 +216,7 @@ from land_barrier"
 
 and, make sure we have a primary key established as well as a spatial index
 
-```{r, eval=FALSE}
+```{r}
 dbExecute(con, 
 "alter table land_barrier_buffer add column gid serial primary key"
 )
@@ -227,11 +228,16 @@ ON land_barrier_buffer USING GIST ( geometry )")
 
 now, we create the coastal corridor where we will focus our network
 
-```{r create-coastal-corridor, eval=FALSE}
+```{r create-coastal-corridor}
 dbExecute(con,
 "create table coastal_corridor as
 select ST_Difference(land_barrier_buffer.geometry,land_barrier.geom) geometry
 from land_barrier, land_barrier_buffer"
+)
+
+dbExecute(con,
+"CREATE INDEX coastal_corridor_gist 
+ON coastal_corridor USING GIST ( geometry )"
 )
 ```
 
@@ -240,7 +246,7 @@ spacing. You can choose a different grid resolution for your study area. The mai
 cost is that more grid points means a larger network which adds to your initial
 network creation time and, later, the time it takes to find the shortest path.
 
-```{r, eval=FALSE}
+```{r}
 dbExecute(con, 
 "create table coastal_pts as 
 select (ST_PixelAsCentroids(ST_AsRaster(geometry,1000.0,1000.0))).geom geometry 
@@ -261,32 +267,56 @@ This is the key step that insures our network only includes routes that pass
 through water. This is also the step that takes the longest (in this example,
 ~4 hours).
 
-```{r, eval=FALSE}
+```{r}
+tic("total")
+tic("makeline")
 dbExecute(con,
-"create table vis_graph as
-select id, source, target, ll.geometry the_geom from 
+"create table graph_lines as
+with lines as (
+select id, source, target, ll.line_geom the_geom from 
 (select
   row_number() over () as id,
   p1.gid as source,
   p2.gid as target,
-  st_makeline(p1.geometry, p2.geometry)::geometry(LINESTRING) as geometry
-from coastal_pts p1
-join coastal_pts p2 on p1.gid < p2.gid) ll,
-coastal_corridor
-where st_within(ll.geometry, coastal_corridor.geometry)"
+  st_makeline(p1.geometry, p2.geometry)::geometry(LINESTRING) as line_geom
+from coastal_pts p1, coastal_pts p2 where p1.gid < p2.gid) ll
 )
+select lines.id, lines.source, lines.target, lines.the_geom
+from lines, land_barrier
+where not st_intersects(lines.the_geom, land_barrier.geom)
+and st_within(lines.the_geom, st_envelope(land_barrier.geom))")
+toc()
+
+tic("st_within")
+dbExecute(con,
+"create table vis_graph as
+select g.id, g.source, g.target, g.the_geom 
+from coastal_corridor, graph_lines g 
+  where st_within(g.the_geom, coastal_corridor.geometry)")
+toc()
+toc()
 
 dbExecute(con,
 "alter table vis_graph add primary key (id)"
 )
 ```
 
+let's take a quick moment and view a sampling of these network lines (edges)
+within our study area. to save time, we will plot only 10% of the lines.
+
+```{r}
+mapview::mapview(sf::st_read(con, 
+        query = "select * from vis_graph tablesample system (10)"))
+```
+
 Now, we'll create the topology for our network. This is our first use of the
 `pgRouting` extension. This step creates a `vis_graph_vertices_pgr` table
 that includes all of our network nodes. This step also creates spatial indexes
 
-```{r, eval=FALSE}
+```{r}
+tic()
 dbSendQuery(con,"select pgr_createTopology('vis_graph',0.01,clean:=true)")
+toc()
 ```
 
 At this point, we are ready to calculate shortest path distances through our 
@@ -386,12 +416,12 @@ bounding box that includes our start and end points. This can be adjusted if
 needed. But, 50km seemed a good default value.
 
 ```{r}
-stmt <- "select (wrk_fromAtoB(s.start_pt, s.end_pt, s.sid, 50000)).* from
+stmt <- "select (wrk_fromAtoB(s.start_pt, s.end_pt, s.sid, 30000)).* from
 (select start_pt, end_pt, sid from segs_tbl) s"
-# bench::mark(
+tic()
 segs_tbl <- sf::st_read(con,query = stmt) %>% 
   dplyr::inner_join(segs_tbl, by = c("sid" = "sid"))
-# )
+toc()
 ```
 
 We can use the `mapview` package to view and zoom in on each of these re-routed
