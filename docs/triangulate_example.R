@@ -21,11 +21,12 @@ area_crop <- sf::st_polygon(list(matrix(
 ))) %>% st_sfc(crs = 4326) %>%
   st_transform(3338)
 
-ak <- ptolemy::alaska(resolution = "h")
+ak <- ptolemy::alaska(resolution = "i")
 
-land_barrier <- ak %>%
-  st_crop(area_crop) %>%
-  sf::st_collection_extract('POLYGON') %>%
+land_barrier <- sf::st_read('~/gis/pathroutr/simple_land_barrier.gpkg') %>%
+  st_transform(3338)
+
+land_barrier <- land_barrier %>%
   sf::st_cast('POLYGON') %>%
   sf::st_union()
 
@@ -34,15 +35,15 @@ library(ggspatial)
 ggplot() +
   ggspatial::layer_spatial(land_barrier)
 
-not_intersects  = function(x, y) !st_intersects(x, y)
+not_crosses  = function(x, y) !st_crosses(x, y)
 
 tic()
-delaunay_routes <- sf::st_cast(sf::st_buffer(land_barrier, 1),'MULTIPOINT') %>%
+delaunay_routes <- sf::st_cast(sf::st_buffer(land_barrier, 1), 'MULTIPOINT') %>%
   st_as_sf() %>%
-  sfdct::ct_triangulate(D=TRUE) %>%
-  sf::st_collection_extract() %>%
+  sf::st_triangulate() %>%
+  sf::st_collection_extract('POLYGON') %>%
   sf::st_cast("LINESTRING") %>%
-  sf::st_filter(land_barrier, .predicate = not_intersects)
+  sf::st_filter(land_barrier, .predicate = not_crosses)
 toc()
 
 ggplot() +
@@ -53,25 +54,35 @@ library(sfnetworks)
 
 n <- sfnetworks::as_sfnetwork(delaunay_routes)
 
+n %>% to_spatial_subgraph(land_barrier,.predicate = not_intersects, subset_by = "edges")
+
 n <- n %>%
   activate("edges") %>%
   mutate(
     length = edge_length())
 
-library(mapview)
-n %>% activate("edges") %>% st_as_sf() %>% mapview()
+poi <- sf::st_read('~/gis/pathroutr/points_of_interest.gpkg') %>%
+  st_transform(3338) %>% sample_n(2)
 
-start <- st_point(c(-154.11346, 59.05751)) %>%
-  st_sfc(crs = 4326) %>%
-  st_transform(3338)
-end <- st_point(c(-153.55042, 58.63836)) %>%
-  st_sfc(crs = 4326) %>%
-  st_transform(3338)
+start <- poi[1,]
+end <- poi[2,]
 
 ggplot() +
   ggspatial::annotation_spatial(land_barrier) +
   ggspatial::layer_spatial(delaunay_routes) +
-  ggspatial::layer_spatial(start) +
-  ggspatial::layer_spatial(end)
+  ggspatial::layer_spatial(start, color = "green", size = 3) +
+  ggspatial::layer_spatial(end, color = "red", size = 3)
 
 st_shortest_paths(n, start, end, weights = "length")$vpath
+st_shortest_paths(n, start, end)
+
+## try using anglr package
+
+library(anglr)
+
+barrier_mesh <- sf::st_cast(sf::st_buffer(land_barrier, 1),'MULTIPOINT') %>%
+  st_as_sf() %>%
+  anglr::DEL0() %>%
+  anglr::as.mesh3d()
+
+# now what?
