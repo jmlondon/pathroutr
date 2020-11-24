@@ -149,20 +149,20 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_barrier</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 31 x 6</span>
+<span class="co">#&gt; # A tibble: 35 x 6</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt              end_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1        35     229   193 (85816.52 935900.5) (82660.07 938461.4)</span>
-<span class="co">#&gt;  2     2       257     297    39    (82204.5 938831)   (81553.68 939359)</span>
-<span class="co">#&gt;  3     3       311     348    36  (81325.9 939543.8) (80723.89 940032.2)</span>
-<span class="co">#&gt;  4     4       376     491   114 (80596.65 940524.6) (81012.86 942897.9)</span>
-<span class="co">#&gt;  5     5       568     758   189 (81291.53 944486.9) (81979.17 948407.9)</span>
-<span class="co">#&gt;  6     6       903    1086   182 (82503.94 951400.2) (83166.25 955176.8)</span>
-<span class="co">#&gt;  7     7      1165    1245    79 (83452.16 956807.1)   (83741.69 958458)</span>
-<span class="co">#&gt;  8     8      1367    1419    51 (84183.23 960975.7) (84371.42 962048.8)</span>
-<span class="co">#&gt;  9     9      1446    1485    38 (84573.77 962059.1) (85002.02 961363.2)</span>
-<span class="co">#&gt; 10    10      1726    1783    56 (87377.34 956965.4) (87542.57 955782.6)</span>
-<span class="co">#&gt; # … with 21 more rows</span></code></pre></div>
+<span class="co">#&gt;  1     1        10      17     6 (84024.68 941606.5) (84039.99 941748.6)</span>
+<span class="co">#&gt;  2     2        75     557   481   (84166.82 942926) (85220.87 952710.3)</span>
+<span class="co">#&gt;  3     3       638     643     4 (84419.08 952349.2) (84345.78 952278.2)</span>
+<span class="co">#&gt;  4     4       738     741     2 (82953.13 950928.1) (82909.15 950885.5)</span>
+<span class="co">#&gt;  5     5      1027    1480   452 (81432.79 947513.4) (90344.51 945039.1)</span>
+<span class="co">#&gt;  6     6      1556    1986   429 (90437.79 945297.9) (83319.84 950436.9)</span>
+<span class="co">#&gt;  7     7      2065    2077    11 (82012.12 951381.1) (81813.48 951524.5)</span>
+<span class="co">#&gt;  8     8      2145    2257   111 (80687.85 952337.2) (78833.87 953675.7)</span>
+<span class="co">#&gt;  9     9      2314    2347    32 (78343.94 953542.5) (78391.63 952870.4)</span>
+<span class="co">#&gt; 10    10      2350    2422    71 (78395.96 952809.3)   (78500.01 951343)</span>
+<span class="co">#&gt; # … with 25 more rows</span></code></pre></div>
 <p>Our next step is to create a visibility graph. This is, essentially, our road network for our marine environment. At some point, I’ll provide greater detail on this process. But, in simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns a <em>SpatialLinesNetwork</em> created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package.</p>
 <p>With our network created, we need to identify the nearest node on the network for the start and end points of each identified segment.</p>
 <p>NOTE: there is currently an error when the nearest node for the start and end is the same node when calculating the shortest path between them. I need to explore this further.</p>
@@ -193,6 +193,7 @@
   <span class="va">fix_pts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_orient_line.html">prt_orient_line</a></span><span class="op">(</span><span class="va">segs_tbl</span><span class="op">$</span><span class="va">start_pt</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">fix_pts</span><span class="op">)</span>
   <span class="va">pts_list</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html">st_sf</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">fix_idx</span>, geometry <span class="op">=</span> <span class="va">fix_pts</span> <span class="op">)</span>
 <span class="op">}</span>
+<span class="co">#&gt; point order reversed</span>
 <span class="co">#&gt; point order reversed</span>
 
 <span class="va">fixed_pts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">pts_list</span><span class="op">)</span> <span class="op">%&gt;%</span> 
