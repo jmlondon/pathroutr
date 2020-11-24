@@ -1,26 +1,37 @@
 Package: pathroutr
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Visibility Graphs and Tools for (Re-)Routing Paths Around Barriers
+Version: 0.1.0
 Authors@R: 
     person(given = "Josh",
            family = "London",
            role = c("aut", "cre"),
            email = "josh.london@noaa.gov",
            comment = c(ORCID = "0000-0002-3647-5046"))
-Description: What the package does (one paragraph).
+Description: The `pathroutr` package aims to provide a set of tools for routing marine
+    animal tracks around land barriers based on the shortest path through a visibility
+    graph network. The foundation of the package is a graph network created from a 
+    Delaunay Triangle mesh created from the vertices of land polygons within the study 
+    area. Any network edges that cross or fall completely within the land (barrier)
+    polygons are removed. 
 License: CC0
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Imports: 
     sf,
-    RPostgres,
+    lwgeom,
     dplyr,
-    DBI,
-    purrr
+    purrr,
+    magrittr,
+    units,
+    stplanr,
+    tibble
 Suggests: 
-    mapview,
-    crawl (>= 2.2.3)
-Remotes:  
-    NMML/crawl
+    ggplot2,
+    ggspatial,
+    knitr,
+    rmarkdown
+Depends: 
+    R (>= 2.10)
+VignetteBuilder: knitr

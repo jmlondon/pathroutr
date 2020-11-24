@@ -2,3 +2,9 @@
 ^\.Rproj\.user$
 ^docs/
 ^README\.Rmd$
+^scratch/
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^doc$
+^Meta$

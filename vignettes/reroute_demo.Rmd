@@ -1,0 +1,176 @@
+---
+title: "Re-routing Straight Line Paths Around Barriers - A Visibility Graph Demo"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Re-routing Straight Line Paths Around Barriers - A Visibility Graph Demo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette demonstrates the basic concept within the `{pathroutr}` package for
+re-routing paths that cross a barrier around the barrier using the shortest path
+through a visibility graph.
+
+The larger intent is to use this approach for adjust the movement tracks of marine
+animals through water when estimated paths incorrectly cross land.
+
+```{r setup}
+library(pathroutr)
+data(land_barrier)
+data(poi)
+```
+
+## The Test Environment
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(sf)
+library(ggspatial)
+```
+
+
+First, let's setup our test space with our included land barrier and points of interest.
+This was based off of the north Kodiak Island region in Alaska, USA (but, is not an
+exact replica. So, not for navigational use!!). 
+
+```{r}
+ggplot() + 
+  ggspatial::annotation_spatial(data = land_barrier, 
+                                fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(data = poi) +
+  theme_void()
+```
+
+The complexity of the nearshore environment with small islands and narrow passages is
+a difficult situation for estimating marine animal tracks from telemetry devices that
+often have error associated with the location estimates.
+
+Here, we sample 15 of our points of interest and, then, connect them as a line
+representing a path across our complicated landscape.
+
+```{r}
+l_pts <- poi %>% slice_sample(n=15)
+path <- l_pts %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING')
+
+ggplot() + 
+  ggspatial::annotation_spatial(land_barrier, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(poi) +
+  ggspatial::layer_spatial(path, color = "deepskyblue3") +
+  ggspatial::layer_spatial(l_pts[1,], color = "darkgreen", size = 4) +
+  ggspatial::layer_spatial(l_pts[15,], color = "darkred", size = 4) +
+  theme_void()
+```
+
+Now, let's sample 10000 points along this string and this will represent our simulated
+path of track observations.
+
+```{r}
+track_pts <- st_sample(path, size = 10000, type = "regular")
+
+ggplot() + 
+  ggspatial::annotation_spatial(land_barrier, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(path, color = "deepskyblue3") +
+  ggspatial::layer_spatial(track_pts) +
+  theme_void()
+
+```
+
+## Re-route the path
+
+The first function we'll use form the `{pathroutr}` package is `get_barrier_segments()`
+which identifies all of the consecutive track points that intersect with the land
+barrier. 
+
+```{r}
+segs_tbl <- get_barrier_segments(track_pts,land_barrier)
+segs_tbl
+```
+
+Our next step is to create a visibility graph. This is, essentially, our road network for
+our marine environment. At some point, I'll provide greater detail on this process. But,
+in simple terms, we connect all of the vertices for our barrier polygon with a Delaunay
+triangle mesh and, then, remove any of the edges that cross land. Our `prt_visgraph()`
+function returns a _SpatialLinesNetwork_ created with the `{stplanr}` package.
+
+With our network created, we need to identify the nearest node on the network for 
+the start and end points of each identified segment.
+
+NOTE: there is currently an error when the nearest node for the start and end is the same
+node when calculating the shortest path between them. I need to explore this further.
+
+```{r}
+vis_graph <- prt_visgraph(land_barrier, buffer = 150)
+segs_tbl <- segs_tbl %>% prt_nearestnode(vis_graph)
+```
+
+Calculate all of our shortest path routes around the barrier for each segment
+
+```{r}
+segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
+
+ggplot() + 
+  ggspatial::annotation_spatial(land_barrier, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(segs_tbl$geometry, color = "deepskyblue3") +
+  theme_void()
+
+```
+
+This last bit is the point where we insert the fixed points back into our original
+path. It's currently a bit messy and I'll soon turn this into a standalone function.
+
+```{r}
+track_pts <- track_pts %>% st_cast('POINT') %>% 
+  st_sf() %>% tibble::rowid_to_column("id")
+
+pts_list <- vector(mode = "list", length = nrow(segs_tbl))
+
+for (i in 1:nrow(segs_tbl)) {
+  fix_idx <- seq(segs_tbl$start_idx[i]+1,segs_tbl$end_idx[i]-1)
+  fix_pts <- sf::st_sample(segs_tbl$geometry[i], size = segs_tbl$n_pts[i], 
+                           type = "regular") %>% 
+    sf::st_cast('POINT')
+  fix_pts <- prt_orient_line(segs_tbl$start_pt[i], fix_pts)
+  pts_list[[i]] <- sf::st_sf(id = fix_idx, geometry = fix_pts )
+}
+
+fixed_pts <- do.call(rbind, pts_list) %>% 
+  tibble::as_tibble()
+
+track_pts_fix <- track_pts %>% tibble::as_tibble()  %>% 
+  dplyr::rows_update(fixed_pts, by = "id") %>% 
+  sf::st_sf(sf_column_name = "geometry")
+
+fixed_line <- track_pts_fix %>% 
+  dplyr::summarise(do_union = FALSE) %>% 
+  st_cast('LINESTRING')
+```
+
+
+## Did it work?
+
+A final plot of our corrected path. The green dot is the start and the red dot then end.
+The blue line is the shortest path fix and the black line is the new path. Red line
+represents the original path.
+
+If everything is working correctly, there should not be any black lines crossing land.
+
+```{r}
+track_pts <- track_pts %>% summarise(do_union=FALSE) %>% st_cast('LINESTRING')
+
+ggplot() + 
+  ggspatial::annotation_spatial(land_barrier, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(track_pts, color = "red3") +
+  ggspatial::layer_spatial(segs_tbl$geometry, color = "deepskyblue3", size=2) +
+  ggspatial::layer_spatial(fixed_line) +
+  ggspatial::layer_spatial(l_pts[1,], color = "darkgreen", size = 4) +
+  ggspatial::layer_spatial(l_pts[15,], color = "darkred", size = 4) +
+  theme_void()
+```
