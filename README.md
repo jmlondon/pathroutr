@@ -4,6 +4,9 @@
 # pathroutr
 
 <!-- badges: start -->
+
+[![R build
+status](https://github.com/jmlondon/pathroutr/workflows/R-CMD-check/badge.svg)](https://github.com/jmlondon/pathroutr/actions)
 <!-- badges: end -->
 
 The goal of `{pathroutr}` is to provide functions for re-routing paths
