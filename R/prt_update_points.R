@@ -1,14 +1,14 @@
 #' Update track points with fixed geometry
 #'
 #' @param track_pts point geometry
-#' @param segs_tbl
+#' @param segs_tbl segments table
 #'
 #' @return point geometry
 #' @export
 #'
 prt_update_points <- function(track_pts, segs_tbl) {
-  track_pts <- track_pts %>% st_cast('POINT') %>%
-    st_sf() %>% tibble::rowid_to_column("id")
+  track_pts <- track_pts %>% sf::st_cast('POINT') %>%
+    sf::st_sf() %>% tibble::rowid_to_column("id")
 
   pts_list <- vector(mode = "list", length = nrow(segs_tbl))
 

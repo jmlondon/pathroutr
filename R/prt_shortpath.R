@@ -21,9 +21,9 @@ prt_shortpath <- function(segs_tbl, vis_graph) {
 
     if(segs_tbl$start_node[i] == segs_tbl$end_node[i]) {
       node_pt <- stplanr::sln2points(vis_graph)[i,]
-      g <- rbind(node_pt, node_pt) %>% st_combine() %>% st_cast('LINESTRING')
-      l_sf <- tibble(geometry = g, ID = NA, sum_length = NA, pathfound = FALSE) %>%
-        st_sf(sf_column_name = "geometry")
+      g <- rbind(node_pt, node_pt) %>% sf::st_combine() %>% sf::st_cast('LINESTRING')
+      l_sf <- tibble::tibble(geometry = g, ID = NA, sum_length = NA, pathfound = FALSE) %>%
+        sf::st_sf(sf_column_name = "geometry")
       res_tbl[[i]]$result <- l_sf
     }
 
