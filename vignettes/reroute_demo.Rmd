@@ -103,9 +103,6 @@ function returns a _SpatialLinesNetwork_ created with the `{stplanr}` package.
 With our network created, we need to identify the nearest node on the network for 
 the start and end points of each identified segment.
 
-NOTE: there is currently an error when the nearest node for the start and end is the same
-node when calculating the shortest path between them. I need to explore this further.
-
 ```{r}
 vis_graph <- prt_visgraph(land_barrier, buffer = 150)
 segs_tbl <- segs_tbl %>% prt_nearestnode(vis_graph)
