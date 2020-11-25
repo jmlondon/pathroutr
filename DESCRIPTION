@@ -1,5 +1,5 @@
 Package: pathroutr
-Title: Visibility Graphs and Tools for (Re-)Routing Paths Around Barriers
+Title: Tools for (Re-)Routing Paths Around Barriers
 Version: 0.1.0
 Authors@R: 
     person(given = "Josh",
