@@ -57,7 +57,7 @@ Here, we sample 15 of our points of interest and, then, connect them as a line
 representing a path across our complicated landscape.
 
 ```{r}
-l_pts <- poi %>% slice_sample(n=15)
+l_pts <- poi %>% slice_sample(n = 15)
 path <- l_pts %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING')
 
 ggplot() + 
@@ -124,30 +124,7 @@ This last bit is the point where we insert the fixed points back into our origin
 path. It's currently a bit messy and I'll soon turn this into a standalone function.
 
 ```{r}
-track_pts <- track_pts %>% st_cast('POINT') %>% 
-  st_sf() %>% tibble::rowid_to_column("id")
-
-pts_list <- vector(mode = "list", length = nrow(segs_tbl))
-
-for (i in 1:nrow(segs_tbl)) {
-  fix_idx <- seq(segs_tbl$start_idx[i]+1,segs_tbl$end_idx[i]-1)
-  fix_pts <- sf::st_sample(segs_tbl$geometry[i], size = segs_tbl$n_pts[i], 
-                           type = "regular") %>% 
-    sf::st_cast('POINT')
-  fix_pts <- prt_orient_line(segs_tbl$start_pt[i], fix_pts)
-  pts_list[[i]] <- sf::st_sf(id = fix_idx, geometry = fix_pts )
-}
-
-fixed_pts <- do.call(rbind, pts_list) %>% 
-  tibble::as_tibble()
-
-track_pts_fix <- track_pts %>% tibble::as_tibble()  %>% 
-  dplyr::rows_update(fixed_pts, by = "id") %>% 
-  sf::st_sf(sf_column_name = "geometry")
-
-fixed_line <- track_pts_fix %>% 
-  dplyr::summarise(do_union = FALSE) %>% 
-  st_cast('LINESTRING')
+track_pts_fix <- prt_update_points(track_pts, segs_tbl)
 ```
 
 
@@ -160,13 +137,14 @@ represents the original path.
 If everything is working correctly, there should not be any black lines crossing land.
 
 ```{r}
-track_pts <- track_pts %>% summarise(do_union=FALSE) %>% st_cast('LINESTRING')
+track_pts <- track_pts %>% st_cast('LINESTRING')
+track_line_fixed <- track_pts_fix %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING')
 
 ggplot() + 
   ggspatial::annotation_spatial(land_barrier, fill = "cornsilk3", size = 0) +
   ggspatial::layer_spatial(track_pts, color = "red3") +
-  ggspatial::layer_spatial(segs_tbl$geometry, color = "deepskyblue3", size=2) +
-  ggspatial::layer_spatial(fixed_line) +
+  ggspatial::layer_spatial(segs_tbl$geometry, color = "deepskyblue3", size = 2) +
+  ggspatial::layer_spatial(track_line_fixed) +
   ggspatial::layer_spatial(l_pts[1,], color = "darkgreen", size = 4) +
   ggspatial::layer_spatial(l_pts[15,], color = "darkred", size = 4) +
   theme_void()
