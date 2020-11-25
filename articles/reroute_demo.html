@@ -120,7 +120,7 @@
 <p>The complexity of the nearshore environment with small islands and narrow passages is a difficult situation for estimating marine animal tracks from telemetry devices that often have error associated with the location estimates.</p>
 <p>Here, we sample 15 of our points of interest and, then, connect them as a line representing a path across our complicated landscape.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">l_pts</span> <span class="op">&lt;-</span> <span class="va">poi</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_sample</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">15</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">l_pts</span> <span class="op">&lt;-</span> <span class="va">poi</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_sample</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">15</span><span class="op">)</span>
 <span class="va">path</span> <span class="op">&lt;-</span> <span class="va">l_pts</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>do_union <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
@@ -149,20 +149,20 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_barrier</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 39 x 6</span>
+<span class="co">#&gt; # A tibble: 41 x 6</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt              end_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1        40     122    81   (87844.31 956994) (89026.62 955595.7)</span>
-<span class="co">#&gt;  2     2       130     174    43 (89141.97 955459.3)   (89776.38 954709)</span>
-<span class="co">#&gt;  3     3       224     575   350  (90497.3 953856.4) (95558.17 947870.9)</span>
-<span class="co">#&gt;  4     4       811    1418   606   (91081.58 947279) (77541.68 946639.1)</span>
-<span class="co">#&gt;  5     5      1606    1680    73  (73348.1 946440.9) (71697.44 946362.9)</span>
-<span class="co">#&gt;  6     6      2294    2302     7  (81386.1 951396.2) (81548.53 951470.6)</span>
-<span class="co">#&gt;  7     7      2334    2406    71 (82198.26 951768.1) (83660.15 952437.4)</span>
-<span class="co">#&gt;  8     8      2434    2436     1 (84228.66 952697.7) (84269.27 952716.3)</span>
-<span class="co">#&gt;  9     9      2507    2914   406 (85193.36 952697.4)  (83736.4 943726.1)</span>
-<span class="co">#&gt; 10    10      3017    3451   433 (83367.68 941455.8) (81814.06 931889.4)</span>
-<span class="co">#&gt; # … with 29 more rows</span></code></pre></div>
+<span class="co">#&gt;  1     1       408     534   125  (87524.8 939582.1)    (86155 941521.7)</span>
+<span class="co">#&gt;  2     2       577     945   367 (85687.53 942183.7) (81686.85 947848.6)</span>
+<span class="co">#&gt;  3     3      1198    1260    61 (78936.39 951743.3) (78262.36 952697.7)</span>
+<span class="co">#&gt;  4     4      1279    1385   105   (78429.74 952869)  (80320.1 953514.9)</span>
+<span class="co">#&gt;  5     5      1403    1434    30  (80641.1 953624.5) (81193.94 953813.4)</span>
+<span class="co">#&gt;  6     6      1479    1627   147 (81996.45 954087.6) (84635.82 954989.4)</span>
+<span class="co">#&gt;  7     7      1761    2008   246 (87025.52 955805.8) (91430.41 957310.8)</span>
+<span class="co">#&gt;  8     8      2050    2288   237 (92179.42 957566.7)  (96423.8 959016.8)</span>
+<span class="co">#&gt;  9     9      2741    3013   271 (94996.09 956114.6)  (90454.6 953737.4)</span>
+<span class="co">#&gt; 10    10      3088    3486   397 (89202.35 953081.9) (82557.08 949603.5)</span>
+<span class="co">#&gt; # … with 31 more rows</span></code></pre></div>
 <p>Our next step is to create a visibility graph. This is, essentially, our road network for our marine environment. At some point, I’ll provide greater detail on this process. But, in simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns a <em>SpatialLinesNetwork</em> created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package.</p>
 <p>With our network created, we need to identify the nearest node on the network for the start and end points of each identified segment.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -179,30 +179,7 @@
 <p><img src="reroute_demo_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>This last bit is the point where we insert the fixed points back into our original path. It’s currently a bit messy and I’ll soon turn this into a standalone function.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">track_pts</span> <span class="op">&lt;-</span> <span class="va">track_pts</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'POINT'</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html">st_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/rownames.html">rowid_to_column</a></span><span class="op">(</span><span class="st">"id"</span><span class="op">)</span>
-
-<span class="va">pts_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html">vector</a></span><span class="op">(</span>mode <span class="op">=</span> <span class="st">"list"</span>, length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">segs_tbl</span><span class="op">)</span><span class="op">)</span>
-
-<span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">segs_tbl</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="va">fix_idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="va">segs_tbl</span><span class="op">$</span><span class="va">start_idx</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">+</span><span class="fl">1</span>,<span class="va">segs_tbl</span><span class="op">$</span><span class="va">end_idx</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span>
-  <span class="va">fix_pts</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_sample.html">st_sample</a></span><span class="op">(</span><span class="va">segs_tbl</span><span class="op">$</span><span class="va">geometry</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, size <span class="op">=</span> <span class="va">segs_tbl</span><span class="op">$</span><span class="va">n_pts</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, 
-                           type <span class="op">=</span> <span class="st">"regular"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-    <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'POINT'</span><span class="op">)</span>
-  <span class="va">fix_pts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_orient_line.html">prt_orient_line</a></span><span class="op">(</span><span class="va">segs_tbl</span><span class="op">$</span><span class="va">start_pt</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">fix_pts</span><span class="op">)</span>
-  <span class="va">pts_list</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html">st_sf</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">fix_idx</span>, geometry <span class="op">=</span> <span class="va">fix_pts</span> <span class="op">)</span>
-<span class="op">}</span>
-
-<span class="va">fixed_pts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">pts_list</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="va">track_pts</span> <span class="op">%&gt;%</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span>  <span class="op">%&gt;%</span> 
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rows.html">rows_update</a></span><span class="op">(</span><span class="va">fixed_pts</span>, by <span class="op">=</span> <span class="st">"id"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html">st_sf</a></span><span class="op">(</span>sf_column_name <span class="op">=</span> <span class="st">"geometry"</span><span class="op">)</span>
-
-<span class="va">fixed_line</span> <span class="op">&lt;-</span> <span class="va">track_pts_fix</span> <span class="op">%&gt;%</span> 
-  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>do_union <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">segs_tbl</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="did-it-work" class="section level2">
 <h2 class="hasAnchor">
@@ -210,13 +187,14 @@
 <p>A final plot of our corrected path. The green dot is the start and the red dot then end. The blue line is the shortest path fix and the black line is the new path. Red line represents the original path.</p>
 <p>If everything is working correctly, there should not be any black lines crossing land.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">track_pts</span> <span class="op">&lt;-</span> <span class="va">track_pts</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>do_union<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">track_pts</span> <span class="op">&lt;-</span> <span class="va">track_pts</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span>
+<span class="va">track_line_fixed</span> <span class="op">&lt;-</span> <span class="va">track_pts_fix</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>do_union <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">annotation_spatial</a></span><span class="op">(</span><span class="va">land_barrier</span>, fill <span class="op">=</span> <span class="st">"cornsilk3"</span>, size <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">track_pts</span>, color <span class="op">=</span> <span class="st">"red3"</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">segs_tbl</span><span class="op">$</span><span class="va">geometry</span>, color <span class="op">=</span> <span class="st">"deepskyblue3"</span>, size<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">fixed_line</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">segs_tbl</span><span class="op">$</span><span class="va">geometry</span>, color <span class="op">=</span> <span class="st">"deepskyblue3"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">track_line_fixed</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">l_pts</span><span class="op">[</span><span class="fl">1</span>,<span class="op">]</span>, color <span class="op">=</span> <span class="st">"darkgreen"</span>, size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">l_pts</span><span class="op">[</span><span class="fl">15</span>,<span class="op">]</span>, color <span class="op">=</span> <span class="st">"darkred"</span>, size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • pathroutr</title>
+<title>Update track points with fixed geometry — prt_update_points • pathroutr</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,8 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Update track points with fixed geometry — prt_update_points" />
+<meta property="og:description" content="Update track points with fixed geometry" />
 
 
 
@@ -58,7 +59,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -115,96 +116,37 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Update track points with fixed geometry</h1>
+    
+    <div class="hidden name"><code>prt_update_points.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    <p>Update track points with fixed geometry</p>
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
+    <pre class="usage"><span class='fu'>prt_update_points</span><span class='op'>(</span><span class='va'>track_pts</span>, <span class='va'>segs_tbl</span><span class='op'>)</span></pre>
 
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      
-      
-    </tbody><tbody>
-      
-      
-      <tr>
-        
-        <td>
-          <p><code><a href="get_barrier_segments.html">get_barrier_segments()</a></code> </p>
-        </td>
-        <td><p>Identify Track Points That Intersect With A Barrier</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="land_barrier.html">land_barrier</a></code> </p>
-        </td>
-        <td><p>land barrier</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="poi.html">poi</a></code> </p>
-        </td>
-        <td><p>points of interest</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prt_extend_line.html">prt_extend_line()</a></code> </p>
-        </td>
-        <td><p>extend a line to include given start and end points</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prt_nearestnode.html">prt_nearestnode()</a></code> </p>
-        </td>
-        <td><p>Find the nearest node for start and end points in segs_tbl</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prt_orient_line.html">prt_orient_line()</a></code> </p>
-        </td>
-        <td><p>Correctly orient points from line based on a given nearest start point</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prt_shortpath.html">prt_shortpath()</a></code> </p>
-        </td>
-        <td><p>Calculate the shortest path through a visibility network between two points</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prt_update_points.html">prt_update_points()</a></code> </p>
-        </td>
-        <td><p>Update track points with fixed geometry</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prt_visgraph.html">prt_visgraph()</a></code> </p>
-        </td>
-        <td><p>Create a visibility graph</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="spatial_predicates.html">not_crosses()</a></code> <code><a href="spatial_predicates.html">not_within()</a></code> <code><a href="spatial_predicates.html">not_intersects()</a></code> </p>
-        </td>
-        <td><p>Spatial predicates</p></td>
-      </tr>
-    </tbody>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>track_pts</th>
+      <td><p>point geometry</p></td>
+    </tr>
+    <tr>
+      <th>segs_tbl</th>
+      <td><p>segments table</p></td>
+    </tr>
     </table>
-  </div>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>point geometry</p>
+
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
       <h2 data-toc-skip>Contents</h2>
