@@ -12,7 +12,7 @@
 prt_visgraph <- function(barrier,
                          buffer = 0,
                          centroids = TRUE,
-                         centroid_limit = 4e+06,
+                         centroid_limit = 10e+06,
                          aug_points = NULL) {
   barrier <- sf::st_union(
     sf::st_cast(barrier, 'POLYGON')

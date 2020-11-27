@@ -1,0 +1,216 @@
+---
+title: "Re-routing Harbor Seal Movement Tracks Around Land with {pathroutr}"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Re-routing Harbor Seal Movement Tracks Around Land with {pathroutr}}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(pathroutr)
+```
+
+## Alaska Harbor Seal Example
+
+The purpose of this is to demonstrate a more 'real world' use of `{pathroutr}` for
+re-routing of marine animal movement around land features. Here, we will use the
+Alaska harbor seal data provided in the `{crawl}` package to:
+
+1. demonstrate and data wrangling and pre-processing needed
+2. use `{crawl`}'s movement model to predict the most likely path
+3. re-route the predicted path around any land barriers
+4. repeat the process but using `{crawl}`'s multiple imputation functionality to 
+create a set of possible predicted paths that span model uncertainty
+
+## Pre-processing Track Data and Land Polygon Data
+
+For our land data, we will source in the Alaska 1:250000 coastal data polygon. This
+is provided by the Alaska Department of Natural Resources and was obtained from their
+open data portal (https://gis.data.alaska.gov/datasets/alaska-1250000). Here, we'll
+pull the data directly from the portal API. Note, only those polygons that intersect
+with the bounding box of our harbor seal movement are included.
+
+```{r}
+library(sf)
+
+# akcoast_qry <- "https://arcgis.dnr.alaska.gov/arcgis/rest/services/OpenData/Physical_AlaskaCoast/MapServer/2/query?where=1%3D1&outFields=*&geometry=-159.240%2C55.112%2C-152.422%2C59.413&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outSR=3338&f=json"
+# 
+# akcoast <- sf::read_sf(akcoast_qry)
+# akcoast <- sf::st_make_valid(akcoast)
+data("akcoast")
+```
+
+Now, let's load in our harbor seal data from the `{crawl}` package
+
+```{r}
+library(crawl)
+data("harborSeal_sf")
+
+harborSeal_sf <- harborSeal_sf %>% sf::st_transform(3338)
+
+```
+
+And, we'll plot things to make sure everything looks good
+
+```{r}
+library(ggplot2)
+library(ggspatial)
+library(dplyr)
+
+l <- harborSeal_sf %>% dplyr::filter(!sf::st_is_empty(.)) %>% 
+summarise(do_union = FALSE) %>% st_cast('LINESTRING')
+
+ggplot() +
+  ggspatial::annotation_spatial(akcoast, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(l, color = "darkgrey", size = 0.5) +
+  ggspatial::layer_spatial(harborSeal_sf, color = "deepskyblue3", size = 0.5) +
+  theme_void()
+```
+
+## Re-Route Raw Observations
+
+While the preferred approach would be to rely on a movement model for predicting the
+path of our seal, it can sometimes be useful to just correct the raw observations. So,
+that's what we'll do first.
+
+With such a large geographic area, the computational time needed to create our
+visibility graph could be quite large. So, we will want to limit our land polygon
+as much as we reasonably can.
+
+We'll do this by creating a convex hull boundary around our observed data and limiting
+the region to this space.
+
+```{r}
+land_region <- sf::st_buffer(harborSeal_sf, dist = 35000) %>% 
+  sf::st_union() %>% 
+  sf::st_convex_hull() %>% 
+  sf::st_intersection(akcoast) %>% 
+  st_collection_extract('POLYGON') %>% 
+  st_sf()
+
+ggplot() +
+  ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(l, color = "darkgrey", size = 0.5) +
+  ggspatial::layer_spatial(harborSeal_sf, color = "deepskyblue3", size = 0.5) +
+  theme_void()
+```
+At this point, we are ready to create our visibility graph using the 
+`pathroutr::prt_visgraph()` function. We'll set *centroids = FALSE* in order to 
+speed up the build.
+
+NOTE: this will take about 30 min to build
+
+```{r, eval=FALSE}
+library(tictoc)
+tic()
+vis_graph <- prt_visgraph(land_region, centroids = FALSE)
+toc()
+```
+
+And, let's take a look at our network.
+
+```{r}
+data("vis_graph")
+ggplot() +
+  ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(vis_graph@sl, size = 0.5) +
+  theme_void()
+```
+
+```{r}
+track_pts <- harborSeal_sf %>% dplyr::filter(!sf::st_is_empty(.))
+segs_tbl <- get_barrier_segments(track_pts,land_region)
+segs_tbl <- segs_tbl %>% prt_nearestnode(vis_graph, maxdist = 50000)
+segs_tbl
+```
+
+```{r}
+segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
+
+ggplot() + 
+  ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(segs_tbl$geometry, color = "deepskyblue3") +
+  theme_void()
+```
+
+This last bit is the point where we insert the fixed points back into our original
+path.
+
+```{r}
+track_pts_fix <- prt_update_points(track_pts, segs_tbl)
+```
+
+```{r}
+track_line_fixed <- track_pts_fix %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING')
+
+ggplot() +
+  ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(track_line_fixed, color = "darkgrey", size = 0.5) +
+  ggspatial::layer_spatial(track_pts_fix, color = "deepskyblue3", size = 0.5) +
+  theme_void()
+```
+Let's fit a movement model
+
+```{r}
+##Fit model as given in Johnson et al. (2008) Ecology 89:1208-1215
+## Start values for theta come from the estimates in Johnson et al. (2008)
+fixPar = c(log(250), log(500), log(1500), rep(NA,5), 0)
+displayPar( mov.model=~1, err.model=list(x=~Argos_loc_class-1),data=harborSeal_sf, 
+            activity=~I(1-DryTime),fixPar=fixPar)
+constr=list(
+  lower=c(rep(log(1500),3), rep(-Inf,2)),
+  upper=rep(Inf,5)
+)
+
+set.seed(123)
+fit1 <- crwMLE(
+  mov.model=~1, err.model=list(x=~Argos_loc_class-1), activity=~I(1-DryTime),
+  data=harborSeal_sf,  Time.name="Time", 
+  fixPar=fixPar, theta=c(rep(log(5000),3),log(3*3600), 0),
+  constr=constr, method="L-BFGS-B",
+  control=list(maxit=2000, trace=1, REPORT=1)
+)
+
+print(fit1)
+pred1 = crwPredict(fit1, predTime = '5 min')
+pred1_sf <- pred1 %>% crw_as_sf("POINT","p")
+```
+
+```{r}
+segs_tbl <- get_barrier_segments(pred1_sf,land_region)
+segs_tbl <- segs_tbl %>% prt_nearestnode(vis_graph)
+segs_tbl
+```
+
+```{r}
+segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
+
+ggplot() + 
+  ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(segs_tbl$geometry, color = "deepskyblue3") +
+  theme_void()
+```
+
+This last bit is the point where we insert the fixed points back into our original
+path.
+
+```{r}
+track_pts_fix <- prt_update_points(pred1_sf, segs_tbl)
+```
+
+```{r}
+track_line_fixed <- track_pts_fix %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING')
+
+ggplot() +
+  ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(track_line_fixed, color = "deepskyblue3", size = 0.5) + 
+  theme_void()
+```

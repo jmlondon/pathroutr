@@ -8,7 +8,7 @@ prt_visgraph(
   barrier,
   buffer = 0,
   centroids = TRUE,
-  centroid_limit = 4e+06,
+  centroid_limit = 1e+07,
   aug_points = NULL
 )
 }

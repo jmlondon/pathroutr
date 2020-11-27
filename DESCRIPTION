@@ -30,8 +30,11 @@ Imports:
 Suggests: 
     ggplot2,
     ggspatial,
+    crawl,
     knitr,
     rmarkdown
+Remotes:
+    NMML/crawl@devel
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr
