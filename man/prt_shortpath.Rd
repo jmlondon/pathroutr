@@ -12,7 +12,7 @@ prt_shortpath(segs_tbl, vis_graph)
 \item{vis_graph}{SpatialLinesNetwork from prt_visgraph()}
 }
 \value{
-simple feature 'LINESTRING'
+data frame seg_tbl with added geometry column for shortest path LINESTRING
 }
 \description{
 Calculate the shortest path through a visibility network between two points
