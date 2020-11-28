@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Find the nearest node for start and end points in segs_tbl — prt_nearestnode • pathroutr</title>
+<title>visual graph for Alaska coast region — vis_graph • pathroutr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,9 @@
 
 
 
-<meta property="og:title" content="Find the nearest node for start and end points in segs_tbl — prt_nearestnode" />
-<meta property="og:description" content="Find the nearest node for start and end points in segs_tbl" />
+<meta property="og:title" content="visual graph for Alaska coast region — vis_graph" />
+<meta property="og:description" content="A visual graph built with prt_visgraph() and the Alaska coastal region used
+by the harbor seal example. Included to save time during vignette build." />
 
 
 
@@ -121,37 +122,22 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Find the nearest node for start and end points in segs_tbl</h1>
+    <h1>visual graph for Alaska coast region</h1>
     
-    <div class="hidden name"><code>prt_nearestnode.Rd</code></div>
+    <div class="hidden name"><code>vis_graph.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Find the nearest node for start and end points in segs_tbl</p>
+    <p>A visual graph built with <code><a href='prt_visgraph.html'>prt_visgraph()</a></code> and the Alaska coastal region used
+by the harbor seal example. Included to save time during vignette build.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prt_nearestnode</span><span class='op'>(</span><span class='va'>segs_tbl</span>, <span class='va'>vis_graph</span>, maxdist <span class='op'>=</span> <span class='fl'>15000</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='va'>vis_graph</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>segs_tbl</th>
-      <td><p>output from get_barrier_segments</p></td>
-    </tr>
-    <tr>
-      <th>vis_graph</th>
-      <td><p>output from prt_visgraph</p></td>
-    </tr>
-    <tr>
-      <th>maxdist</th>
-      <td><p>max search distance for locating the nearest node</p></td>
-    </tr>
-    </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>segs_tbl with updated columns for nearest start and end nodes</p>
+    <p>sfNetwork</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

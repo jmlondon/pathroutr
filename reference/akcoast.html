@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Find the nearest node for start and end points in segs_tbl — prt_nearestnode • pathroutr</title>
+<title>Alaska coastline — akcoast • pathroutr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,11 @@
 
 
 
-<meta property="og:title" content="Find the nearest node for start and end points in segs_tbl — prt_nearestnode" />
-<meta property="og:description" content="Find the nearest node for start and end points in segs_tbl" />
+<meta property="og:title" content="Alaska coastline — akcoast" />
+<meta property="og:description" content="Alaska 1:250000 coastal data polygon. This is provided by the Alaska Department of
+Natural Resources and was obtained from their open data portal
+(https://gis.data.alaska.gov/datasets/alaska-1250000). Note, only those polygons that
+intersect with the bounding box of our harbor seal movement are included." />
 
 
 
@@ -121,37 +124,31 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Find the nearest node for start and end points in segs_tbl</h1>
+    <h1>Alaska coastline</h1>
     
-    <div class="hidden name"><code>prt_nearestnode.Rd</code></div>
+    <div class="hidden name"><code>akcoast.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Find the nearest node for start and end points in segs_tbl</p>
+    <p>Alaska 1:250000 coastal data polygon. This is provided by the Alaska Department of
+Natural Resources and was obtained from their open data portal
+(https://gis.data.alaska.gov/datasets/alaska-1250000). Note, only those polygons that
+intersect with the bounding box of our harbor seal movement are included.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prt_nearestnode</span><span class='op'>(</span><span class='va'>segs_tbl</span>, <span class='va'>vis_graph</span>, maxdist <span class='op'>=</span> <span class='fl'>15000</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='va'>akcoast</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>segs_tbl</th>
-      <td><p>output from get_barrier_segments</p></td>
-    </tr>
-    <tr>
-      <th>vis_graph</th>
-      <td><p>output from prt_visgraph</p></td>
-    </tr>
-    <tr>
-      <th>maxdist</th>
-      <td><p>max search distance for locating the nearest node</p></td>
-    </tr>
-    </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>segs_tbl with updated columns for nearest start and end nodes</p>
+    <p>Simple feature collection with 273 features and 5 fields:</p><dl>
+<dt>geometry</dt><dd><p>POLYGON</p></dd>
+
+</dl>
+
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p><a href='https://gis.data.alaska.gov/datasets/alaska-1250000'>https://gis.data.alaska.gov/datasets/alaska-1250000</a></p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
