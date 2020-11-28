@@ -34,7 +34,7 @@ Suggests:
     knitr,
     rmarkdown
 Remotes:
-    NMML/crawl@devel
+    NMML/crawl@devel,
     ropensci/stplanr@f5b7211289797cbb42f2194083d02fb3d3f4a46a
 Depends: 
     R (>= 2.10)
