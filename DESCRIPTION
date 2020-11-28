@@ -35,7 +35,7 @@ Suggests:
     rmarkdown
 Remotes:
     NMML/crawl@devel,
-    ropensci/stplanr@f5b7211289797cbb42f2194083d02fb3d3f4a46a
+    ropensci/stplanr
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr
