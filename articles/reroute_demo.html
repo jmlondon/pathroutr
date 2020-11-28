@@ -152,20 +152,20 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_barrier</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 28 x 6</span>
+<span class="co">#&gt; # A tibble: 22 x 6</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt              end_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1       174     387   212 (94277.53 952042.1) (90499.02 953862.2)</span>
-<span class="co">#&gt;  2     2       640    1019   378 (90159.72 953108.7) (95484.98 947880.6)</span>
-<span class="co">#&gt;  3     3      1266    1376   109 (92952.84 944306.2)  (91494.1 942705.2)</span>
-<span class="co">#&gt;  4     4      2245    2302    56  (88693.4 940204.1) (88213.32 941218.6)</span>
-<span class="co">#&gt;  5     5      2363    2830   466 (87699.55 942304.3)   (83766.24 950616)</span>
-<span class="co">#&gt;  6     6      2883    2991   107 (83319.85 951559.3) (82410.22 953481.5)</span>
-<span class="co">#&gt;  7     7      3000    3205   204 (82334.42 953641.6) (80607.81 957290.3)</span>
-<span class="co">#&gt;  8     8      3502    3524    21 (83447.54 961464.6) (83773.67 961749.7)</span>
-<span class="co">#&gt;  9     9      3581    3640    58 (84460.73 962049.3) (84647.99 960902.8)</span>
-<span class="co">#&gt; 10    10      3863    3891    27 (85355.77 956569.2) (85444.64 956025.1)</span>
-<span class="co">#&gt; # … with 18 more rows</span></code></pre></div>
+<span class="co">#&gt;  1     1        41     374   332 (81060.02 941573.1) (74944.81 941000.5)</span>
+<span class="co">#&gt;  2     2       411     437    25 (74265.34 940936.8) (73787.88 940892.1)</span>
+<span class="co">#&gt;  3     3      1032    1424   391 (75686.09 936211.9)   (78738.71 942766)</span>
+<span class="co">#&gt;  4     4      1573    1676   102 (79899.02 945257.3) (80701.11 946979.4)</span>
+<span class="co">#&gt;  5     5      1928    2164   235 (82663.51 951192.8) (84501.32 955138.7)</span>
+<span class="co">#&gt;  6     6      2198    2410   211 (84441.64 955200.2)  (81914.3 952216.5)</span>
+<span class="co">#&gt;  7     7      2922    3493   570 (78085.53 946303.5) (88473.34 948038.6)</span>
+<span class="co">#&gt;  8     8      3568    3930   361 (89160.71 947818.4) (85574.07 942186.7)</span>
+<span class="co">#&gt;  9     9      4044    4490   445 (84444.58 940413.1) (80025.69 933474.6)</span>
+<span class="co">#&gt; 10    10      4603    4708   104 (78434.82 934050.6) (76842.17 935152.5)</span>
+<span class="co">#&gt; # … with 12 more rows</span></code></pre></div>
 <p>Our next step is to create a visibility graph. This is, essentially, our road network for our marine environment. At some point, I’ll provide greater detail on this process. But, in simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns a <em>SpatialLinesNetwork</em> created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package.</p>
 <p>With our network created, we need to identify the nearest node on the network for the start and end points of each identified segment.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -182,7 +182,8 @@
 <p><img src="reroute_demo_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <p>This last bit is the point where we insert the fixed points back into our original path. It’s currently a bit messy and I’ll soon turn this into a standalone function.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">segs_tbl</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">segs_tbl</span><span class="op">)</span>
+<span class="co">#&gt; point order reversed</span></code></pre></div>
 </div>
 <div id="did-it-work" class="section level2">
 <h2 class="hasAnchor">
