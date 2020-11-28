@@ -212,7 +212,8 @@
 <p><img src="akharborseal_demo_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <p>This last bit is the point where we insert the fixed points back into our original path.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">segs_tbl</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">segs_tbl</span><span class="op">)</span>
+<span class="co">#&gt; point order reversed</span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">track_line_fixed</span> <span class="op">&lt;-</span> <span class="va">track_pts_fix</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>do_union <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span>
 
