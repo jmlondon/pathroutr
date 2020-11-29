@@ -87,7 +87,7 @@ harborSeal_sf <- harborSeal_sf %>% sf::st_transform(3338)
 Let's plot things to make sure everything looks good. The `harborSeal_sf` data has
 missing values in the *geometry* field so we need to filter those out when making a line.
 
-```{r}
+```{r, fig.cap="Movement data from a harbor seal in Alaska. Raw Argos observations and the derived connect-the-dots trackline"}
 l <- harborSeal_sf %>% 
   dplyr::filter(!sf::st_is_empty(.)) %>% 
   dplyr::summarise(do_union = FALSE) %>% 
@@ -97,9 +97,7 @@ ggplot() +
   ggspatial::annotation_spatial(akcoast, fill = "cornsilk3", size = 0) +
   ggspatial::layer_spatial(l, color = "darkgrey", size = 0.5) +
   ggspatial::layer_spatial(harborSeal_sf, color = "deepskyblue3", size = 0.5) +
-  theme_void() +
-  ggtitle("Raw Argos Ovservations and Derived Trackline",
-          subtitle = "Harbor Seal, Alaska, USA")
+  theme_void()
 ```
 
 ## Re-Route Raw Observations
@@ -118,7 +116,7 @@ We'll do this by creating a convex hull boundary around our observed data and li
 the region to this space. Here, we'll go with a buffer of 35 km around each point and
 rely on the buffered features to create our convex hull.
 
-```{r}
+```{r, fig.cap="Land barrier polygon after limiting to a 35km buffered convex hull of the observation points"}
 land_region <- sf::st_buffer(harborSeal_sf, dist = 35000) %>% 
   sf::st_union() %>% 
   sf::st_convex_hull() %>% 
@@ -130,9 +128,7 @@ ggplot() +
   ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
   ggspatial::layer_spatial(l, color = "darkgrey", size = 0.5) +
   ggspatial::layer_spatial(harborSeal_sf, color = "deepskyblue3", size = 0.5) +
-  theme_void() +
-  ggtitle("Land Barrier Polygon",
-          subtitle = "limited to 35km convex hull around track points")
+  theme_void()
 ```
 
 ### Create Visibility Graph
@@ -158,13 +154,12 @@ vis_graph <- prt_visgraph(land_region)
 Let's take a look at our network. The 'edges' are stored within `@sl` slot of `vis_graph`.
 We can pass thing along to `ggspatial::layer_spatial()` just like an `sf` object.
 
-```{r}
+```{r, fig.cap="Visibility graph network edges created with the `{stplanr}` package. All vertices from the land polygon were used as nodes in the network and any edges that crossed land were removed." }
 data("vis_graph")
 ggplot() +
   ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
   ggspatial::layer_spatial(vis_graph@sl, size = 0.5) +
-  theme_void()+
-  ggtitle("Visibility Graph Edges")
+  theme_void()
 ```
 
 Note the large triangles in the large, open water areas. This is a key advantage for our
@@ -198,14 +193,13 @@ network for each segment. The `stplanr::sum_network_routes()` function only calc
 the LINESTRING from start node to end node. So, the `prt_shortpath()` function extends
 each end to connect with our bookend points for each segment.
 
-```{r}
+```{r, fig.cap="Segments that were identified to cross land have been re-routed along the shortest path throught visibility network"}
 segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
 
 ggplot() + 
   ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
   ggspatial::layer_spatial(segs_tbl$geometry, color = "deepskyblue3") +
-  theme_void() +
-  ggtitle("Re-routed Segments That Were Identified to Cross Land")
+  theme_void()
 ```
 
 ### Update Geometry With Re-routed Coordinates
@@ -217,18 +211,17 @@ path.
 track_pts_fix <- prt_update_points(track_pts, segs_tbl)
 ```
 
-```{r}
+```{r, fig.cap="Raw Argos observation geometries updated in place with the re-routed paths"}
 track_line_fixed <- track_pts_fix %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING')
 
 ggplot() +
   ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
   ggspatial::layer_spatial(track_line_fixed, color = "darkgrey", size = 0.5) +
   ggspatial::layer_spatial(track_pts_fix, color = "deepskyblue3", size = 0.5) +
-  theme_void() +
-  ggtitle("Trackline and Argos Observations After Re-routing")
+  theme_void()
 ```
 
-## Correcting a Movement Model Prediction
+## Re-Routing a Movement Model Prediction
 
 First, let's fit our movement model. Here, we rely on an example from the `{crawl}`
 package. But, other model approaches (e.g. `{foieGras}`) should work as well. We have
@@ -282,14 +275,13 @@ segs_tbl
 
 As before, we use the `prt_shortpath()` function to calculated all of our re-routed paths
 
-```{r}
+```{r, fig.cap="Re-routed segments from the predicted path"}
 segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
 
 ggplot() + 
   ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
   ggspatial::layer_spatial(segs_tbl$geometry, color = "deepskyblue3") +
-  theme_void() +
-  ggtitle("Re-routed Segments from Predicted Path")
+  theme_void()
 ```
 
 ### Update Predicted Path
@@ -306,13 +298,11 @@ issue and troubleshoot any issues.
 track_pts_fix <- prt_update_points(pred1_sf, segs_tbl)
 ```
 
-```{r}
+```{r, fig.cap="Updated predicted path with re-routed geometries"}
 track_line_fixed <- track_pts_fix %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING')
 
 ggplot() +
   ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
   ggspatial::layer_spatial(track_line_fixed, color = "deepskyblue3", size = 0.5) + 
-  theme_void() +
-  ggtitle("Updated Predicted Path to Re-route Around Land",
-          subtitle = "Harbor Seal, Alaska")
+  theme_void()
 ```
