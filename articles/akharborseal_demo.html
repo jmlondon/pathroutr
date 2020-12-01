@@ -265,8 +265,7 @@ Segments that were identified to cross land have been re-routed along the shorte
 <a href="#update-geometry-with-re-routed-coordinates" class="anchor"></a>Update Geometry With Re-routed Coordinates</h3>
 <p>This last bit is the point where we insert the fixed points back into our original path.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">segs_tbl</span><span class="op">)</span>
-<span class="co">#&gt; point order reversed</span></code></pre></div>
+<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">segs_tbl</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">track_line_fixed</span> <span class="op">&lt;-</span> <span class="va">track_pts_fix</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>do_union <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span>
 
@@ -396,6 +395,41 @@ Re-routed segments from the predicted path
 Updated predicted path with re-routed geometries
 </p>
 </div>
+</div>
+</div>
+<div id="multiple-imputation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#multiple-imputation" class="anchor"></a>Multiple Imputation</h2>
+<p>The recommended analytic workflow for <code>{crawl}</code> movement models is to characterize movement from a collection of imputed paths from the model fit. The <code>{pathroutr}</code> re-routing can be applied to each of these imputed paths and, hopefully, provide a more complete picture of uncertainty.</p>
+<div id="create-multiple-imputations-from-crawl-model" class="section level3">
+<h3 class="hasAnchor">
+<a href="#create-multiple-imputations-from-crawl-model" class="anchor"></a>Create Multiple Imputations from {crawl} Model</h3>
+<p>We will use the <code><a href="https://rdrr.io/pkg/crawl/man/crwPostIS.html">crawl::crwPostIS()</a></code> function to create our imputed paths.</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">crw_sim</span> <span class="op">&lt;-</span> <span class="fu">crawl</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwSimulator.html">crwSimulator</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">"5 min"</span><span class="op">)</span>
+<span class="co">#&gt; Computing importance weights ...</span>
+
+
+
+<span class="va">midf</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>.rows <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>postis <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwPostIS.html">crwPostIS</a></span><span class="op">(</span><span class="va">crw_sim</span>, fullPost <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,
+         pts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crw_as_sf.html">crw_as_sf</a></span><span class="op">(</span><span class="va">postis</span>, locType <span class="op">=</span> <span class="st">"p"</span>, ftype <span class="op">=</span> <span class="st">"POINT"</span><span class="op">)</span><span class="op">)</span>,
+         lines <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crw_as_sf.html">crw_as_sf</a></span><span class="op">(</span><span class="va">postis</span>, locType <span class="op">=</span> <span class="st">"p"</span>, ftype <span class="op">=</span> <span class="st">"LINESTRING"</span><span class="op">)</span><span class="op">)</span>,
+         segs_tbl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">pts</span>, <span class="va">land_region</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+                           <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+                           <span class="fu"><a href="../reference/prt_shortpath.html">prt_shortpath</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span><span class="op">)</span>,
+         pts_fix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">pts</span>, <span class="va">segs_tbl</span><span class="op">)</span><span class="op">)</span>,
+         lines_fix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">pts_fix</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>do_union <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span><span class="op">)</span>
+         <span class="op">)</span>
+
+<span class="va">sim_lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">midf</span><span class="op">$</span><span class="va">lines_fix</span><span class="op">)</span>
+
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">annotation_spatial</a></span><span class="op">(</span><span class="va">land_region</span>, fill <span class="op">=</span> <span class="st">"cornsilk3"</span>, size <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">sim_lines</span>, color <span class="op">=</span> <span class="st">"deepskyblue"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">track_line_fixed</span>, color <span class="op">=</span> <span class="st">"deepskyblue3"</span>, size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p><img src="akharborseal_demo_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
 </div>
 </div>
   </div>
