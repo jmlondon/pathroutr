@@ -306,3 +306,40 @@ ggplot() +
   ggspatial::layer_spatial(track_line_fixed, color = "deepskyblue3", size = 0.5) + 
   theme_void()
 ```
+
+## Multiple Imputation 
+
+The recommended analytic workflow for `{crawl}` movement models is to characterize movement
+from a collection of imputed paths from the model fit. The `{pathroutr}` re-routing can
+be applied to each of these imputed paths and, hopefully, provide a more complete
+picture of uncertainty.
+
+### Create Multiple Imputations from {crawl} Model
+
+We will use the `crawl::crwPostIS()` function to create our imputed paths. 
+
+```{r}
+crw_sim <- crawl::crwSimulator(fit1, predTime = "5 min")
+
+
+
+midf <- tibble::tibble(.rows = 5) %>% dplyr::rowwise() %>% 
+  mutate(postis = list(crwPostIS(crw_sim, fullPost = FALSE)),
+         pts = list(crw_as_sf(postis, locType = "p", ftype = "POINT")),
+         lines = list(crw_as_sf(postis, locType = "p", ftype = "LINESTRING")),
+         segs_tbl = list(get_barrier_segments(pts, land_region) %>% 
+                           prt_nearestnode(vis_graph) %>% 
+                           prt_shortpath(vis_graph)),
+         pts_fix = list(prt_update_points(pts, segs_tbl)),
+         lines_fix = list(pts_fix %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING'))
+         )
+
+sim_lines <- do.call(rbind, midf$lines_fix)
+
+ggplot() +
+  ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(sim_lines, color = "deepskyblue", alpha = 0.5) +
+  ggspatial::layer_spatial(track_line_fixed, color = "deepskyblue3", size = 0.5) + 
+  theme_void()
+```
+
