@@ -39,7 +39,7 @@ library(stplanr)
 
 Additional packages we'll want to load
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(dplyr)
 library(sf)
 library(ggplot2)
@@ -51,7 +51,7 @@ The purpose of this is to demonstrate a more 'real world' use of `{pathroutr}` f
 re-routing of marine animal movement around land features. Here, we will use the
 Alaska harbor seal data provided in the `{crawl}` package to:
 
-1. demonstrate and data wrangling and pre-processing needed
+1. demonstrate the data wrangling and pre-processing needed
 2. use `{crawl`}'s movement model to predict the most likely path
 3. re-route the predicted path around any land barriers
 4. repeat the process but using `{crawl}`'s multiple imputation functionality to 
@@ -101,7 +101,7 @@ ggplot() +
   theme_void()
 ```
 
-## Re-Route Raw Observations
+## Re-Route Raw Argos Observations
 
 While the preferred approach would be to rely on a movement model for predicting the
 path of our seal, it can sometimes be useful to just correct the raw observations. So,
@@ -146,14 +146,18 @@ At this point, we are ready to create our visibility graph using the
 speed up the build. Adding additional centroids will increase the likelihood of
 linearity in the calculated shortest path. This is especially true when the shortest
 path crosses larger areas of open water. However, adding the additional centroids
-results in a very large increase in computational time (both in createion of the visual
-graph and in subesquent operations). There is likely little improvement in
+results in a very large increase in computational time (both in creation of the visual
+graph and in subsequent operations). There is likely little improvement in
 situations where the shortest path routing follows the coast. The default setting
 is *centroids=FALSE*. If a user chooses to set *centroids=TRUE*, we strongly 
 encourage setting *centroid_limit* to a large value (default is *1e+07*).
 
-NOTE: the following step will take approximately 30 minutes. Here, to save time, the
-code is not evaluated and we will load from package data.
+You may get a warning about the graph being composed of multiple subgraphs. This is to
+be expected in complex coastline areas with islands and peninsulas. The only caution is
+to ensure your study area (land barrier region) is large enough such that your animal is
+not restricted or, potentially, isolated in one of those subgraphs. For the vast majority
+of situations, this is not going to be an issue of concern. And, likely, this warning
+would be suppressed in future releases.
 
 ```{r}
 vis_graph <- prt_visgraph(land_region)
@@ -175,7 +179,7 @@ purpose as we concentrate the detail of our network along the coastline where ro
 of our tracks around land requires the most detail. The trade-off is that any shortest 
 path routing that crosses the large, open areas will have less linearity. If we had set
 *centroids=FALSE*, then a centroid point would have been added to each of these triangles
-and the mesh would have been rebuild to include those points.
+and the mesh would have been rebuilt to include those points.
 
 ### Determine Segments of Track On Land
 
@@ -185,12 +189,13 @@ points in water that bookend each segment. We will use this information to calcu
 our shortest path through our network and create an updated series of point features.
 
 Since our bookend points were not used to create our visibility graph, we need to also
-determine the closes network node to each point.
+determine the closest network node to each point. Our `prt_nearestnode()` function relies
+on the `nabor::knn()` function for this.
 
 ```{r}
 track_pts <- harborSeal_sf %>% dplyr::filter(!sf::st_is_empty(.))
 segs_tbl <- get_barrier_segments(track_pts,land_region)
-segs_tbl <- segs_tbl %>% prt_nearestnode(vis_graph, maxdist = 50000)
+segs_tbl <- segs_tbl %>% prt_nearestnode(vis_graph)
 segs_tbl
 ```
 
@@ -231,9 +236,12 @@ ggplot() +
 
 ## Re-Routing a Movement Model Prediction
 
-First, let's fit our movement model. Here, we rely on an example from the `{crawl}`
+Now, we'll move on to the preferred workflow and establish a movement model from our
+raw location observations.
+
+Here, we rely on an example from the `{crawl}`
 package. But, other model approaches (e.g. `{foieGras}`) should work as well. We have
-plans to provide specific methods for a variety of model outputs.
+plans to provide specific methods for a variety of model outputs in future releases.
 
 ### Fit Movement Model and Predict Locations
 
@@ -264,7 +272,7 @@ fit1 <- crwMLE(
   control=list(maxit=2000, trace=1, REPORT=1)
 )
 
-pred1 = crwPredict(fit1, predTime = '10 min')
+pred1 = crwPredict(fit1, predTime = '5 min')
 pred1_sf <- pred1 %>% crw_as_sf("POINT","p")
 ```
 
@@ -281,7 +289,8 @@ segs_tbl
 
 ### Re-route Model Prediction via Shortest Path
 
-As before, we use the `prt_shortpath()` function to calculated all of our re-routed paths
+And just like we did with the raw observations, we use the `prt_shortpath()` function to 
+calculate all of our re-routed paths
 
 ```{r, fig.cap="Re-routed segments from the predicted path"}
 segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
@@ -324,17 +333,18 @@ picture of uncertainty.
 
 ### Create Multiple Imputations from {crawl} Model
 
-We will use the `crawl::crwPostIS()` function to create our imputed paths. 
+We will use the `crawl::crwSimulator()` and `crawl::crwPostIS()` functions to create our 
+imputed paths. The code below is a more tidyverse-centric approach that relies on
+`dplyr::rowwise()` and `dplyr::mutate()` to draw and, then, re-route 5 imputed paths.
+
 
 ```{r}
-crw_sim <- crawl::crwSimulator(fit1, predTime = "10 min")
+crw_sim <- crawl::crwSimulator(fit1, predTime = "5 min")
 
-
-
-midf <- tibble::tibble(.rows = 5) %>% dplyr::rowwise() %>% 
+imputes <- tibble::tibble(.rows = 5) %>% 
+  dplyr::rowwise() %>% 
   mutate(postis = list(crwPostIS(crw_sim, fullPost = FALSE)),
          pts = list(crw_as_sf(postis, locType = "p", ftype = "POINT")),
-         lines = list(crw_as_sf(postis, locType = "p", ftype = "LINESTRING")),
          segs_tbl = list(get_barrier_segments(pts, land_region) %>% 
                            prt_nearestnode(vis_graph) %>% 
                            prt_shortpath(vis_graph)),
@@ -342,11 +352,14 @@ midf <- tibble::tibble(.rows = 5) %>% dplyr::rowwise() %>%
          lines_fix = list(pts_fix %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING'))
          )
 
-sim_lines <- do.call(rbind, midf$lines_fix)
+sim_lines <- do.call(rbind, imputes$lines_fix)
+```
 
+
+```{r, fig.cap="Five imputed paths are shown along with the predicted most likely path after re-routing around the land barrier."}
 ggplot() +
   ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
-  ggspatial::layer_spatial(sim_lines, color = "deepskyblue", alpha = 0.5) +
+  ggspatial::layer_spatial(sim_lines, color = "deepskyblue", alpha = 0.35) +
   ggspatial::layer_spatial(track_line_fixed, color = "deepskyblue3", size = 0.5) + 
   theme_void()
 ```
