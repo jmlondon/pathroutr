@@ -26,7 +26,8 @@ Imports:
     magrittr,
     units,
     stplanr,
-    tibble
+    tibble,
+    nabor
 Suggests: 
     ggplot2,
     ggspatial,

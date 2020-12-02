@@ -4,14 +4,12 @@
 \alias{prt_nearestnode}
 \title{Find the nearest node for start and end points in segs_tbl}
 \usage{
-prt_nearestnode(segs_tbl, vis_graph, maxdist = 15000)
+prt_nearestnode(segs_tbl, vis_graph)
 }
 \arguments{
 \item{segs_tbl}{output from get_barrier_segments}
 
 \item{vis_graph}{output from prt_visgraph}
-
-\item{maxdist}{max search distance for locating the nearest node}
 }
 \value{
 segs_tbl with updated columns for nearest start and end nodes
