@@ -152,20 +152,20 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_barrier</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 50 x 6</span>
+<span class="co">#&gt; # A tibble: 41 x 6</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt              end_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1       128     150    21 (88376.37 942354.6) (87862.63 942320.7)</span>
-<span class="co">#&gt;  2     2       195     239    43 (86811.82 942251.4) (85784.35 942183.6)</span>
-<span class="co">#&gt;  3     3       405     414     8   (81908.01 941928) (81697.84 941914.1)</span>
-<span class="co">#&gt;  4     4       441     690   248 (81067.35 941872.5)   (75252.84 941489)</span>
-<span class="co">#&gt;  5     5       771     850    78 (73361.37 941364.2)  (71516.6 941242.6)</span>
-<span class="co">#&gt;  6     6       913    1058   144 (70045.46 941145.5) (66659.49 940922.2)</span>
-<span class="co">#&gt;  7     7      1164    1301   136 (66626.01 941461.7) (69447.85 942983.7)</span>
-<span class="co">#&gt;  8     8      1523    1576    52 (74020.46 945449.9) (75112.12 946038.7)</span>
-<span class="co">#&gt;  9     9      1933    1951    17 (78387.55 951218.5) (78186.51 951588.7)</span>
-<span class="co">#&gt; 10    10      1972    2078   105 (78333.15 951912.8) (80483.03 953150.4)</span>
-<span class="co">#&gt; # … with 40 more rows</span></code></pre></div>
+<span class="co">#&gt;  1     1        12      37    24 (81717.41 953681.1) (81710.84 953161.7)</span>
+<span class="co">#&gt;  2     2       125     224    98 (82063.41 951920.6) (83920.01 952806.5)</span>
+<span class="co">#&gt;  3     3       227     246    18 (83976.27 952833.3) (84332.58 953003.4)</span>
+<span class="co">#&gt;  4     4       333     431    97 (85964.13 953781.9) (87801.97 954658.9)</span>
+<span class="co">#&gt;  5     5       481    1060   578 (88073.17 954526.7) (81435.44 944492.3)</span>
+<span class="co">#&gt;  6     6      1206    1274    67 (78760.36 943150.5)  (77466.7 942582.3)</span>
+<span class="co">#&gt;  7     7      1278    1386   107  (77390.6 942548.8) (75335.95 941646.3)</span>
+<span class="co">#&gt;  8     8      1609    1719   109 (75361.91 942906.5) (76871.02 944623.1)</span>
+<span class="co">#&gt;  9     9      1821    1901    79   (78270.38 946215) (79367.91 947463.5)</span>
+<span class="co">#&gt; 10    10      2140    2206    65 (82646.79 951193.4) (83552.26 952223.4)</span>
+<span class="co">#&gt; # … with 31 more rows</span></code></pre></div>
 <p>Our next step is to create a visibility graph. This is, essentially, our road network for our marine environment. At some point, I’ll provide greater detail on this process. But, in simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns a <em>SpatialLinesNetwork</em> created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package.</p>
 <p>With our network created, we need to identify the nearest node on the network for the start and end points of each identified segment.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">

@@ -93,7 +93,8 @@
 <h2 class="hasAnchor">
 <a href="#alaska-harbor-seal-example" class="anchor"></a>Alaska Harbor Seal Example</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">pathroutr</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">pathroutr</span><span class="op">)</span>
+<span class="co">#devtools::load_all(here::here())</span></code></pre></div>
 </div>
 <div id="essential-packages" class="section level2">
 <h2 class="hasAnchor">
@@ -176,23 +177,23 @@ Movement data from a harbor seal in Alaska. Raw Argos observations and the deriv
 <h3 class="hasAnchor">
 <a href="#limit-barrier-polygon-to-region-of-interest" class="anchor"></a>Limit Barrier Polygon to Region of Interest</h3>
 <p>With such a large geographic area, the computational time needed to create our visibility graph could be quite large. So, we will want to limit our land polygon as much as we reasonably can.</p>
-<p>We’ll do this by creating a convex hull boundary around our observed data and limiting the region to this space. Here, we’ll go with a buffer of 35 km around each point and rely on the buffered features to create our convex hull.</p>
+<p>We’ll do this by creating a convex hull boundary around our observed data and limiting the region to this space. Here, we’ll go with a buffer of 50 km around each point and rely on the buffered features to create our convex hull. The size of the buffer is case-specific. In this case, we could likely get away with a smaller buffer if we were only interested in the connect-the-dot track or a model predication. But, later, we will also impute additional, possible tracks from the model fit to better represent model uncertainty. For this reason, we went with a larger buffer so we only have to create a single network graph.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">land_region</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_buffer</a></span><span class="op">(</span><span class="va">harborSeal_sf</span>, dist <span class="op">=</span> <span class="fl">35000</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+<code class="sourceCode R"><span class="va">land_region</span> <span class="op">&lt;-</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_buffer</a></span><span class="op">(</span><span class="va">harborSeal_sf</span>, dist <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_combine.html">st_union</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_convex_hull</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_binary_ops.html">st_intersection</a></span><span class="op">(</span><span class="va">akcoast</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_collection_extract.html">st_collection_extract</a></span><span class="op">(</span><span class="st">'POLYGON'</span><span class="op">)</span> <span class="op">%&gt;%</span> 
-  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html">st_sf</a></span><span class="op">(</span><span class="op">)</span>
-
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/sf.html">st_sf</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">annotation_spatial</a></span><span class="op">(</span><span class="va">land_region</span>, fill <span class="op">=</span> <span class="st">"cornsilk3"</span>, size <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">l</span>, color <span class="op">=</span> <span class="st">"darkgrey"</span>, size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">harborSeal_sf</span>, color <span class="op">=</span> <span class="st">"deepskyblue3"</span>, size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div class="figure">
-<img src="akharborseal_demo_files/figure-html/unnamed-chunk-8-1.png" alt="Land barrier polygon after limiting to a 35km buffered convex hull of the observation points" width="700"><p class="caption">
-Land barrier polygon after limiting to a 35km buffered convex hull of the observation points
+<img src="akharborseal_demo_files/figure-html/unnamed-chunk-9-1.png" alt="Land barrier polygon after limiting to a 50km buffered convex hull of the observation points" width="700"><p class="caption">
+Land barrier polygon after limiting to a 50km buffered convex hull of the observation points
 </p>
 </div>
 </div>
@@ -201,17 +202,19 @@ Land barrier polygon after limiting to a 35km buffered convex hull of the observ
 <a href="#create-visibility-graph" class="anchor"></a>Create Visibility Graph</h3>
 <p>At this point, we are ready to create our visibility graph using the <code><a href="../reference/prt_visgraph.html">pathroutr::prt_visgraph()</a></code> function. We’ll keep <em>centroids = FALSE</em> in order to speed up the build. Adding additional centroids will increase the likelihood of linearity in the calculated shortest path. This is especially true when the shortest path crosses larger areas of open water. However, adding the additional centroids results in a very large increase in computational time (both in createion of the visual graph and in subesquent operations). There is likely little improvement in situations where the shortest path routing follows the coast. The default setting is <em>centroids=FALSE</em>. If a user chooses to set <em>centroids=TRUE</em>, we strongly encourage setting <em>centroid_limit</em> to a large value (default is <em>1e+07</em>).</p>
 <p>NOTE: the following step will take approximately 30 minutes. Here, to save time, the code is not evaluated and we will load from package data.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">vis_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_visgraph.html">prt_visgraph</a></span><span class="op">(</span><span class="va">land_region</span><span class="op">)</span></code></pre></div>
-<p>Let’s take a look at our network. The ‘edges’ are stored within <code>@sl</code> slot of <code>vis_graph</code>. We can pass thing along to <code><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">ggspatial::layer_spatial()</a></code> just like an <code>sf</code> object.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"vis_graph"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">vis_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_visgraph.html">prt_visgraph</a></span><span class="op">(</span><span class="va">land_region</span><span class="op">)</span>
+<span class="co">#&gt; Warning in SpatialLinesNetwork.sf(edges): Graph composed of multiple subgraphs,</span>
+<span class="co">#&gt; consider cleaning it with sln_clean_graph().</span></code></pre></div>
+<p>Let’s take a look at our network. The ‘edges’ are stored within <code>@sl</code> slot of <code>vis_graph</code>. We can pass thing along to <code><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">ggspatial::layer_spatial()</a></code> just like an <code>sf</code> object.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">annotation_spatial</a></span><span class="op">(</span><span class="va">land_region</span>, fill <span class="op">=</span> <span class="st">"cornsilk3"</span>, size <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">@</span><span class="va">sl</span>, size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div class="figure">
-<img src="akharborseal_demo_files/figure-html/unnamed-chunk-10-1.png" alt="Visibility graph network edges created with the `{stplanr}` package. All vertices from the land polygon were used as nodes in the network and any edges that crossed land were removed." width="700"><p class="caption">
+<img src="akharborseal_demo_files/figure-html/unnamed-chunk-11-1.png" alt="Visibility graph network edges created with the `{stplanr}` package. All vertices from the land polygon were used as nodes in the network and any edges that crossed land were removed." width="700"><p class="caption">
 Visibility graph network edges created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package. All vertices from the land polygon were used as nodes in the network and any edges that crossed land were removed.
 </p>
 </div>
@@ -222,7 +225,7 @@ Visibility graph network edges created with the <a href="https://docs.ropensci.o
 <a href="#determine-segments-of-track-on-land" class="anchor"></a>Determine Segments of Track On Land</h3>
 <p>In this example, our interest is to re-route only the portions of the track that cross land. So, we need to identify the segments of consecutive points on land and, also, the points in water that bookend each segment. We will use this information to calculate our shortest path through our network and create an updated series of point features.</p>
 <p>Since our bookend points were not used to create our visibility graph, we need to also determine the closes network node to each point.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">track_pts</span> <span class="op">&lt;-</span> <span class="va">harborSeal_sf</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_query.html">st_is_empty</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span>
 <span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_region</span><span class="op">)</span>
 <span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span>, maxdist <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span>
@@ -247,7 +250,7 @@ Visibility graph network edges created with the <a href="https://docs.ropensci.o
 <h3 class="hasAnchor">
 <a href="#determine-re-routed-track-via-shortest-path" class="anchor"></a>Determine Re-routed Track via Shortest Path</h3>
 <p>Now, we have all the information we need to calculate the shortest path through our network for each segment. The <code><a href="https://docs.ropensci.org/stplanr/reference/sum_network_routes.html">stplanr::sum_network_routes()</a></code> function only calculates the LINESTRING from start node to end node. So, the <code><a href="../reference/prt_shortpath.html">prt_shortpath()</a></code> function extends each end to connect with our bookend points for each segment.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_shortpath.html">prt_shortpath</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
@@ -255,7 +258,7 @@ Visibility graph network edges created with the <a href="https://docs.ropensci.o
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">segs_tbl</span><span class="op">$</span><span class="va">geometry</span>, color <span class="op">=</span> <span class="st">"deepskyblue3"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div class="figure">
-<img src="akharborseal_demo_files/figure-html/unnamed-chunk-12-1.png" alt="Segments that were identified to cross land have been re-routed along the shortest path throught visibility network" width="700"><p class="caption">
+<img src="akharborseal_demo_files/figure-html/unnamed-chunk-13-1.png" alt="Segments that were identified to cross land have been re-routed along the shortest path throught visibility network" width="700"><p class="caption">
 Segments that were identified to cross land have been re-routed along the shortest path throught visibility network
 </p>
 </div>
@@ -264,9 +267,9 @@ Segments that were identified to cross land have been re-routed along the shorte
 <h3 class="hasAnchor">
 <a href="#update-geometry-with-re-routed-coordinates" class="anchor"></a>Update Geometry With Re-routed Coordinates</h3>
 <p>This last bit is the point where we insert the fixed points back into our original path.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">segs_tbl</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">segs_tbl</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">track_line_fixed</span> <span class="op">&lt;-</span> <span class="va">track_pts_fix</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>do_union <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
@@ -275,7 +278,7 @@ Segments that were identified to cross land have been re-routed along the shorte
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">track_pts_fix</span>, color <span class="op">=</span> <span class="st">"deepskyblue3"</span>, size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div class="figure">
-<img src="akharborseal_demo_files/figure-html/unnamed-chunk-14-1.png" alt="Raw Argos observation geometries updated in place with the re-routed paths" width="700"><p class="caption">
+<img src="akharborseal_demo_files/figure-html/unnamed-chunk-15-1.png" alt="Raw Argos observation geometries updated in place with the re-routed paths" width="700"><p class="caption">
 Raw Argos observation geometries updated in place with the re-routed paths
 </p>
 </div>
@@ -289,7 +292,7 @@ Raw Argos observation geometries updated in place with the re-routed paths
 <h3 class="hasAnchor">
 <a href="#fit-movement-model-and-predict-locations" class="anchor"></a>Fit Movement Model and Predict Locations</h3>
 <p>As you might have noticed when we re-routed our raw observations, the trackline derived from those points can still cross land. This is because we only control for the presence of observation points on land. At the irregular and sometimes large time intervals common to location data for marine mammals, this cannot be avoided. However, once we have a movement model, we can predicted a finer location intervals and limit this possibility. You will notice in this example, the prediction interval is every 5 minutes.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">##Fit model as given in Johnson et al. (2008) Ecology 89:1208-1215</span>
 <span class="co">## Start values for theta come from the estimates in Johnson et al. (2008)</span>
 <span class="va">fixPar</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="fl">250</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="fl">500</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="fl">1500</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>,<span class="fl">5</span><span class="op">)</span>, <span class="fl">0</span><span class="op">)</span>
@@ -333,38 +336,38 @@ Raw Argos observation geometries updated in place with the re-routed paths
 <span class="co">#&gt; final  value 40001.048534 </span>
 <span class="co">#&gt; converged</span>
 
-<span class="va">pred1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwPredict.html">crwPredict</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">'5 min'</span><span class="op">)</span>
+<span class="va">pred1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwPredict.html">crwPredict</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">'10 min'</span><span class="op">)</span>
 <span class="va">pred1_sf</span> <span class="op">&lt;-</span> <span class="va">pred1</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crw_as_sf.html">crw_as_sf</a></span><span class="op">(</span><span class="st">"POINT"</span>,<span class="st">"p"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="identify-predicted-locations-on-land" class="section level3">
 <h3 class="hasAnchor">
 <a href="#identify-predicted-locations-on-land" class="anchor"></a>Identify Predicted Locations on Land</h3>
 <p>As before, we need to identify all of the segments of consecutive locations on land and determine the associated start and end nodes within our network.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">pred1_sf</span>,<span class="va">land_region</span><span class="op">)</span>
 <span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 154 x 8</span>
+<span class="co">#&gt; # A tibble: 147 x 8</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts                  start_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;               &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1      7278    7303    24        (16296.99 1008893)</span>
-<span class="co">#&gt;  2     2      7445    7452     6        (13879.22 1009100)</span>
-<span class="co">#&gt;  3     3      7456    7462     5        (14334.24 1007460)</span>
-<span class="co">#&gt;  4     4      7463    7667   203         (14675.3 1006230)</span>
-<span class="co">#&gt;  5     5      7943    7951     7       (46971.14 912298.8)</span>
-<span class="co">#&gt;  6     6      7967    7982    14       (44466.22 904097.1)</span>
-<span class="co">#&gt;  7     7      9778    9782     3      (-169713.6 678313.5)</span>
-<span class="co">#&gt;  8     8      9783    9785     1      (-170220.2 677600.9)</span>
-<span class="co">#&gt;  9     9     10572   10590    17      (-167015.2 673230.6)</span>
-<span class="co">#&gt; 10    10     10634   10689    54      (-166298.7 678527.9)</span>
-<span class="co">#&gt; # … with 144 more rows, and 3 more variables: end_pt &lt;POINT [m]&gt;,</span>
+<span class="co">#&gt;  1     1      3639    3652    12        (16246.11 1008908)</span>
+<span class="co">#&gt;  2     2      3723    3727     3        (13879.22 1009100)</span>
+<span class="co">#&gt;  3     3      3728    3732     3        (14287.79 1007627)</span>
+<span class="co">#&gt;  4     4      3732    3834   101         (14675.3 1006230)</span>
+<span class="co">#&gt;  5     5      3972    3976     3       (46971.14 912298.8)</span>
+<span class="co">#&gt;  6     6      3984    3992     7       (44466.22 904097.1)</span>
+<span class="co">#&gt;  7     7      4889    4892     2      (-169612.5 678456.2)</span>
+<span class="co">#&gt;  8     8      5286    5296     9      (-166915.1 673045.5)</span>
+<span class="co">#&gt;  9     9      5317    5345    27      (-166337.5 678529.5)</span>
+<span class="co">#&gt; 10    10      5415    5423     7      (-166152.1 678410.4)</span>
+<span class="co">#&gt; # … with 137 more rows, and 3 more variables: end_pt &lt;POINT [m]&gt;,</span>
 <span class="co">#&gt; #   start_node &lt;int&gt;, end_node &lt;int&gt;</span></code></pre></div>
 </div>
 <div id="re-route-model-prediction-via-shortest-path" class="section level3">
 <h3 class="hasAnchor">
 <a href="#re-route-model-prediction-via-shortest-path" class="anchor"></a>Re-route Model Prediction via Shortest Path</h3>
 <p>As before, we use the <code><a href="../reference/prt_shortpath.html">prt_shortpath()</a></code> function to calculated all of our re-routed paths</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_shortpath.html">prt_shortpath</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
@@ -372,7 +375,7 @@ Raw Argos observation geometries updated in place with the re-routed paths
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">segs_tbl</span><span class="op">$</span><span class="va">geometry</span>, color <span class="op">=</span> <span class="st">"deepskyblue3"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div class="figure">
-<img src="akharborseal_demo_files/figure-html/unnamed-chunk-17-1.png" alt="Re-routed segments from the predicted path" width="700"><p class="caption">
+<img src="akharborseal_demo_files/figure-html/unnamed-chunk-18-1.png" alt="Re-routed segments from the predicted path" width="700"><p class="caption">
 Re-routed segments from the predicted path
 </p>
 </div>
@@ -381,9 +384,9 @@ Re-routed segments from the predicted path
 <h3 class="hasAnchor">
 <a href="#update-predicted-path" class="anchor"></a>Update Predicted Path</h3>
 <p>This last bit is the point where we insert the fixed points back into our original path. This is done by taking the number of points in the original segment and distributing an equal number of points along the updated path. At this time, the geometry is simply updated in place. This isn’t, technically, the correct approach as all of the model prediction parameters are no longer valid for these updated records. Expect this workflow/function/approach to change. But, for now, it allows us to demonstrate the issue and troubleshoot any issues.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">pred1_sf</span>, <span class="va">segs_tbl</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">pred1_sf</span>, <span class="va">segs_tbl</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">track_line_fixed</span> <span class="op">&lt;-</span> <span class="va">track_pts_fix</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>do_union <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
@@ -391,7 +394,7 @@ Re-routed segments from the predicted path
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">track_line_fixed</span>, color <span class="op">=</span> <span class="st">"deepskyblue3"</span>, size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <div class="figure">
-<img src="akharborseal_demo_files/figure-html/unnamed-chunk-19-1.png" alt="Updated predicted path with re-routed geometries" width="700"><p class="caption">
+<img src="akharborseal_demo_files/figure-html/unnamed-chunk-20-1.png" alt="Updated predicted path with re-routed geometries" width="700"><p class="caption">
 Updated predicted path with re-routed geometries
 </p>
 </div>
@@ -405,8 +408,8 @@ Updated predicted path with re-routed geometries
 <h3 class="hasAnchor">
 <a href="#create-multiple-imputations-from-crawl-model" class="anchor"></a>Create Multiple Imputations from {crawl} Model</h3>
 <p>We will use the <code><a href="https://rdrr.io/pkg/crawl/man/crwPostIS.html">crawl::crwPostIS()</a></code> function to create our imputed paths.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">crw_sim</span> <span class="op">&lt;-</span> <span class="fu">crawl</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwSimulator.html">crwSimulator</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">"5 min"</span><span class="op">)</span>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">crw_sim</span> <span class="op">&lt;-</span> <span class="fu">crawl</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwSimulator.html">crwSimulator</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">"10 min"</span><span class="op">)</span>
 <span class="co">#&gt; Computing importance weights ...</span>
 
 
@@ -429,7 +432,7 @@ Updated predicted path with re-routed geometries
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">sim_lines</span>, color <span class="op">=</span> <span class="st">"deepskyblue"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">track_line_fixed</span>, color <span class="op">=</span> <span class="st">"deepskyblue3"</span>, size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="akharborseal_demo_files/figure-html/unnamed-chunk-20-1.png" width="700"></p>
+<p><img src="akharborseal_demo_files/figure-html/unnamed-chunk-21-1.png" width="700"></p>
 </div>
 </div>
   </div>
