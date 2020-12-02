@@ -114,22 +114,13 @@
 <p>Additional packages we’ll want to load</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'dplyr'</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     filter, lag</span>
-<span class="co">#&gt; The following objects are masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
-<span class="co">#&gt; Linking to GEOS 3.8.1, GDAL 3.1.1, PROJ 6.3.1</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://paleolimbot.github.io/ggspatial">ggspatial</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></code></pre></div>
 <p>The purpose of this is to demonstrate a more ‘real world’ use of <code>{pathroutr}</code> for re-routing of marine animal movement around land features. Here, we will use the Alaska harbor seal data provided in the <code>{crawl}</code> package to:</p>
 <ol style="list-style-type: decimal">
-<li>demonstrate and data wrangling and pre-processing needed</li>
+<li>demonstrate the data wrangling and pre-processing needed</li>
 <li>use <code>{crawl</code>}’s movement model to predict the most likely path</li>
 <li>re-route the predicted path around any land barriers</li>
 <li>repeat the process but using <code>{crawl}</code>’s multiple imputation functionality to create a set of possible predicted paths that span model uncertainty</li>
@@ -169,9 +160,9 @@ Movement data from a harbor seal in Alaska. Raw Argos observations and the deriv
 </p>
 </div>
 </div>
-<div id="re-route-raw-observations" class="section level2">
+<div id="re-route-raw-argos-observations" class="section level2">
 <h2 class="hasAnchor">
-<a href="#re-route-raw-observations" class="anchor"></a>Re-Route Raw Observations</h2>
+<a href="#re-route-raw-argos-observations" class="anchor"></a>Re-Route Raw Argos Observations</h2>
 <p>While the preferred approach would be to rely on a movement model for predicting the path of our seal, it can sometimes be useful to just correct the raw observations. So, that’s what we’ll do first.</p>
 <div id="limit-barrier-polygon-to-region-of-interest" class="section level3">
 <h3 class="hasAnchor">
@@ -200,8 +191,8 @@ Land barrier polygon after limiting to a 50km buffered convex hull of the observ
 <div id="create-visibility-graph" class="section level3">
 <h3 class="hasAnchor">
 <a href="#create-visibility-graph" class="anchor"></a>Create Visibility Graph</h3>
-<p>At this point, we are ready to create our visibility graph using the <code><a href="../reference/prt_visgraph.html">pathroutr::prt_visgraph()</a></code> function. We’ll keep <em>centroids = FALSE</em> in order to speed up the build. Adding additional centroids will increase the likelihood of linearity in the calculated shortest path. This is especially true when the shortest path crosses larger areas of open water. However, adding the additional centroids results in a very large increase in computational time (both in createion of the visual graph and in subesquent operations). There is likely little improvement in situations where the shortest path routing follows the coast. The default setting is <em>centroids=FALSE</em>. If a user chooses to set <em>centroids=TRUE</em>, we strongly encourage setting <em>centroid_limit</em> to a large value (default is <em>1e+07</em>).</p>
-<p>NOTE: the following step will take approximately 30 minutes. Here, to save time, the code is not evaluated and we will load from package data.</p>
+<p>At this point, we are ready to create our visibility graph using the <code><a href="../reference/prt_visgraph.html">pathroutr::prt_visgraph()</a></code> function. We’ll keep <em>centroids = FALSE</em> in order to speed up the build. Adding additional centroids will increase the likelihood of linearity in the calculated shortest path. This is especially true when the shortest path crosses larger areas of open water. However, adding the additional centroids results in a very large increase in computational time (both in creation of the visual graph and in subsequent operations). There is likely little improvement in situations where the shortest path routing follows the coast. The default setting is <em>centroids=FALSE</em>. If a user chooses to set <em>centroids=TRUE</em>, we strongly encourage setting <em>centroid_limit</em> to a large value (default is <em>1e+07</em>).</p>
+<p>You may get a warning about the graph being composed of multiple subgraphs. This is to be expected in complex coastline areas with islands and peninsulas. The only caution is to ensure your study area (land barrier region) is large enough such that your animal is not restricted or, potentially, isolated in one of those subgraphs. For the vast majority of situations, this is not going to be an issue of concern. And, likely, this warning would be suppressed in future releases.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">vis_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_visgraph.html">prt_visgraph</a></span><span class="op">(</span><span class="va">land_region</span><span class="op">)</span>
 <span class="co">#&gt; Warning in SpatialLinesNetwork.sf(edges): Graph composed of multiple subgraphs,</span>
@@ -218,17 +209,17 @@ Land barrier polygon after limiting to a 50km buffered convex hull of the observ
 Visibility graph network edges created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package. All vertices from the land polygon were used as nodes in the network and any edges that crossed land were removed.
 </p>
 </div>
-<p>Note the large triangles in the large, open water areas. This is a key advantage for our purpose as we concentrate the detail of our network along the coastline where routing of our tracks around land requires the most detail. The trade-off is that any shortest path routing that crosses the large, open areas will have less linearity. If we had set <em>centroids=FALSE</em>, then a centroid point would have been added to each of these triangles and the mesh would have been rebuild to include those points.</p>
+<p>Note the large triangles in the large, open water areas. This is a key advantage for our purpose as we concentrate the detail of our network along the coastline where routing of our tracks around land requires the most detail. The trade-off is that any shortest path routing that crosses the large, open areas will have less linearity. If we had set <em>centroids=FALSE</em>, then a centroid point would have been added to each of these triangles and the mesh would have been rebuilt to include those points.</p>
 </div>
 <div id="determine-segments-of-track-on-land" class="section level3">
 <h3 class="hasAnchor">
 <a href="#determine-segments-of-track-on-land" class="anchor"></a>Determine Segments of Track On Land</h3>
 <p>In this example, our interest is to re-route only the portions of the track that cross land. So, we need to identify the segments of consecutive points on land and, also, the points in water that bookend each segment. We will use this information to calculate our shortest path through our network and create an updated series of point features.</p>
-<p>Since our bookend points were not used to create our visibility graph, we need to also determine the closes network node to each point.</p>
+<p>Since our bookend points were not used to create our visibility graph, we need to also determine the closest network node to each point. Our <code><a href="../reference/prt_nearestnode.html">prt_nearestnode()</a></code> function relies on the <code><a href="https://rdrr.io/pkg/nabor/man/knn.html">nabor::knn()</a></code> function for this.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">track_pts</span> <span class="op">&lt;-</span> <span class="va">harborSeal_sf</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_query.html">st_is_empty</a></span><span class="op">(</span><span class="va">.</span><span class="op">)</span><span class="op">)</span>
 <span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_region</span><span class="op">)</span>
-<span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span>, maxdist <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span>
+<span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
 <span class="co">#&gt; # A tibble: 44 x 8</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts                  start_pt</span>
@@ -287,7 +278,8 @@ Raw Argos observation geometries updated in place with the re-routed paths
 <div id="re-routing-a-movement-model-prediction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#re-routing-a-movement-model-prediction" class="anchor"></a>Re-Routing a Movement Model Prediction</h2>
-<p>First, let’s fit our movement model. Here, we rely on an example from the <code>{crawl}</code> package. But, other model approaches (e.g. <code>{foieGras}</code>) should work as well. We have plans to provide specific methods for a variety of model outputs.</p>
+<p>Now, we’ll move on to the preferred workflow and establish a movement model from our raw location observations.</p>
+<p>Here, we rely on an example from the <code>{crawl}</code> package. But, other model approaches (e.g. <code>{foieGras}</code>) should work as well. We have plans to provide specific methods for a variety of model outputs in future releases.</p>
 <div id="fit-movement-model-and-predict-locations" class="section level3">
 <h3 class="hasAnchor">
 <a href="#fit-movement-model-and-predict-locations" class="anchor"></a>Fit Movement Model and Predict Locations</h3>
@@ -336,7 +328,7 @@ Raw Argos observation geometries updated in place with the re-routed paths
 <span class="co">#&gt; final  value 40001.048534 </span>
 <span class="co">#&gt; converged</span>
 
-<span class="va">pred1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwPredict.html">crwPredict</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">'10 min'</span><span class="op">)</span>
+<span class="va">pred1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwPredict.html">crwPredict</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">'5 min'</span><span class="op">)</span>
 <span class="va">pred1_sf</span> <span class="op">&lt;-</span> <span class="va">pred1</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crw_as_sf.html">crw_as_sf</a></span><span class="op">(</span><span class="st">"POINT"</span>,<span class="st">"p"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="identify-predicted-locations-on-land" class="section level3">
@@ -347,26 +339,26 @@ Raw Argos observation geometries updated in place with the re-routed paths
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">pred1_sf</span>,<span class="va">land_region</span><span class="op">)</span>
 <span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 147 x 8</span>
+<span class="co">#&gt; # A tibble: 154 x 8</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts                  start_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;               &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1      3639    3652    12        (16246.11 1008908)</span>
-<span class="co">#&gt;  2     2      3723    3727     3        (13879.22 1009100)</span>
-<span class="co">#&gt;  3     3      3728    3732     3        (14287.79 1007627)</span>
-<span class="co">#&gt;  4     4      3732    3834   101         (14675.3 1006230)</span>
-<span class="co">#&gt;  5     5      3972    3976     3       (46971.14 912298.8)</span>
-<span class="co">#&gt;  6     6      3984    3992     7       (44466.22 904097.1)</span>
-<span class="co">#&gt;  7     7      4889    4892     2      (-169612.5 678456.2)</span>
-<span class="co">#&gt;  8     8      5286    5296     9      (-166915.1 673045.5)</span>
-<span class="co">#&gt;  9     9      5317    5345    27      (-166337.5 678529.5)</span>
-<span class="co">#&gt; 10    10      5415    5423     7      (-166152.1 678410.4)</span>
-<span class="co">#&gt; # … with 137 more rows, and 3 more variables: end_pt &lt;POINT [m]&gt;,</span>
+<span class="co">#&gt;  1     1      7278    7303    24        (16296.99 1008893)</span>
+<span class="co">#&gt;  2     2      7445    7452     6        (13879.22 1009100)</span>
+<span class="co">#&gt;  3     3      7456    7462     5        (14334.24 1007460)</span>
+<span class="co">#&gt;  4     4      7463    7667   203         (14675.3 1006230)</span>
+<span class="co">#&gt;  5     5      7943    7951     7       (46971.14 912298.8)</span>
+<span class="co">#&gt;  6     6      7967    7982    14       (44466.22 904097.1)</span>
+<span class="co">#&gt;  7     7      9778    9782     3      (-169713.6 678313.5)</span>
+<span class="co">#&gt;  8     8      9783    9785     1      (-170220.2 677600.9)</span>
+<span class="co">#&gt;  9     9     10572   10590    17      (-167015.2 673230.6)</span>
+<span class="co">#&gt; 10    10     10634   10689    54      (-166298.7 678527.9)</span>
+<span class="co">#&gt; # … with 144 more rows, and 3 more variables: end_pt &lt;POINT [m]&gt;,</span>
 <span class="co">#&gt; #   start_node &lt;int&gt;, end_node &lt;int&gt;</span></code></pre></div>
 </div>
 <div id="re-route-model-prediction-via-shortest-path" class="section level3">
 <h3 class="hasAnchor">
 <a href="#re-route-model-prediction-via-shortest-path" class="anchor"></a>Re-route Model Prediction via Shortest Path</h3>
-<p>As before, we use the <code><a href="../reference/prt_shortpath.html">prt_shortpath()</a></code> function to calculated all of our re-routed paths</p>
+<p>And just like we did with the raw observations, we use the <code><a href="../reference/prt_shortpath.html">prt_shortpath()</a></code> function to calculate all of our re-routed paths</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_shortpath.html">prt_shortpath</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span>
 
@@ -407,17 +399,15 @@ Updated predicted path with re-routed geometries
 <div id="create-multiple-imputations-from-crawl-model" class="section level3">
 <h3 class="hasAnchor">
 <a href="#create-multiple-imputations-from-crawl-model" class="anchor"></a>Create Multiple Imputations from {crawl} Model</h3>
-<p>We will use the <code><a href="https://rdrr.io/pkg/crawl/man/crwPostIS.html">crawl::crwPostIS()</a></code> function to create our imputed paths.</p>
+<p>We will use the <code><a href="https://rdrr.io/pkg/crawl/man/crwSimulator.html">crawl::crwSimulator()</a></code> and <code><a href="https://rdrr.io/pkg/crawl/man/crwPostIS.html">crawl::crwPostIS()</a></code> functions to create our imputed paths. The code below is a more tidyverse-centric approach that relies on <code><a href="https://dplyr.tidyverse.org/reference/rowwise.html">dplyr::rowwise()</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> to draw and, then, re-route 5 imputed paths.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">crw_sim</span> <span class="op">&lt;-</span> <span class="fu">crawl</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwSimulator.html">crwSimulator</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">"10 min"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">crw_sim</span> <span class="op">&lt;-</span> <span class="fu">crawl</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwSimulator.html">crwSimulator</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">"5 min"</span><span class="op">)</span>
 <span class="co">#&gt; Computing importance weights ...</span>
 
-
-
-<span class="va">midf</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>.rows <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+<span class="va">imputes</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>.rows <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> 
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>postis <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwPostIS.html">crwPostIS</a></span><span class="op">(</span><span class="va">crw_sim</span>, fullPost <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span>,
          pts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crw_as_sf.html">crw_as_sf</a></span><span class="op">(</span><span class="va">postis</span>, locType <span class="op">=</span> <span class="st">"p"</span>, ftype <span class="op">=</span> <span class="st">"POINT"</span><span class="op">)</span><span class="op">)</span>,
-         lines <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crw_as_sf.html">crw_as_sf</a></span><span class="op">(</span><span class="va">postis</span>, locType <span class="op">=</span> <span class="st">"p"</span>, ftype <span class="op">=</span> <span class="st">"LINESTRING"</span><span class="op">)</span><span class="op">)</span>,
          segs_tbl <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">pts</span>, <span class="va">land_region</span><span class="op">)</span> <span class="op">%&gt;%</span> 
                            <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span> <span class="op">%&gt;%</span> 
                            <span class="fu"><a href="../reference/prt_shortpath.html">prt_shortpath</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span><span class="op">)</span>,
@@ -425,14 +415,18 @@ Updated predicted path with re-routed geometries
          lines_fix <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">pts_fix</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>do_union <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_cast.html">st_cast</a></span><span class="op">(</span><span class="st">'LINESTRING'</span><span class="op">)</span><span class="op">)</span>
          <span class="op">)</span>
 
-<span class="va">sim_lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">midf</span><span class="op">$</span><span class="va">lines_fix</span><span class="op">)</span>
-
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+<span class="va">sim_lines</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">imputes</span><span class="op">$</span><span class="va">lines_fix</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">annotation_spatial</a></span><span class="op">(</span><span class="va">land_region</span>, fill <span class="op">=</span> <span class="st">"cornsilk3"</span>, size <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">sim_lines</span>, color <span class="op">=</span> <span class="st">"deepskyblue"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">sim_lines</span>, color <span class="op">=</span> <span class="st">"deepskyblue"</span>, alpha <span class="op">=</span> <span class="fl">0.35</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">layer_spatial</a></span><span class="op">(</span><span class="va">track_line_fixed</span>, color <span class="op">=</span> <span class="st">"deepskyblue3"</span>, size <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p><img src="akharborseal_demo_files/figure-html/unnamed-chunk-21-1.png" width="700"></p>
+<div class="figure">
+<img src="akharborseal_demo_files/figure-html/unnamed-chunk-22-1.png" alt="Five imputed paths are shown along with the predicted most likely path after re-routing around the land barrier." width="700"><p class="caption">
+Five imputed paths are shown along with the predicted most likely path after re-routing around the land barrier.
+</p>
+</div>
 </div>
 </div>
   </div>
