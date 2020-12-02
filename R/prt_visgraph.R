@@ -45,16 +45,22 @@ prt_visgraph <- function(barrier,
       sf::st_union() %>%
       sf::st_triangulate(bOnlyEdges = TRUE) %>%
       sf::st_cast('LINESTRING') %>%
-      sf::st_sf() %>%
-      sf::st_filter(sf::st_buffer(barrier,-1), .predicate = not_intersects)
+      sf::st_sf()
+    crosses <- do.call(c, st_intersects(st_buffer(barrier,-1), edges))
+
+    edges <- edges[-crosses,]
+
   } else {
     edges <- buf_poly %>%
       sf::st_cast('MULTIPOINT') %>%
       sf::st_union() %>%
       sf::st_triangulate(bOnlyEdges = TRUE) %>%
       sf::st_cast('LINESTRING') %>%
-      sf::st_sf() %>%
-      sf::st_filter(sf::st_buffer(barrier,-1), .predicate = not_intersects)
+      sf::st_sf()
+
+    crosses <- do.call(c, st_intersects(st_buffer(barrier,-1), edges))
+
+    edges <- edges[-crosses,]
   }
 
   sln <- stplanr::SpatialLinesNetwork(edges)
