@@ -38,5 +38,5 @@ Remotes:
     NMML/crawl@devel,
     ropensci/stplanr
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5.0)
 VignetteBuilder: knitr
