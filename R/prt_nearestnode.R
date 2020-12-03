@@ -8,13 +8,6 @@
 #' @export
 
 prt_nearestnode <- function(segs_tbl, vis_graph) {
-  # segs_tbl <- segs_tbl %>%
-  #   dplyr::mutate(
-  #     start_node = stplanr::find_network_nodes(vis_graph, sf::st_coordinates(.$start_pt),
-  #                                              maxdist = maxdist),
-  #     end_node = stplanr::find_network_nodes(vis_graph, sf::st_coordinates(.$end_pt),
-  #                                            maxdist = maxdist)
-  #   )
   segs_tbl <- segs_tbl %>% ungroup() %>%
     dplyr::mutate(
       start_node = nabor::knn(st_coordinates(stplanr::sln2points(vis_graph)),
