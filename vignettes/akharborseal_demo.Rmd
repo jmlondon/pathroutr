@@ -250,7 +250,7 @@ from those points can still cross land. This is because we only control for the 
 of observation points on land. At the irregular and sometimes large time intervals
 common to location data for marine mammals, this cannot be avoided. However, once we
 have a movement model, we can predicted a finer location intervals and limit this
-possibility. You will notice in this example, the prediction interval is every 5 minutes.
+possibility. You will notice in this example, the prediction interval is every 15 minutes.
 
 ```{r}
 ##Fit model as given in Johnson et al. (2008) Ecology 89:1208-1215
@@ -272,7 +272,7 @@ fit1 <- crwMLE(
   control=list(maxit=2000, trace=1, REPORT=1)
 )
 
-pred1 = crwPredict(fit1, predTime = '5 min')
+pred1 = crwPredict(fit1, predTime = '15 min')
 pred1_sf <- pred1 %>% crw_as_sf("POINT","p")
 ```
 
@@ -339,7 +339,7 @@ imputed paths. The code below is a more tidyverse-centric approach that relies o
 
 
 ```{r}
-crw_sim <- crawl::crwSimulator(fit1, predTime = "5 min")
+crw_sim <- crawl::crwSimulator(fit1, predTime = "15 min")
 
 imputes <- tibble::tibble(.rows = 5) %>% 
   dplyr::rowwise() %>% 
