@@ -29,7 +29,7 @@ This example relies on two non-release packages of `{stplanr}` and `{crawl}`
 # not run
 library(remotes)
 install_github('NMML/crawl@devel')
-install_github('ropensci/stplanr')
+install_github('ropensci/stplanr@6725d04b7')
 ```
 
 ```{r}
