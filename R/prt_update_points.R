@@ -14,11 +14,9 @@ prt_update_points <- function(track_pts, segs_tbl) {
 
   for (i in 1:nrow(segs_tbl)) {
     fix_idx <- seq(segs_tbl$start_idx[i] + 1,segs_tbl$end_idx[i] - 1)
-    fix_pts <- sf::st_sample(segs_tbl$geometry[i],
-                             size = segs_tbl$n_pts[i],
-                             type = "regular",
-                             offset = 0.5,
-                             exact = TRUE) %>%
+    fix_pts <- sf::st_line_sample(segs_tbl$geometry[i],
+                             n = segs_tbl$n_pts[i],
+                             type = "regular") %>%
       sf::st_cast('POINT')
     #fix_pts <- prt_orient_line(segs_tbl$start_pt[i], fix_pts)
     pts_list[[i]] <- sf::st_sf(id = fix_idx, geometry = fix_pts )
