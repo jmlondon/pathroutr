@@ -104,7 +104,7 @@
 <code class="sourceCode R"><span class="co"># not run</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org">remotes</a></span><span class="op">)</span>
 <span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'NMML/crawl@devel'</span><span class="op">)</span>
-<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'ropensci/stplanr'</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'ropensci/stplanr@6725d04b7'</span><span class="op">)</span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">crawl</span><span class="op">)</span>
 <span class="co">#&gt; crawl 2.2.3 (2019-04-30) </span>
@@ -283,7 +283,7 @@ Raw Argos observation geometries updated in place with the re-routed paths
 <div id="fit-movement-model-and-predict-locations" class="section level3">
 <h3 class="hasAnchor">
 <a href="#fit-movement-model-and-predict-locations" class="anchor"></a>Fit Movement Model and Predict Locations</h3>
-<p>As you might have noticed when we re-routed our raw observations, the trackline derived from those points can still cross land. This is because we only control for the presence of observation points on land. At the irregular and sometimes large time intervals common to location data for marine mammals, this cannot be avoided. However, once we have a movement model, we can predicted a finer location intervals and limit this possibility. You will notice in this example, the prediction interval is every 5 minutes.</p>
+<p>As you might have noticed when we re-routed our raw observations, the trackline derived from those points can still cross land. This is because we only control for the presence of observation points on land. At the irregular and sometimes large time intervals common to location data for marine mammals, this cannot be avoided. However, once we have a movement model, we can predicted a finer location intervals and limit this possibility. You will notice in this example, the prediction interval is every 15 minutes.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">##Fit model as given in Johnson et al. (2008) Ecology 89:1208-1215</span>
 <span class="co">## Start values for theta come from the estimates in Johnson et al. (2008)</span>
@@ -328,7 +328,7 @@ Raw Argos observation geometries updated in place with the re-routed paths
 <span class="co">#&gt; final  value 40001.048534 </span>
 <span class="co">#&gt; converged</span>
 
-<span class="va">pred1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwPredict.html">crwPredict</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">'5 min'</span><span class="op">)</span>
+<span class="va">pred1</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwPredict.html">crwPredict</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">'15 min'</span><span class="op">)</span>
 <span class="va">pred1_sf</span> <span class="op">&lt;-</span> <span class="va">pred1</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crw_as_sf.html">crw_as_sf</a></span><span class="op">(</span><span class="st">"POINT"</span>,<span class="st">"p"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="identify-predicted-locations-on-land" class="section level3">
@@ -339,20 +339,20 @@ Raw Argos observation geometries updated in place with the re-routed paths
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">pred1_sf</span>,<span class="va">land_region</span><span class="op">)</span>
 <span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 154 x 8</span>
+<span class="co">#&gt; # A tibble: 140 x 8</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts                  start_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;               &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1      7278    7303    24        (16296.99 1008893)</span>
-<span class="co">#&gt;  2     2      7445    7452     6        (13879.22 1009100)</span>
-<span class="co">#&gt;  3     3      7456    7462     5        (14334.24 1007460)</span>
-<span class="co">#&gt;  4     4      7463    7667   203         (14675.3 1006230)</span>
-<span class="co">#&gt;  5     5      7943    7951     7       (46971.14 912298.8)</span>
-<span class="co">#&gt;  6     6      7967    7982    14       (44466.22 904097.1)</span>
-<span class="co">#&gt;  7     7      9778    9782     3      (-169713.6 678313.5)</span>
-<span class="co">#&gt;  8     8      9783    9785     1      (-170220.2 677600.9)</span>
-<span class="co">#&gt;  9     9     10572   10590    17      (-167015.2 673230.6)</span>
-<span class="co">#&gt; 10    10     10634   10689    54      (-166298.7 678527.9)</span>
-<span class="co">#&gt; # … with 144 more rows, and 3 more variables: end_pt &lt;POINT [m]&gt;,</span>
+<span class="co">#&gt;  1     1      2426    2435     8        (16195.24 1008923)</span>
+<span class="co">#&gt;  2     2      2482    2485     2        (13845.85 1009221)</span>
+<span class="co">#&gt;  3     3      2486    2488     1        (14334.24 1007460)</span>
+<span class="co">#&gt;  4     4      2488    2557    68        (14625.18 1006411)</span>
+<span class="co">#&gt;  5     5      2648    2651     2         (47203.07 912631)</span>
+<span class="co">#&gt;  6     6      2656    2662     5       (44653.54 904336.9)</span>
+<span class="co">#&gt;  7     7      3260    3263     2      (-169713.6 678313.5)</span>
+<span class="co">#&gt;  8     8      3524    3531     6        (-166814 672859.7)</span>
+<span class="co">#&gt;  9     9      3545    3564    18      (-166337.5 678529.5)</span>
+<span class="co">#&gt; 10    10      3610    3616     5      (-166162.5 678383.6)</span>
+<span class="co">#&gt; # … with 130 more rows, and 3 more variables: end_pt &lt;POINT [m]&gt;,</span>
 <span class="co">#&gt; #   start_node &lt;int&gt;, end_node &lt;int&gt;</span></code></pre></div>
 </div>
 <div id="re-route-model-prediction-via-shortest-path" class="section level3">
@@ -401,7 +401,7 @@ Updated predicted path with re-routed geometries
 <a href="#create-multiple-imputations-from-crawl-model" class="anchor"></a>Create Multiple Imputations from {crawl} Model</h3>
 <p>We will use the <code><a href="https://rdrr.io/pkg/crawl/man/crwSimulator.html">crawl::crwSimulator()</a></code> and <code><a href="https://rdrr.io/pkg/crawl/man/crwPostIS.html">crawl::crwPostIS()</a></code> functions to create our imputed paths. The code below is a more tidyverse-centric approach that relies on <code><a href="https://dplyr.tidyverse.org/reference/rowwise.html">dplyr::rowwise()</a></code> and <code><a href="https://dplyr.tidyverse.org/reference/mutate.html">dplyr::mutate()</a></code> to draw and, then, re-route 5 imputed paths.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">crw_sim</span> <span class="op">&lt;-</span> <span class="fu">crawl</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwSimulator.html">crwSimulator</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">"5 min"</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">crw_sim</span> <span class="op">&lt;-</span> <span class="fu">crawl</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/crawl/man/crwSimulator.html">crwSimulator</a></span><span class="op">(</span><span class="va">fit1</span>, predTime <span class="op">=</span> <span class="st">"15 min"</span><span class="op">)</span>
 <span class="co">#&gt; Computing importance weights ...</span>
 
 <span class="va">imputes</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>.rows <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">%&gt;%</span> 
