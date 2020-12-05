@@ -355,12 +355,89 @@ imputes <- tibble::tibble(.rows = 5) %>%
 sim_lines <- do.call(rbind, imputes$lines_fix)
 ```
 
+The figure below combines our predicted path and the collection of five imputed paths.
+Note the routing of tracks around the land barrier features for both the predicted track
+and the imputed tracks. One thing to keep in mind is that the imputed tracks will often
+have less linear inertia and, thus, a greater number of small land crossings. This means
+re-routing any one of the imputed tracks will likely take longer than the predicted path.
+The exact number of imputed paths needed will be case specific. However, more than 20 is
+likely not needed.
 
 ```{r, fig.cap="Five imputed paths are shown along with the predicted most likely path after re-routing around the land barrier."}
 ggplot() +
   ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
   ggspatial::layer_spatial(sim_lines, color = "deepskyblue", alpha = 0.35) +
   ggspatial::layer_spatial(track_line_fixed, color = "deepskyblue3", size = 0.5) + 
+  theme_void()
+```
+
+### Space Use Analysis
+
+Understanding space use is a common goal for telemetry data like is presented in this
+example. Since the movement model allows us to predict at regular intervals, we can use
+the count of predicted points within a regular grid to represent space use. And, by
+averaging the count across multiple imputed paths we can create a space use surface that
+incorporates our uncertainty.
+
+First thing we'll want to do is to create a regular grid for our the bounding box of our
+study area. It is important to base this grid on `sim_lines` so that we have complete
+spatial coverage for our imputed tracks. We'll use a hexagonal grid and remove all of the
+grid cells that fall within our land polygon. This will leave those cells that are
+completely over water or that touch or overlap the coastline.
+
+```{r, fig.cap="5km hexagonal grid for space use analysis"}
+hex_grid <- sf::st_make_grid(
+  st_as_sfc(st_bbox(sim_lines)),
+  cellsize = 5000,
+  square = FALSE
+) %>% st_sf() %>% 
+  st_filter(st_union(land_region), .predicate = pathroutr:::not_within) %>% 
+  tibble::rowid_to_column(var = "hexid")
+
+ggplot() +
+  ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(hex_grid, color = "deepskyblue", size = 0.25, fill = NA) + 
+  theme_void()
+```
+
+Now, we need to join our fixed points from our imputations (`imputes$pts_fix`) to our
+`hex_grid` and count the number of points per grid cell.
+
+```{r}
+# Suppress summarise info
+options(dplyr.summarise.inform = FALSE)
+
+hexbins <- imputes$pts_fix %>% purrr::map(~ {
+  st_join(.x, hex_grid, join = st_intersects) %>% 
+    sf::st_set_geometry(NULL) %>% 
+    group_by(hexid) %>% 
+    summarise(n = n()) %>% 
+    right_join(hex_grid, by = "hexid") %>% 
+    sf::st_sf()})
+```
+
+For our seal-use statistics, we'll want to average our counts per grid cell across each
+of the imputed tracks. We will also calculate standard deviation, CV, and a normalized
+CV that we will use in our plot to communicate uncertainty.
+
+```{r}
+seal_use <- do.call(rbind, hexbins) %>% 
+  mutate(n = ifelse(is.na(n),0,n)) %>% 
+  group_by(hexid) %>% summarise(n_mean = mean(n), n_sd = sd(n)) %>% 
+  dplyr::filter(n_mean > 0) %>% 
+  dplyr::mutate(n_cv = n_sd/n_mean,
+                n_cv2 = n_cv/max(n_cv))
+```
+
+Our final plot of seal use is presented on a log10 scale and the transparency is set
+based on our normalized CV such that cells with higher uncertainty are more transparent.
+
+```{r}
+ggplot() +
+  ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
+  ggspatial::layer_spatial(seal_use, 
+                           aes(fill = n_mean, alpha = 1 - n_cv2), color = "white", size = 0.05) + 
+  scale_fill_viridis_c(trans = "log10") +
   theme_void()
 ```
 
