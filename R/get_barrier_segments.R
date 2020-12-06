@@ -7,7 +7,7 @@
 #' @export
 
 get_barrier_segments = function(trkpts, barrier) {
-  # TODO: add check for starting or ending track_pts on land
+  # TODO: add check for start/end within barrier and suggest prt_trim()
   trkpts <- sf::st_cast(trkpts, 'POINT')
   barrier_intersect <- sf::st_intersects(trkpts, barrier) %>%
     purrr::map_lgl(~ length(.x) > 0)
@@ -18,6 +18,8 @@ get_barrier_segments = function(trkpts, barrier) {
                        dplyr::lag(c(FALSE, in.segment) == FALSE)) - 2
   end_idx <- which(c(in.segment, FALSE) == TRUE &
                      dplyr::lead(c(in.segment, FALSE) == FALSE)) + 1
+
+
   barrier_segments <- data.frame(sid = 1:length(start_idx),
                                  start_idx, end_idx) %>%
     dplyr::mutate(n_pts = end_idx-start_idx-1) %>%
