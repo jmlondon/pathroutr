@@ -30,7 +30,16 @@ prt_visgraph <- function(barrier,
     buf_poly <- barrier
   }
 
-  if (centroids) {
+  if (!is.null(aug_points)) {
+    stopifnot("aug_points must be a simple feature collection with geometry type 'POINT'" =
+                inherits(aug_points %>% st_geometry(), 'sfc_POINT')
+    )
+    augment <- TRUE
+  } else {
+    augment <- FALSE
+  }
+
+  if (centroids & !augment) {
     centroid_limit <- units::set_units(centroid_limit, "m^2")
     init_dt <- sf::st_collection_extract(
       sf::st_triangulate(
@@ -55,8 +64,58 @@ prt_visgraph <- function(barrier,
     crosses <- do.call(c, st_intersects(st_buffer(barrier,-1), edges))
 
     edges <- edges[-crosses,]
+  }
 
-  } else {
+  if (centroids & augment) {
+    centroid_limit <- units::set_units(centroid_limit, "m^2")
+    init_dt <- sf::st_collection_extract(
+      sf::st_triangulate(
+        sf::st_cast(buf_poly, 'MULTIPOINT')
+      ),
+      'POLYGON')
+
+    ctr_pts <- sf::st_centroid(
+      init_dt[sf::st_area(init_dt) > centroid_limit]
+    )
+
+    edges <- c(
+      buf_poly %>%
+        sf::st_cast('MULTIPOINT') %>%
+        sf::st_cast('POINT'),
+      ctr_pts, aug_pts
+    ) %>%
+      sf::st_union() %>%
+      sf::st_triangulate(bOnlyEdges = TRUE) %>%
+      sf::st_cast('LINESTRING') %>%
+      sf::st_sf()
+    crosses <- do.call(c, st_intersects(st_buffer(barrier,-1), edges))
+
+    edges <- edges[-crosses,]
+  }
+  if (!centroids & augment) {
+    centroid_limit <- units::set_units(centroid_limit, "m^2")
+    init_dt <- sf::st_collection_extract(
+      sf::st_triangulate(
+        sf::st_cast(buf_poly, 'MULTIPOINT')
+      ),
+      'POLYGON')
+
+    edges <- c(
+      buf_poly %>%
+        sf::st_cast('MULTIPOINT') %>%
+        sf::st_cast('POINT'),
+      aug_pts
+    ) %>%
+      sf::st_union() %>%
+      sf::st_triangulate(bOnlyEdges = TRUE) %>%
+      sf::st_cast('LINESTRING') %>%
+      sf::st_sf()
+    crosses <- do.call(c, st_intersects(st_buffer(barrier,-1), edges))
+
+    edges <- edges[-crosses,]
+  }
+
+  if (!centroids & !augment) {
     edges <- buf_poly %>%
       sf::st_cast('MULTIPOINT') %>%
       sf::st_union() %>%
