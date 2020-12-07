@@ -7,10 +7,24 @@
 #' @export
 
 get_barrier_segments = function(trkpts, barrier) {
-  # TODO: add check for start/end within barrier and suggest prt_trim()
+  stopifnot("barrier must be a simple feature collection with geometry type 'POLYGON' or 'MULTIPOLYGON" =
+              inherits(barrier %>% st_geometry(), 'sfc_POLYGON') |
+              inherits(barrier %>% st_geometry(), 'sfc_MULTIPOLYGON')
+  )
+  stopifnot("trkpts must be a simple feature collection with geometry type 'POINT' or 'MULTIPOINT" =
+              inherits(trkpts %>% st_geometry(), 'sfc_POINT') |
+              inherits(trkpts %>% st_geometry(), 'sfc_MULTIPOINT')
+  )
+
   trkpts <- sf::st_cast(trkpts, 'POINT')
   barrier_intersect <- sf::st_intersects(trkpts, barrier) %>%
     purrr::map_lgl(~ length(.x) > 0)
+
+  stopifnot("first point in trkpts cannot intersect with barrier; suggest prt_trim()" =
+              min(which(barrier_intersect == TRUE)) > 1)
+  stopifnot("last point in trkpts cannot intersect with barrier; suggest prt_trim()" =
+              max(which(barrier_intersect == 0)) == length(barrier_intersect)
+  )
 
   in.segment <- (barrier_intersect == TRUE)
 

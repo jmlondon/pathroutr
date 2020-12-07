@@ -14,6 +14,12 @@ prt_visgraph <- function(barrier,
                          centroids = FALSE,
                          centroid_limit = 10e+06,
                          aug_points = NULL) {
+
+  stopifnot("barrier must be a simple feature collection with geometry type 'POLYGON' or 'MULTIPOLYGON" =
+              inherits(barrier %>% st_geometry(), 'sfc_POLYGON') |
+              inherits(barrier %>% st_geometry(), 'sfc_MULTIPOLYGON')
+            )
+
   barrier <- sf::st_union(
     sf::st_cast(barrier, 'POLYGON')
   )
