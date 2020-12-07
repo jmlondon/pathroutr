@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Identify Track Points That Intersect With A Barrier — get_barrier_segments • pathroutr</title>
+<title>Identify track points that intersect with a barrier polygon — get_barrier_segments • pathroutr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,11 @@
 
 
 
-<meta property="og:title" content="Identify Track Points That Intersect With A Barrier — get_barrier_segments" />
-<meta property="og:description" content="Identify Track Points That Intersect With A Barrier" />
+<meta property="og:title" content="Identify track points that intersect with a barrier polygon — get_barrier_segments" />
+<meta property="og:description" content="This function identifies the segments of consecutive points that intersect with the
+barrier polygon feature. The result is a data frame of segment records that identify
+portions of the track that will need to be re-routed. The result from this function
+can be directly passed into the prt_nearestnode()." />
 
 
 
@@ -121,13 +124,16 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Identify Track Points That Intersect With A Barrier</h1>
+    <h1>Identify track points that intersect with a barrier polygon</h1>
     
     <div class="hidden name"><code>get_barrier_segments.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Identify Track Points That Intersect With A Barrier</p>
+    <p>This function identifies the segments of consecutive points that intersect with the
+barrier polygon feature. The result is a data frame of segment records that identify
+portions of the track that will need to be re-routed. The result from this function
+can be directly passed into the <code><a href='prt_nearestnode.html'>prt_nearestnode()</a></code>.</p>
     </div>
 
     <pre class="usage"><span class='fu'>get_barrier_segments</span><span class='op'>(</span><span class='va'>trkpts</span>, <span class='va'>barrier</span><span class='op'>)</span></pre>
@@ -137,17 +143,24 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>trkpts</th>
-      <td><p>simple feature points that represent track</p></td>
+      <td><p>Simple Feature points ('sf', 'sfc_POINT'/'sfc_MULTIPOINT') that represent
+track points. Order is accepted as is and the bounding box of trkpts should be within
+the bounding box of the barrier polygon.</p></td>
     </tr>
     <tr>
       <th>barrier</th>
-      <td><p>simple feature polygon for barrier</p></td>
+      <td><p>Simple Feature polygon ('sf', 'sfc_POLYGON'/'sfc_MULTIPOLYGON')
+representing the barrier feature. Should be the same barrier as supplied to the
+<code><a href='prt_visgraph.html'>prt_visgraph()</a></code> function.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>data.frame of on-barrier points by segment</p>
+    <p>data.frame representing segments of consecutive points that intersect with
+barrier feature. the <em>start_pt</em> and <em>end_pt</em> geometry columns represent the bookend
+points for each segment that do not intersect with the barrier feature. The <em>n_pts</em>
+column is the number of points to be re-routed.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

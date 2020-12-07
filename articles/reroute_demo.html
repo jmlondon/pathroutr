@@ -155,16 +155,16 @@
 <span class="co">#&gt; # A tibble: 29 x 6</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt              end_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1       183     273    89 (95675.91 950039.6)  (95186.7 947836.7)</span>
-<span class="co">#&gt;  2     2      1469    1560    90    (95890 947882.1)   (96483.98 950085)</span>
-<span class="co">#&gt;  3     3      2204    2859   654 (95037.43 955660.7)   (83676.13 943802)</span>
-<span class="co">#&gt;  4     4      2889    3245   355 (83500.54 943926.7) (85178.76 952693.5)</span>
-<span class="co">#&gt;  5     5      3428    3599   170 (84496.41 955154.8) (82546.56 951336.4)</span>
-<span class="co">#&gt;  6     6      3749    3920   170 (81748.55 947947.7) (83364.43 943976.4)</span>
-<span class="co">#&gt;  7     7      4064    4226   161 (84725.17 940632.1)    (86256 936869.8)</span>
-<span class="co">#&gt;  8     8      4288    4446   157 (86841.87 935429.9)  (88334.9 931760.5)</span>
-<span class="co">#&gt;  9     9      4478    4544    65 (88473.31 931763.8) (88397.15 933416.9)</span>
-<span class="co">#&gt; 10    10      4806    4858    51   (88094.81 939979) (88034.81 941281.4)</span>
+<span class="co">#&gt;  1     1        45      95    49  (86710.1 957067.9) (86067.41 956398.8)</span>
+<span class="co">#&gt;  2     2       205     416   210 (84653.49 954926.9) (81941.34 952103.5)</span>
+<span class="co">#&gt;  3     3       899     941    41 (75732.96 945640.4)  (75193.1 945078.4)</span>
+<span class="co">#&gt;  4     4      1146    1226    79 (72558.07 942335.2) (71529.77 941264.7)</span>
+<span class="co">#&gt;  5     5      1323    1647   323 (70282.95 939966.8) (66118.32 935631.3)</span>
+<span class="co">#&gt;  6     6      1691    1790    98 (66135.77 935499.6) (67725.93 936419.2)</span>
+<span class="co">#&gt;  7     7      2090    2119    28  (72544.6 939205.8) (73010.41 939475.1)</span>
+<span class="co">#&gt;  8     8      2175    2196    20 (73909.89 939995.3)  (74247.2 940190.4)</span>
+<span class="co">#&gt;  9     9      2218    2476   257 (74600.57 940394.7) (78744.63 942791.2)</span>
+<span class="co">#&gt; 10    10      2650    3545   894 (81529.52 944423.4) (95354.49 953623.6)</span>
 <span class="co">#&gt; # … with 19 more rows</span></code></pre></div>
 <p>Our next step is to create a visibility graph. This is, essentially, our road network for our marine environment. At some point, I’ll provide greater detail on this process. But, in simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns a <em>SpatialLinesNetwork</em> created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package.</p>
 <p>With our network created, we need to identify the nearest node on the network for the start and end points of each identified segment.</p>

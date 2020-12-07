@@ -40,7 +40,8 @@
 
 
 <meta property="og:title" content="Update track points with fixed geometry — prt_update_points" />
-<meta property="og:description" content="Update track points with fixed geometry" />
+<meta property="og:description" content="Original geometry is updated in place and (currently) no record of those points
+that were updated is provided." />
 
 
 
@@ -127,7 +128,8 @@
     </div>
 
     <div class="ref-description">
-    <p>Update track points with fixed geometry</p>
+    <p>Original geometry is updated in place and (currently) no record of those points
+that were updated is provided.</p>
     </div>
 
     <pre class="usage"><span class='fu'>prt_update_points</span><span class='op'>(</span><span class='va'>track_pts</span>, <span class='va'>segs_tbl</span><span class='op'>)</span></pre>
@@ -137,17 +139,17 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>track_pts</th>
-      <td><p>point geometry</p></td>
+      <td><p>original trkpts Simple Features Collection</p></td>
     </tr>
     <tr>
       <th>segs_tbl</th>
-      <td><p>segments table</p></td>
+      <td><p>output from <code><a href='prt_shortpath.html'>prt_shortpath()</a></code></p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>point geometry</p>
+    <p>trackpts with updated geometry</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
