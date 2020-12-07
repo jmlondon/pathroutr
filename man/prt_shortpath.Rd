@@ -7,12 +7,13 @@
 prt_shortpath(segs_tbl, vis_graph)
 }
 \arguments{
-\item{segs_tbl}{tbl from get_barrier_segments()}
+\item{segs_tbl}{tbl from \code{prt_nearestnode()}}
 
 \item{vis_graph}{SpatialLinesNetwork from prt_visgraph()}
 }
 \value{
-data frame seg_tbl with added geometry column for shortest path LINESTRING
+data frame with added geometry column for shortest path LINESTRING that
+connects the \emph{start_pt} and \emph{end_pt} coordinates
 }
 \description{
 Calculate the shortest path through a visibility network between two points

@@ -1,9 +1,10 @@
 #' Calculate the shortest path through a visibility network between two points
 #'
-#' @param segs_tbl tbl from get_barrier_segments()
+#' @param segs_tbl tbl from `prt_nearestnode()`
 #' @param vis_graph SpatialLinesNetwork from prt_visgraph()
 #'
-#' @return data frame seg_tbl with added geometry column for shortest path LINESTRING
+#' @return data frame with added geometry column for shortest path LINESTRING that
+#' connects the *start_pt* and *end_pt* coordinates
 #' @export
 #'
 prt_shortpath <- function(segs_tbl, vis_graph) {

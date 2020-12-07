@@ -1,10 +1,10 @@
 
 #' Find the nearest node for start and end points in segs_tbl
 #'
-#' @param segs_tbl output from get_barrier_segments
-#' @param vis_graph output from prt_visgraph
+#' @param segs_tbl output from `get_barrier_segments()`
+#' @param vis_graph SpatialLinesNetwork output from `prt_visgraph()`
 #'
-#' @return segs_tbl with updated columns for nearest start and end nodes
+#' @return data frame with updated columns for nearest start and end nodes
 #' @export
 
 prt_nearestnode <- function(segs_tbl, vis_graph) {

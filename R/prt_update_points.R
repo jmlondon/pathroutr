@@ -1,9 +1,12 @@
 #' Update track points with fixed geometry
 #'
-#' @param track_pts point geometry
-#' @param segs_tbl segments table
+#' Original geometry is updated in place and (currently) no record of those points
+#' that were updated is provided.
 #'
-#' @return point geometry
+#' @param track_pts original trkpts Simple Features Collection
+#' @param segs_tbl output from `prt_shortpath()`
+#'
+#' @return trackpts with updated geometry
 #' @export
 #'
 prt_update_points <- function(track_pts, segs_tbl) {

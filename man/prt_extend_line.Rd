@@ -2,20 +2,20 @@
 % Please edit documentation in R/prt_extend_line.R
 \name{prt_extend_line}
 \alias{prt_extend_line}
-\title{extend a line to include given start and end points}
+\title{Extend a linestring to include given start and end points}
 \usage{
 prt_extend_line(l, start_pt, end_pt)
 }
 \arguments{
-\item{l}{line}
+\item{l}{linestring}
 
 \item{start_pt}{start point}
 
 \item{end_pt}{end point}
 }
 \value{
-line
+linestring
 }
 \description{
-extend a line to include given start and end points
+Extend a linestring to include given start and end points
 }

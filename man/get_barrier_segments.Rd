@@ -2,18 +2,28 @@
 % Please edit documentation in R/get_barrier_segments.R
 \name{get_barrier_segments}
 \alias{get_barrier_segments}
-\title{Identify Track Points That Intersect With A Barrier}
+\title{Identify track points that intersect with a barrier polygon}
 \usage{
 get_barrier_segments(trkpts, barrier)
 }
 \arguments{
-\item{trkpts}{simple feature points that represent track}
+\item{trkpts}{Simple Feature points ('sf', 'sfc_POINT'/'sfc_MULTIPOINT') that represent
+track points. Order is accepted as is and the bounding box of trkpts should be within
+the bounding box of the barrier polygon.}
 
-\item{barrier}{simple feature polygon for barrier}
+\item{barrier}{Simple Feature polygon ('sf', 'sfc_POLYGON'/'sfc_MULTIPOLYGON')
+representing the barrier feature. Should be the same barrier as supplied to the
+\code{prt_visgraph()} function.}
 }
 \value{
-data.frame of on-barrier points by segment
+data.frame representing segments of consecutive points that intersect with
+barrier feature. the \emph{start_pt} and \emph{end_pt} geometry columns represent the bookend
+points for each segment that do not intersect with the barrier feature. The \emph{n_pts}
+column is the number of points to be re-routed.
 }
 \description{
-Identify Track Points That Intersect With A Barrier
+This function identifies the segments of consecutive points that intersect with the
+barrier polygon feature. The result is a data frame of segment records that identify
+portions of the track that will need to be re-routed. The result from this function
+can be directly passed into the \code{prt_nearestnode()}.
 }

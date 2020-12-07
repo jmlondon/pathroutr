@@ -1,10 +1,10 @@
-#' extend a line to include given start and end points
+#' Extend a linestring to include given start and end points
 #'
-#' @param l line
+#' @param l linestring
 #' @param start_pt start point
 #' @param end_pt end point
 #'
-#' @return line
+#' @return linestring
 #' @export
 #'
 prt_extend_line <- function(l, start_pt, end_pt) {

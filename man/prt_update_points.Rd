@@ -7,13 +7,14 @@
 prt_update_points(track_pts, segs_tbl)
 }
 \arguments{
-\item{track_pts}{point geometry}
+\item{track_pts}{original trkpts Simple Features Collection}
 
-\item{segs_tbl}{segments table}
+\item{segs_tbl}{output from \code{prt_shortpath()}}
 }
 \value{
-point geometry
+trackpts with updated geometry
 }
 \description{
-Update track points with fixed geometry
+Original geometry is updated in place and (currently) no record of those points
+that were updated is provided.
 }

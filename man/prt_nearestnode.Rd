@@ -7,12 +7,12 @@
 prt_nearestnode(segs_tbl, vis_graph)
 }
 \arguments{
-\item{segs_tbl}{output from get_barrier_segments}
+\item{segs_tbl}{output from \code{get_barrier_segments()}}
 
-\item{vis_graph}{output from prt_visgraph}
+\item{vis_graph}{SpatialLinesNetwork output from \code{prt_visgraph()}}
 }
 \value{
-segs_tbl with updated columns for nearest start and end nodes
+data frame with updated columns for nearest start and end nodes
 }
 \description{
 Find the nearest node for start and end points in segs_tbl
