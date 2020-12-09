@@ -4,7 +4,7 @@
 #' @param buffer integer specifying buffer distance for barrier
 #' @param centroids logical whether to include centroids in the mesh
 #' @param centroid_limit integer minimum size (m^2) for adding centroid to triangles
-#' @param aug_points simple feature 'POINT' or 'MULTIPOINT'; Not implemented yet
+#' @param aug_points simple feature 'POINT' or 'MULTIPOINT' as additional nodes
 #'
 #' @return SpatialLinesNetwork
 #' @export

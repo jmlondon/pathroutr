@@ -21,7 +21,7 @@ prt_visgraph(
 
 \item{centroid_limit}{integer minimum size (m^2) for adding centroid to triangles}
 
-\item{aug_points}{simple feature 'POINT' or 'MULTIPOINT'; Not implemented yet}
+\item{aug_points}{simple feature 'POINT' or 'MULTIPOINT' as additional nodes}
 }
 \value{
 SpatialLinesNetwork
