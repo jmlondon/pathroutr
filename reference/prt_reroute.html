@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>land barrier — land_barrier • pathroutr</title>
+<title>Re-route track points around barrier feature — prt_reroute • pathroutr</title>
 
 
 <!-- jquery -->
@@ -39,9 +39,12 @@
 
 
 
-<meta property="og:title" content="land barrier — land_barrier" />
-<meta property="og:description" content="A polygon dataset used to test and demonstrate package functions for routing
-paths around barriers" />
+<meta property="og:title" content="Re-route track points around barrier feature — prt_reroute" />
+<meta property="og:description" content="This is a convenience wrapper, and the suggested function, for re-routing a trkpts
+series of ordered POINT features around a barrier polygon via vis_graph built with
+the prt_visgraph() function. The output can be used as a starting point for a custom
+process to replace the original geometry. Or, provide the output tibble directly to
+prt_update_points() along with trkpts for simply updating in place." />
 
 
 
@@ -122,29 +125,46 @@ paths around barriers" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>land barrier</h1>
+    <h1>Re-route track points around barrier feature</h1>
     
-    <div class="hidden name"><code>land_barrier.Rd</code></div>
+    <div class="hidden name"><code>prt_reroute.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A polygon dataset used to test and demonstrate package functions for routing
-paths around barriers</p>
+    <p>This is a convenience wrapper, and the suggested function, for re-routing a <em>trkpts</em>
+series of ordered POINT features around a <em>barrier</em> polygon via <em>vis_graph</em> built with
+the <code><a href='prt_visgraph.html'>prt_visgraph()</a></code> function. The output can be used as a starting point for a custom
+process to replace the original geometry. Or, provide the output tibble directly to
+<code><a href='prt_update_points.html'>prt_update_points()</a></code> along with <em>trkpts</em> for simply updating in place.</p>
     </div>
 
-    <pre class="usage"><span class='va'>land_barrier</span></pre>
+    <pre class="usage"><span class='fu'>prt_reroute</span><span class='op'>(</span><span class='va'>trkpts</span>, <span class='va'>barrier</span>, <span class='va'>vis_graph</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>trkpts</th>
+      <td><p>Simple Feature points ('sf', 'sfc_POINT'/'sfc_MULTIPOINT') that represent
+track points. Order is accepted as is and the bounding box of trkpts should be within
+the bounding box of the barrier polygon.</p></td>
+    </tr>
+    <tr>
+      <th>barrier</th>
+      <td><p>Simple Feature polygon ('sf', 'sfc_POLYGON'/'sfc_MULTIPOLYGON')
+representing the barrier feature. Should be the same barrier as supplied to the
+<code><a href='prt_visgraph.html'>prt_visgraph()</a></code> function.</p></td>
+    </tr>
+    <tr>
+      <th>vis_graph</th>
+      <td><p>SpatialLinesNetwork from prt_visgraph()</p></td>
+    </tr>
+    </table>
 
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Simple feature collection with 19 features and 0 fields:</p><dl>
-<dt>geometry</dt><dd><p>MULTIPOLYGON</p></dd>
-
-</dl>
-
-    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
-
-    <p>geopackage file available in extData</p>
+    <p>a two-column tibble with column <em>fid</em> representing the row index in trkpts
+to be replaced by the new geometry in <em>geometry</em> column.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

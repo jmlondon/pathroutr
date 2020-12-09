@@ -73,7 +73,7 @@ that were updated is provided." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pathroutr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
       </span>
     </div>
 
@@ -132,24 +132,24 @@ that were updated is provided." />
 that were updated is provided.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prt_update_points</span><span class='op'>(</span><span class='va'>track_pts</span>, <span class='va'>segs_tbl</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>prt_update_points</span><span class='op'>(</span><span class='va'>rrt_pts</span>, <span class='va'>trkpts</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>track_pts</th>
-      <td><p>original trkpts Simple Features Collection</p></td>
+      <th>rrt_pts</th>
+      <td><p>output from <code><a href='prt_reroute.html'>prt_reroute()</a></code> or tibble with <em>rrt_idx</em> and <em>geometry</em> columns</p></td>
     </tr>
     <tr>
-      <th>segs_tbl</th>
-      <td><p>output from <code><a href='prt_shortpath.html'>prt_shortpath()</a></code></p></td>
+      <th>trkpts</th>
+      <td><p>original trkpts Simple Features Collection</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>trackpts with updated geometry</p>
+    <p>trkpts with updated geometry</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
