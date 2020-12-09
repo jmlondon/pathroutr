@@ -4,15 +4,15 @@
 \alias{prt_update_points}
 \title{Update track points with fixed geometry}
 \usage{
-prt_update_points(track_pts, segs_tbl)
+prt_update_points(rrt_pts, trkpts)
 }
 \arguments{
-\item{track_pts}{original trkpts Simple Features Collection}
+\item{rrt_pts}{output from \code{prt_reroute()} or tibble with \emph{rrt_idx} and \emph{geometry} columns}
 
-\item{segs_tbl}{output from \code{prt_shortpath()}}
+\item{trkpts}{original trkpts Simple Features Collection}
 }
 \value{
-trackpts with updated geometry
+trkpts with updated geometry
 }
 \description{
 Original geometry is updated in place and (currently) no record of those points

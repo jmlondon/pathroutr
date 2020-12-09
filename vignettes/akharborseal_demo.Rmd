@@ -217,11 +217,17 @@ ggplot() +
 
 ### Update Geometry With Re-routed Coordinates
 
-This last bit is the point where we insert the fixed points back into our original
-path.
+In reality, most of the time the user will simply want to provide an ordered series of
+points, a barrier polygon, and the spatial network. `{pathroutr}` includes a convenience
+function for this, `prt_reroute()`. This will return a two-column tibble with an index
+location and geometry for each re-routed point. The user can use this to update the
+original data as they see fit. Or, the `prt_update_points()` function can be used to 
+replace the geometry in place.
 
 ```{r}
-track_pts_fix <- prt_update_points(track_pts, segs_tbl)
+track_pts_fix <- prt_reroute(track_pts, land_region, vis_graph)
+
+track_pts_fix <- prt_update_points(track_pts_fix, track_pts)
 ```
 
 ```{r, fig.cap="Raw Argos observation geometries updated in place with the re-routed paths"}
@@ -312,7 +318,9 @@ workflow/function/approach to change. But, for now, it allows us to demonstrate 
 issue and troubleshoot any issues.
 
 ```{r}
-track_pts_fix <- prt_update_points(pred1_sf, segs_tbl)
+track_pts_fix <- prt_reroute(pred1_sf, land_region, vis_graph)
+
+track_pts_fix <- prt_update_points(track_pts_fix, pred1_sf)
 ```
 
 ```{r, fig.cap="Updated predicted path with re-routed geometries"}
@@ -345,10 +353,8 @@ imputes <- tibble::tibble(.rows = 5) %>%
   dplyr::rowwise() %>% 
   mutate(postis = list(crwPostIS(crw_sim, fullPost = FALSE)),
          pts = list(crw_as_sf(postis, locType = "p", ftype = "POINT")),
-         segs_tbl = list(get_barrier_segments(pts, land_region) %>% 
-                           prt_nearestnode(vis_graph) %>% 
-                           prt_shortpath(vis_graph)),
-         pts_fix = list(prt_update_points(pts, segs_tbl)),
+         rrt_pts = list(prt_reroute(pts, land_region, vis_graph)),
+         pts_fix = list(prt_update_points(rrt_pts, pts)),
          lines_fix = list(pts_fix %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING'))
          )
 

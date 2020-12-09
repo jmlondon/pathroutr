@@ -40,13 +40,25 @@ get_barrier_segments = function(trkpts, barrier) {
 
   in.segment <- (barrier_intersect == TRUE)
 
+  if (sum(in.segment) == 0) {
+    barrier_segments <- tibble::tibble(
+      'sid' = integer(),
+      'start_idx' = numeric(),
+      'end_idx' = numeric(),
+      'n_pts' = numeric(),
+      'start_pt' = sf::st_sfc(),
+      'end_pt' = sf::st_sfc()
+    )
+    return(barrier_segments)
+  }
+
   start_idx <- which(c(FALSE, in.segment) == TRUE &
                        dplyr::lag(c(FALSE, in.segment) == FALSE)) - 2
   end_idx <- which(c(in.segment, FALSE) == TRUE &
                      dplyr::lead(c(in.segment, FALSE) == FALSE)) + 1
 
 
-  barrier_segments <- data.frame(sid = 1:length(start_idx),
+  barrier_segments <- tibble::tibble(sid = 1:length(start_idx),
                                  start_idx, end_idx) %>%
     dplyr::mutate(n_pts = end_idx-start_idx-1) %>%
     dplyr::rowwise() %>%

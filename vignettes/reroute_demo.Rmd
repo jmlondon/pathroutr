@@ -121,10 +121,12 @@ ggplot() +
 ```
 
 This last bit is the point where we insert the fixed points back into our original
-path. It's currently a bit messy and I'll soon turn this into a standalone function.
+path.
 
 ```{r}
-track_pts_fix <- prt_update_points(track_pts, segs_tbl)
+track_pts_fix <- prt_reroute(track_pts, land_barrier, vis_graph)
+
+track_pts_fix <- prt_update_points(track_pts_fix, track_pts)
 ```
 
 
