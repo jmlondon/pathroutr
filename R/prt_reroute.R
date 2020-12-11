@@ -40,7 +40,7 @@ prt_reroute <- function(trkpts, barrier, vis_graph) {
 
   if (test_intersect == 0) {
     message("trkpts and barrier do NOT intersect; returning empty tibble")
-    e <- tibble::tibble("fid" = integer(), "geometry" = sf::st_sfc(), .rows = 1)
+    e <- tibble::tibble("fid" = integer(), "geometry" = sf::st_sfc(), .rows = 0)
     return(e)
   }
 

@@ -47,7 +47,8 @@ get_barrier_segments = function(trkpts, barrier) {
       'end_idx' = numeric(),
       'n_pts' = numeric(),
       'start_pt' = sf::st_sfc(),
-      'end_pt' = sf::st_sfc()
+      'end_pt' = sf::st_sfc(),
+      .rows = 0
     )
     return(barrier_segments)
   }
