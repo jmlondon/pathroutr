@@ -15,7 +15,8 @@
 #' @param vis_graph SpatialLinesNetwork from prt_visgraph()
 #'
 #' @return a two-column tibble with column *fid* representing the row index in trkpts
-#' to be replaced by the new geometry in *geometry* column.
+#' to be replaced by the new geometry in *geometry* column. If trkpts and barrier do not
+#' spatially intersect and empty tibble is returned.
 #' @export
 #'
 prt_reroute <- function(trkpts, barrier, vis_graph) {
@@ -39,7 +40,6 @@ prt_reroute <- function(trkpts, barrier, vis_graph) {
     purrr::map_lgl( ~ length(.x) > 0) %>% sum()
 
   if (test_intersect == 0) {
-    message("trkpts and barrier do NOT intersect; returning empty tibble")
     e <- tibble::tibble("fid" = integer(), "geometry" = sf::st_sfc(), .rows = 0)
     return(e)
   }

@@ -14,12 +14,13 @@ prt_visgraph <- function(barrier,
                          centroids = FALSE,
                          centroid_limit = 10e+06,
                          aug_points = NULL) {
-
+  # check barrier is of the proper geometry type
   stopifnot("barrier must be a simple feature collection with geometry type 'POLYGON' or 'MULTIPOLYGON" =
               inherits(barrier %>% st_geometry(), 'sfc_POLYGON') |
               inherits(barrier %>% st_geometry(), 'sfc_MULTIPOLYGON')
             )
 
+  # cast barrier into polygons and union into a single MULTIPOLYGON feature
   barrier <- sf::st_union(
     sf::st_cast(barrier, 'POLYGON')
   )
@@ -128,7 +129,9 @@ prt_visgraph <- function(barrier,
     edges <- edges[-crosses,]
   }
 
-  sln <- stplanr::SpatialLinesNetwork(edges)
+  sln <- supressWarnings(
+    stplanr::SpatialLinesNetwork(edges)
+  )
 
   return(sln)
 }
