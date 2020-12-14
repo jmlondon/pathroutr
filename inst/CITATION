@@ -1,0 +1,18 @@
+citHeader("To cite pathroutr in publications use:")
+
+citEntry(
+  entry    = "Software",
+  title    = "pathroutr: An R Package for (Re-)Routing Paths Around Barriers",
+  author   = personList(as.person("Josh M. London")),
+  month    = "dec",
+  year     = "2020",
+  publisher = "Zenodo",
+  version   = "v0.1.1-beta",
+  doi    = "10.5281/zenodo.4321827",
+  url      = "https://doi.org/10.5281/zenodo.4321827",
+  textVersion = paste(
+      "Josh M. London. (2020, December 14).",
+      "pathroutr: An R Package for (Re-)Routing Paths Around Barriers",
+      "(Version v0.1.1-beta). Zenodo. http://doi.org/10.5281/zenodo.4321828"
+  )
+)

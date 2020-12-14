@@ -6,6 +6,7 @@
 * added prt_reroute() as a convenience wrapper
 * continued improvement of documentation
 * specified version requirements for R (4.0+) and some packages
+* initial beta release and Zenodo.org archive created
 
 # pathroutr 0.1.0
 
