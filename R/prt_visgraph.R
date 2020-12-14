@@ -129,7 +129,7 @@ prt_visgraph <- function(barrier,
     edges <- edges[-crosses,]
   }
 
-  sln <- supressWarnings(
+  sln <- suppressWarnings(
     stplanr::SpatialLinesNetwork(edges)
   )
 
