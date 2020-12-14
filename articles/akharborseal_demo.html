@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -75,8 +75,7 @@
 
       
 
-      </header><script src="akharborseal_demo_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="akharborseal_demo_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="akharborseal_demo_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="akharborseal_demo_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Re-routing Harbor Seal Movement Tracks Around Land with {pathroutr}</h1>
@@ -194,9 +193,7 @@ Land barrier polygon after limiting to a 50km buffered convex hull of the observ
 <p>At this point, we are ready to create our visibility graph using the <code><a href="../reference/prt_visgraph.html">pathroutr::prt_visgraph()</a></code> function. We’ll keep <em>centroids = FALSE</em> in order to speed up the build. Adding additional centroids will increase the likelihood of linearity in the calculated shortest path. This is especially true when the shortest path crosses larger areas of open water. However, adding the additional centroids results in a very large increase in computational time (both in creation of the visual graph and in subsequent operations). There is likely little improvement in situations where the shortest path routing follows the coast. The default setting is <em>centroids=FALSE</em>. If a user chooses to set <em>centroids=TRUE</em>, we strongly encourage setting <em>centroid_limit</em> to a large value (default is <em>1e+07</em>).</p>
 <p>You may get a warning about the graph being composed of multiple subgraphs. This is to be expected in complex coastline areas with islands and peninsulas. The only caution is to ensure your study area (land barrier region) is large enough such that your animal is not restricted or, potentially, isolated in one of those subgraphs. For the vast majority of situations, this is not going to be an issue of concern. And, likely, this warning would be suppressed in future releases.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">vis_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_visgraph.html">prt_visgraph</a></span><span class="op">(</span><span class="va">land_region</span><span class="op">)</span>
-<span class="co">#&gt; Warning in SpatialLinesNetwork.sf(edges): Graph composed of multiple subgraphs,</span>
-<span class="co">#&gt; consider cleaning it with sln_clean_graph().</span></code></pre></div>
+<code class="sourceCode R"><span class="va">vis_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_visgraph.html">prt_visgraph</a></span><span class="op">(</span><span class="va">land_region</span><span class="op">)</span></code></pre></div>
 <p>Let’s take a look at our network. The ‘edges’ are stored within <code>@sl</code> slot of <code>vis_graph</code>. We can pass thing along to <code><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">ggspatial::layer_spatial()</a></code> just like an <code>sf</code> object.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R">

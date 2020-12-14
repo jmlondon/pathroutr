@@ -44,7 +44,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -108,11 +108,28 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>`{pathroutr}’ is currently not available on CRAN</p>
-<p>The development version is available from <a href="https://github.com/jmlondon/pathroutr">GitHub</a> with:</p>
+<p><code>{pathroutr}</code> is currently not available on CRAN and also requires R &gt;= 4.0. Please upgrade your version of R, if needed, before proceeding. Future versions of <code>{pathroutr}</code> may support pre-4.0 versions of R. But, for now, only 4.0+ is supported.</p>
+<p>The development version of <code>{pathroutr}</code> is available from <a href="https://github.com/jmlondon/pathroutr">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
 <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"jmlondon/pathroutr"</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="package-dependencies" class="section level2">
+<h2 class="hasAnchor">
+<a href="#package-dependencies" class="anchor"></a>Package Dependencies</h2>
+<p><code>{pathroutr}</code> is highly dependent upon the <a href="https://docs.ropensci.org/stplanr">stplanr</a> and <a href="https://r-spatial.github.io/sf/">sf</a> packages. The required version of <a href="https://docs.ropensci.org/stplanr">stplanr</a> is 0.8.0.9000 or greater. The current (as of 2020-12-10) version available on CRAN is 0.8.0. So, <a href="https://docs.ropensci.org/stplanr">stplanr</a> will need to be installed from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"ropensci/stplanr"</span><span class="op">)</span></code></pre></div>
+<p>Also, note that the minimum supported version of <a href="https://r-spatial.github.io/sf/">sf</a> is 0.9. So, this might also be a good time to check and update your <a href="https://r-spatial.github.io/sf/">sf</a> package versions.</p>
+<p>Core packages from the <code>tidyverse</code> (<a href="https://dplyr.tidyverse.org">dplyr</a>, <a href="http://purrr.tidyverse.org">purrr</a>, and <a href="https://tibble.tidyverse.org/">tibble</a>) are also required.</p>
+</div>
+<div id="questions-contributions--code-of-conduct" class="section level2">
+<h2 class="hasAnchor">
+<a href="#questions-contributions--code-of-conduct" class="anchor"></a>Questions, Contributions, &amp; Code of Conduct</h2>
+<p>Please note that the pathroutr project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<p>We strongly encourage you to file <a href="https://github.com/jmlondon/pathroutr/issues">Issues</a> and submit <a href="https://github.com/jmlondon/pathroutr/pulls">Pull Requests</a> so we can ensure the package meets the community needs and functions reliably. Please, please, please do your best to create a reproducible example and use the <code>{reprex}</code> <a href="https://reprex.tidyverse.org/">package</a> to share code within your Issue.</p>
+<p>Also, we have enabled the <a href="https://github.com/jmlondon/pathroutr/discussions">Discussion</a> option within the GitHub repository for questions, thoughts, and ideas that may not qualify as an Issue or Pull Request.</p>
 </div>
 </div>
   </div>
@@ -122,6 +139,12 @@
 <h2>License</h2>
 <ul class="list-unstyled">
 <li>CC0</li>
+</ul>
+</div>
+<div class="community">
+<h2>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
 </ul>
 </div>
 <div class="developers">

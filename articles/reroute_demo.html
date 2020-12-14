@@ -39,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -75,8 +75,7 @@
 
       
 
-      </header><script src="reroute_demo_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="reroute_demo_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="reroute_demo_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="reroute_demo_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Re-routing Straight Line Paths Around Barriers - A Visibility Graph Demo</h1>
@@ -152,20 +151,20 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_barrier</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 39 x 6</span>
+<span class="co">#&gt; # A tibble: 36 x 6</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt              end_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1       104     141    36 (69098.65 933378.1) (69606.73 934027.6)</span>
-<span class="co">#&gt;  2     2       506     688   181 (74618.89 940434.5)  (77118.1 943629.1)</span>
-<span class="co">#&gt;  3     3       831     893    61 (79081.77 946139.2) (79933.14 947227.5)</span>
-<span class="co">#&gt;  4     4      1105    1139    33 (82844.31 950948.8)  (83311.2 951545.6)</span>
-<span class="co">#&gt;  5     5      1205    1209     3 (84217.51 952704.1) (84272.44 952774.3)</span>
-<span class="co">#&gt;  6     6      1230    1237     6   (84560.81 953143) (84656.93 953265.8)</span>
-<span class="co">#&gt;  7     7      1442    1533    90 (84271.23 954338.9) (82426.98 953495.3)</span>
-<span class="co">#&gt;  8     8      1567    1574     6 (81737.92 953180.1) (81596.05 953115.2)</span>
-<span class="co">#&gt;  9     9      1640    1658    17   (80739.69 952068) (80610.11 951688.3)</span>
-<span class="co">#&gt; 10    10      1855    1925    69 (79191.89 947533.3) (78687.95 946056.9)</span>
-<span class="co">#&gt; # … with 29 more rows</span></code></pre></div>
+<span class="co">#&gt;  1     1        27     110    82 (79898.61 945521.5) (81247.12 944491.7)</span>
+<span class="co">#&gt;  2     2       134     171    36   (81637.04 944194) (82238.18 943734.9)</span>
+<span class="co">#&gt;  3     3       373     500   126 (85520.08 941228.7) (87583.45 939653.1)</span>
+<span class="co">#&gt;  4     4       785     828    42 (89072.16 940285.5)   (88751.75 941104)</span>
+<span class="co">#&gt;  5     5       891    1418   526 (88282.31 942303.3) (84355.41 952335.3)</span>
+<span class="co">#&gt;  6     6      1438    1566   127   (84206.39 952716) (83252.61 955152.6)</span>
+<span class="co">#&gt;  7     7      1625    1806   180 (83052.03 955211.9) (83307.09 951520.7)</span>
+<span class="co">#&gt;  8     8      1858    2199   340 (83380.37 950460.2)  (83860.9 943505.9)</span>
+<span class="co">#&gt;  9     9      2285    2289     3   (83982.08 941752) (83987.72 941670.4)</span>
+<span class="co">#&gt; 10    10      2436    2618   181 (82613.65 943802.2) (80735.91 947014.1)</span>
+<span class="co">#&gt; # … with 26 more rows</span></code></pre></div>
 <p>Our next step is to create a visibility graph. This is, essentially, our road network for our marine environment. At some point, I’ll provide greater detail on this process. But, in simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns a <em>SpatialLinesNetwork</em> created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package.</p>
 <p>With our network created, we need to identify the nearest node on the network for the start and end points of each identified segment.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
