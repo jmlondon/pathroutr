@@ -1,7 +1,7 @@
 citHeader("To cite pathroutr in publications use:")
 
 citEntry(
-  entry    = "Software",
+  entry    = "Manual",
   title    = "pathroutr: An R Package for (Re-)Routing Paths Around Barriers",
   author   = personList(as.person("Josh M. London")),
   month    = "dec",
