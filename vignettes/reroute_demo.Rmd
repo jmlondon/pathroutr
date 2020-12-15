@@ -18,7 +18,7 @@ This vignette demonstrates the basic concept within the `{pathroutr}` package fo
 re-routing paths that cross a barrier around the barrier using the shortest path
 through a visibility graph.
 
-The larger intent is to use this approach for adjust the movement tracks of marine
+The larger intent is to use this approach for adjusting the movement tracks of marine
 animals through water when estimated paths incorrectly cross land.
 
 ```{r setup}
@@ -29,7 +29,7 @@ data(poi)
 
 ## The Test Environment
 
-```{r}
+```{r, message=FALSE}
 library(dplyr)
 library(ggplot2)
 library(sf)
@@ -85,30 +85,55 @@ ggplot() +
 
 ## Re-route the path
 
-The first function we'll use form the `{pathroutr}` package is `get_barrier_segments()`
+The first function we'll use fromm the `{pathroutr}` package is `get_barrier_segments()`
 which identifies all of the consecutive track points that intersect with the land
-barrier. 
+barrier. The result of this function is a tibble that stores the key metadata about
+each of the segments identified to cross land. The *start_idx* and *end_idx* columns
+store the row index of the two points that bookend each stretch of consecutive points
+that intersect with the barrier polygon. These points DO NOT intersect with the barrier.
+The *n_pts* column is the number of consecutive points that intersect with the barrier.
+Lastly, the *start_pt* and *end_pt* columns store the Simple Feature geometry for the
+bookend points represented by *start_idx* and *end_idx*. Later, these geometries will be
+used to identify the nearest node in our network for shortest path routing and the final, 
+updated path will start and end with these geometries.
 
 ```{r}
 segs_tbl <- get_barrier_segments(track_pts,land_barrier)
 segs_tbl
 ```
 
-Our next step is to create a visibility graph. This is, essentially, our road network for
-our marine environment. At some point, I'll provide greater detail on this process. But,
-in simple terms, we connect all of the vertices for our barrier polygon with a Delaunay
-triangle mesh and, then, remove any of the edges that cross land. Our `prt_visgraph()`
-function returns a _SpatialLinesNetwork_ created with the `{stplanr}` package.
+Our next step is to create a visibility graph. This is, essentially, a road network for
+our marine environment. In simple terms, we connect all of the vertices for our barrier 
+polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. 
+Our `prt_visgraph()` function returns a _SpatialLinesNetwork_ created with the `{stplanr}` 
+package.
+
+The most computationally intensive step is likely to be identification of which edges
+intersect with the barrier polygon. We try to minimize this by, first, buffering the 
+barrier by -1 meter and then calling `sf::st_intersect()`. Because all of the nodes in our
+network are also vertices in our barrier polygon, all edges intersect with the barrier
+polygon. By buffering by -1 meter, we disconnect the nodes. If we didn't do this, we would
+need to evaluate two spatial predicate functions (`sf::st_crosses()` and `sf::st_within()`).
+With the negative buffer adjustment, we can rely solely on `sf::st_intersect()`. The other
+step we do to minimize compute time is to NOT evaluate which edges intersect with the
+barrier polygon feature. Instead we evaluate which polygon features intersect with which
+edges. Because `sf::st_intersect()` evaluates row wise, this minimizes the number of 
+evaluations since the number of polygon features in barrier is always going to be much
+much smaller than the number of edges.
 
 With our network created, we need to identify the nearest node on the network for 
-the start and end points of each identified segment.
+the start and end points of each identified segment. The `prt_nearestnode()` function
+relies on the `{nabor}` package for fast determination of the nearest nodes.
 
 ```{r}
 vis_graph <- prt_visgraph(land_barrier, buffer = 150)
 segs_tbl <- segs_tbl %>% prt_nearestnode(vis_graph)
 ```
 
-Calculate all of our shortest path routes around the barrier for each segment
+Notice, we pass `segs_tbl` as input to `prt_nearestnode()`. Each of these steps simply 
+modifies the data stored in the original tibble output from `get_barrier_segments()`. We
+now have all the information we need to calculate our shortest path routes around the 
+barrier for each segment.
 
 ```{r}
 segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
@@ -120,8 +145,21 @@ ggplot() +
 
 ```
 
-This last bit is the point where we insert the fixed points back into our original
-path.
+This process of 
+
+1. `get_barrier_segments()`
+2. `prt_nearestnode()`
+3. `prt_shortpath()`
+
+are likely to be the same across most workflows. So, the `prt_reroute()` function exists
+to simply the process for the user. In short, this function calls the three functions
+above along with some error handling and data checking. In the example code below
+`prt_reroute()` is followed up with a call to `prt_update_points()`. For even more
+efficient coding, the `%>%` function could be used to pipe the result from `prt_reroute()`
+into `prt_update_points()`. The result will be a version of `track_pts` with the re-routed
+geometry updated in place. Users may want to construct their own function for updating
+points while also tracking which rows were updated and adjusting other column values
+as needed.
 
 ```{r}
 track_pts_fix <- prt_reroute(track_pts, land_barrier, vis_graph)
