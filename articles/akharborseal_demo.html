@@ -111,8 +111,8 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://paleolimbot.github.io/ggspatial">ggspatial</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://paleolimbot.github.io/ggspatial/">ggspatial</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></code></pre></div>
 <p>The purpose of this is to demonstrate a more ‘real world’ use of <code>{pathroutr}</code> for re-routing of marine animal movement around land features. Here, we will use the Alaska harbor seal data provided in the <code>{crawl}</code> package to:</p>
 <ol style="list-style-type: decimal">
@@ -215,18 +215,18 @@ Visibility graph network edges created with the <a href="https://docs.ropensci.o
 <span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
 <span class="co">#&gt; # A tibble: 44 x 8</span>
-<span class="co">#&gt;      sid start_idx end_idx n_pts                  start_pt</span>
-<span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;               &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1        70      72     1       (-7141.435 1009874)</span>
-<span class="co">#&gt;  2     2       211     213     1        (17825.82 1009686)</span>
-<span class="co">#&gt;  3     3       296     298     1      (-166514.5 678462.8)</span>
-<span class="co">#&gt;  4     4       299     301     1      (-166385.8 678569.6)</span>
-<span class="co">#&gt;  5     5       310     312     1        (-159772 672617.8)</span>
-<span class="co">#&gt;  6     6       313     315     1      (-168417.8 679098.1)</span>
-<span class="co">#&gt;  7     7       346     348     1      (-166934.5 680376.9)</span>
-<span class="co">#&gt;  8     8       372     375     2        (-167836 679632.4)</span>
-<span class="co">#&gt;  9     9       390     392     1        (-164953 673937.4)</span>
-<span class="co">#&gt; 10    10       398     400     1        (-163341.9 680010)</span>
+<span class="co">#&gt;      sid start_idx end_idx n_pts             start_pt</span>
+<span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;          &lt;POINT [m]&gt;</span>
+<span class="co">#&gt;  1     1        70      72     1  (-7141.435 1009874)</span>
+<span class="co">#&gt;  2     2       211     213     1   (17825.82 1009686)</span>
+<span class="co">#&gt;  3     3       296     298     1 (-166514.5 678462.8)</span>
+<span class="co">#&gt;  4     4       299     301     1 (-166385.8 678569.6)</span>
+<span class="co">#&gt;  5     5       310     312     1   (-159772 672617.8)</span>
+<span class="co">#&gt;  6     6       313     315     1 (-168417.8 679098.1)</span>
+<span class="co">#&gt;  7     7       346     348     1 (-166934.5 680376.9)</span>
+<span class="co">#&gt;  8     8       372     375     2   (-167836 679632.4)</span>
+<span class="co">#&gt;  9     9       390     392     1   (-164953 673937.4)</span>
+<span class="co">#&gt; 10    10       398     400     1   (-163341.9 680010)</span>
 <span class="co">#&gt; # … with 34 more rows, and 3 more variables: end_pt &lt;POINT [m]&gt;,</span>
 <span class="co">#&gt; #   start_node &lt;int&gt;, end_node &lt;int&gt;</span></code></pre></div>
 </div>
@@ -335,18 +335,18 @@ Raw Argos observation geometries updated in place with the re-routed paths
 <span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
 <span class="co">#&gt; # A tibble: 140 x 8</span>
-<span class="co">#&gt;      sid start_idx end_idx n_pts                  start_pt</span>
-<span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;               &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1      2426    2435     8        (16195.24 1008923)</span>
-<span class="co">#&gt;  2     2      2482    2485     2        (13845.85 1009221)</span>
-<span class="co">#&gt;  3     3      2486    2488     1        (14334.24 1007460)</span>
-<span class="co">#&gt;  4     4      2488    2557    68        (14625.18 1006411)</span>
-<span class="co">#&gt;  5     5      2648    2651     2         (47203.07 912631)</span>
-<span class="co">#&gt;  6     6      2656    2662     5       (44653.54 904336.9)</span>
-<span class="co">#&gt;  7     7      3260    3263     2      (-169713.6 678313.5)</span>
-<span class="co">#&gt;  8     8      3524    3531     6        (-166814 672859.7)</span>
-<span class="co">#&gt;  9     9      3545    3564    18      (-166337.5 678529.5)</span>
-<span class="co">#&gt; 10    10      3610    3616     5      (-166162.5 678383.6)</span>
+<span class="co">#&gt;      sid start_idx end_idx n_pts             start_pt</span>
+<span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;          &lt;POINT [m]&gt;</span>
+<span class="co">#&gt;  1     1      2426    2435     8   (16195.24 1008923)</span>
+<span class="co">#&gt;  2     2      2482    2485     2   (13845.85 1009221)</span>
+<span class="co">#&gt;  3     3      2486    2488     1   (14334.24 1007460)</span>
+<span class="co">#&gt;  4     4      2488    2557    68   (14625.18 1006411)</span>
+<span class="co">#&gt;  5     5      2648    2651     2    (47203.07 912631)</span>
+<span class="co">#&gt;  6     6      2656    2662     5  (44653.54 904336.9)</span>
+<span class="co">#&gt;  7     7      3260    3263     2 (-169713.6 678313.5)</span>
+<span class="co">#&gt;  8     8      3524    3531     6   (-166814 672859.7)</span>
+<span class="co">#&gt;  9     9      3545    3564    18 (-166337.5 678529.5)</span>
+<span class="co">#&gt; 10    10      3610    3616     5 (-166162.5 678383.6)</span>
 <span class="co">#&gt; # … with 130 more rows, and 3 more variables: end_pt &lt;POINT [m]&gt;,</span>
 <span class="co">#&gt; #   start_node &lt;int&gt;, end_node &lt;int&gt;</span></code></pre></div>
 </div>

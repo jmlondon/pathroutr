@@ -99,9 +99,9 @@
 <a href="#the-test-environment" class="anchor"></a>The Test Environment</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://paleolimbot.github.io/ggspatial">ggspatial</a></span><span class="op">)</span></code></pre></div>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://paleolimbot.github.io/ggspatial/">ggspatial</a></span><span class="op">)</span></code></pre></div>
 <p>First, let’s setup our test space with our included land barrier and points of interest. This was based off of the north Kodiak Island region in Alaska, USA (but, is not an exact replica. So, not for navigational use!!).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
@@ -142,20 +142,20 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_barrier</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 42 x 6</span>
-<span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt              end_pt</span>
-<span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1        20     119    98    (90215.6 957527) (88933.01 955622.3)</span>
-<span class="co">#&gt;  2     2       178     698   519 (88168.63 954487.2) (81431.77 944482.7)</span>
-<span class="co">#&gt;  3     3       836    1042   205   (78744.29 942791)   (74608.01 940399)</span>
-<span class="co">#&gt;  4     4      1060    1077    16   (74246.59 940190) (73905.24 939992.6)</span>
-<span class="co">#&gt;  5     5      1122    1145    22 (73001.69 939470.1)   (72539.87 939203)</span>
-<span class="co">#&gt;  6     6      1385    1464    78  (67720.9 936416.3)   (66134.65 935499)</span>
-<span class="co">#&gt;  7     7      1499    1769   269 (66099.41 935644.1) (70200.68 940376.9)</span>
-<span class="co">#&gt;  8     8      1862    1891    28 (71613.34 942007.1) (72053.85 942515.4)</span>
-<span class="co">#&gt;  9     9      2050    2092    41 (74469.04 945302.5) (75107.01 946038.7)</span>
-<span class="co">#&gt; 10    10      2447    2461    13 (80499.43 952261.5) (80712.09 952506.9)</span>
-<span class="co">#&gt; # … with 32 more rows</span></code></pre></div>
+<span class="co">#&gt; # A tibble: 39 x 6</span>
+<span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt</span>
+<span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;</span>
+<span class="co">#&gt;  1     1        19     300   280   (76693.91 936792)</span>
+<span class="co">#&gt;  2     2       459     468     8 (77597.59 946506.5)</span>
+<span class="co">#&gt;  3     3       662     686    23 (78014.51 950988.5)</span>
+<span class="co">#&gt;  4     4       707     728    20 (78160.21 951572.6)</span>
+<span class="co">#&gt;  5     5       912    1046   133 (79725.74 947305.1)</span>
+<span class="co">#&gt;  6     6      1171    1178     6 (81703.66 941913.4)</span>
+<span class="co">#&gt;  7     7      1192    1200     7 (81860.33 941810.4)</span>
+<span class="co">#&gt;  8     8      1287    1761   473 (82541.86 943803.6)</span>
+<span class="co">#&gt;  9     9      1865    1917    51 (86688.42 955930.8)</span>
+<span class="co">#&gt; 10    10      1984    2029    44 (86735.28 957062.2)</span>
+<span class="co">#&gt; # … with 29 more rows, and 1 more variable: end_pt &lt;POINT [m]&gt;</span></code></pre></div>
 <p>Our next step is to create a visibility graph. This is, essentially, a road network for our marine environment. In simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns a <em>SpatialLinesNetwork</em> created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package.</p>
 <p>The most computationally intensive step is likely to be identification of which edges intersect with the barrier polygon. We try to minimize this by, first, buffering the barrier by -1 meter and then calling <code>sf::st_intersect()</code>. Because all of the nodes in our network are also vertices in our barrier polygon, all edges intersect with the barrier polygon. By buffering by -1 meter, we disconnect the nodes. If we didn’t do this, we would need to evaluate two spatial predicate functions (<code><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">sf::st_crosses()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">sf::st_within()</a></code>). With the negative buffer adjustment, we can rely solely on <code>sf::st_intersect()</code>. The other step we do to minimize compute time is to NOT evaluate which edges intersect with the barrier polygon feature. Instead we evaluate which polygon features intersect with which edges. Because <code>sf::st_intersect()</code> evaluates row wise, this minimizes the number of evaluations since the number of polygon features in barrier is always going to be much much smaller than the number of edges.</p>
 <p>With our network created, we need to identify the nearest node on the network for the start and end points of each identified segment. The <code><a href="../reference/prt_nearestnode.html">prt_nearestnode()</a></code> function relies on the <a href="https://github.com/jefferis/nabor">nabor</a> package for fast determination of the nearest nodes.</p>
