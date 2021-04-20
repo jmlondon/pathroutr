@@ -13,6 +13,9 @@ prt_update_points <- function(rrt_pts, trkpts) {
   trkpts <- trkpts %>% sf::st_cast('POINT') %>%
     sf::st_sf() %>% tibble::rowid_to_column("fid")
 
+  if(nrow(rrt_pts) == 0) {
+    return(trkpts)
+  }
   res <- trkpts %>% tibble::as_tibble()  %>%
     dplyr::rows_update(rrt_pts, by = "fid") %>%
     sf::st_sf(sf_column_name = "geometry")
