@@ -3,6 +3,8 @@ on:
     # * is a special character in YAML so you have to quote this string
     - cron:  '0 8 * * MON'
 
+name: vignettes
+
 jobs:
   build:
     runs-on: macOS-latest
