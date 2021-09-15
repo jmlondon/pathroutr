@@ -28,7 +28,8 @@ get_barrier_segments = function(trkpts, barrier) {
               inherits(trkpts %>% st_geometry(), 'sfc_MULTIPOINT')
   )
 
-  trkpts <- sf::st_cast(trkpts, 'POINT')
+  trkpts <- sf::st_cast(trkpts, 'POINT') %>% st_geometry()
+
   barrier_intersect <- sf::st_intersects(trkpts, barrier) %>%
     purrr::map_lgl(~ length(.x) > 0)
 
@@ -63,8 +64,8 @@ get_barrier_segments = function(trkpts, barrier) {
                                  start_idx, end_idx) %>%
     dplyr::mutate(n_pts = end_idx-start_idx-1) %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(start_pt = trkpts[start_idx, ] %>% sf::st_geometry(),
-                  end_pt = trkpts[end_idx, ] %>% sf::st_geometry()) %>%
+    dplyr::mutate(start_pt = trkpts[start_idx] %>% sf::st_geometry(),
+                  end_pt = trkpts[end_idx] %>% sf::st_geometry()) %>%
     dplyr::ungroup()
 
   return(barrier_segments)
