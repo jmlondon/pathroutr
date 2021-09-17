@@ -36,11 +36,14 @@ developing the approach
     Delaunay Triangulation.” IEEE/ASME Transactions On Mechatronics 19.2
     (2013): 660-666. DOI: 10.1109/TMECH.2013.2252076
 
-In addition, both the `{sf}` and `{stplanr}` R packages are of key
-importance to the functionality within `{pathroutr}`
+In addition, both the `{sf}` and `{sfnetworks}` R packages are of key
+importance to the functionality within `{pathroutr}`. A special
+acknowledgement for the {stplanr} package is also warranted as early
+development versions relied on {stplanr} functions.
 
-1.  Lovelace, R. and Ellison, R., 2017. stplanr: A Package for Transport
-    Planning. The R Journal. <https://doi.org/10.32614/RJ-2018-053>
+1.  Lucas van der Meer, Lorena Abad, Andrea Gilardi and Robin Lovelace
+    (2021). sfnetworks: Tidy Geospatial Networks. R package version
+    0.5.2. <https://CRAN.R-project.org/package=sfnetworks>
 2.  Pebesma, E., 2018. Simple Features for R: Standardized Support for
     Spatial Vector Data. The R Journal 10 (1), 439-446,
     <https://doi.org/10.32614/RJ-2018-009>
@@ -62,18 +65,13 @@ remotes::install_github("jmlondon/pathroutr")
 
 ## Package Dependencies
 
-`{pathroutr}` is highly dependent upon the `{stplanr}` and `{sf}`
-packages. The required version of `{stplanr}` is 0.8.0.9000 or greater.
-The current (as of 2020-12-10) version available on CRAN is 0.8.0. So,
-`{stplanr}` will need to be installed from GitHub:
+`{pathroutr}` is highly dependent upon the `{sfnetworks}` and `{sf}`
+packages.
 
-``` r
-# install.packages("remotes")
-remotes::install_github("ropensci/stplanr")
-```
+Both are available on CRAN.
 
-Also, note that the minimum supported version of `{sf}` is 0.9. So, this
-might also be a good time to check and update your `{sf}` package
+Please note that the minimum supported version of `{sf}` is 0.9. So,
+this might also be a good time to check and update your `{sf}` package
 versions.
 
 Core packages from the `tidyverse` (`{dplyr}`, `{purrr}`, and
