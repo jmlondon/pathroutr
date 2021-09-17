@@ -1,3 +1,11 @@
+# pathroutr 0.2.0
+
+* switched from {stplanr} to {sfnetworks} for network creation and shortest path calc
+* implement use of sfnetworks::st_network_blend() to identify start/end node points for shortest path
+* added additional check when creating the shortest path `LINESTRING` to ensure direction is correct
+* updated both vignettes to reflect changes
+* removed function `prt_extend_line()`; now uses `prt_extend_path()`
+
 # pathroutr 0.1.1
 
 * added AK harbor seal demo vignette

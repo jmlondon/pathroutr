@@ -2,8 +2,7 @@
 
 export("%>%")
 export(get_barrier_segments)
-export(prt_extend_line)
-export(prt_nearestnode)
+export(prt_extend_path)
 export(prt_reroute)
 export(prt_shortpath)
 export(prt_trim)
