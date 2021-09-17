@@ -34,6 +34,7 @@ library(dplyr)
 library(ggplot2)
 library(sf)
 library(ggspatial)
+library(tictoc)
 ```
 
 
@@ -122,7 +123,9 @@ evaluations since the number of polygon features in barrier is always going to b
 much smaller than the number of edges.
 
 ```{r}
+tic()
 vis_graph <- prt_visgraph(land_barrier, buffer = 150)
+toc()
 ```
 
 In previous development versions of {pathroutr} we relied on the {stplanr} package. Now,
@@ -143,7 +146,9 @@ segment start point). This should resolve any previous issues that created spuri
 segments that diverged from the determined shortest path.
 
 ```{r, message=FALSE}
+tic()
 segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
+toc()
 
 ggplot() + 
   ggspatial::annotation_spatial(land_barrier, fill = "cornsilk3", size = 0) +
