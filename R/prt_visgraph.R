@@ -130,7 +130,9 @@ prt_visgraph <- function(barrier,
   }
 
   sln <- suppressWarnings(
-    stplanr::SpatialLinesNetwork(edges)
+    sfnetworks::as_sfnetwork(edges,
+                             directed = FALSE,
+                             length_as_weight = TRUE)
   )
 
   return(sln)

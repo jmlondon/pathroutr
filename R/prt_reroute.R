@@ -45,7 +45,6 @@ prt_reroute <- function(trkpts, barrier, vis_graph) {
   }
 
   segs_tbl <- get_barrier_segments(trkpts, barrier) %>%
-    prt_nearestnode(vis_graph) %>%
     prt_shortpath(vis_graph)
 
   pts_list <- vector(mode = "list", length = nrow(segs_tbl))

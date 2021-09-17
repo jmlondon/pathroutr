@@ -8,15 +8,22 @@
 #' @export
 #'
 prt_shortpath <- function(segs_tbl, vis_graph) {
+  suppressWarnings({
+  vis_graph <- vis_graph %>%
+    sfnetworks::st_network_blend(c(segs_tbl$start_pt,segs_tbl$end_pt))
+  })
 
-  res_tbl <- stplanr::sum_network_routes(sln = vis_graph,
-                                         start = segs_tbl$start_node,
-                                         end = segs_tbl$end_node)
-
-  segs_tbl <- cbind(segs_tbl, res_tbl) %>%
+  edge_tbl <- segs_tbl %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(geometry = prt_extend_line(geometry, start_pt, end_pt)) %>%
-    dplyr::select(sid:geometry)
+    dplyr::mutate(edge_paths = sfnetworks::st_network_paths(vis_graph,
+                                             from = start_pt,
+                                             to = end_pt) %>% pull(edge_paths),
+                  geometry = sfnetworks::activate(vis_graph, "edges") %>%
+                    slice(unlist(edge_paths)) %>%
+                    prt_extend_path(start_pt, end_pt)
+    )
+
+  segs_tbl <- cbind(segs_tbl, edge_tbl %>% select(geometry))
 
   return(segs_tbl)
 }

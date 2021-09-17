@@ -19,7 +19,8 @@ representing the barrier feature. Should be the same barrier as supplied to the
 }
 \value{
 a two-column tibble with column \emph{fid} representing the row index in trkpts
-to be replaced by the new geometry in \emph{geometry} column.
+to be replaced by the new geometry in \emph{geometry} column. If trkpts and barrier do not
+spatially intersect and empty tibble is returned.
 }
 \description{
 This is a convenience wrapper, and the suggested function, for re-routing a \emph{trkpts}
