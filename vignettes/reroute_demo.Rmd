@@ -105,8 +105,8 @@ segs_tbl
 Our next step is to create a visibility graph. This is, essentially, a road network for
 our marine environment. In simple terms, we connect all of the vertices for our barrier 
 polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. 
-Our `prt_visgraph()` function returns a _SpatialLinesNetwork_ created with the `{stplanr}` 
-package.
+Our `prt_visgraph()` function returns an undirected graph of type _sfnetwork_ created with 
+the `{sfnetworks}` package.
 
 The most computationally intensive step is likely to be identification of which edges
 intersect with the barrier polygon. We try to minimize this by, first, buffering the 
@@ -121,21 +121,28 @@ edges. Because `sf::st_intersect()` evaluates row wise, this minimizes the numbe
 evaluations since the number of polygon features in barrier is always going to be much
 much smaller than the number of edges.
 
-With our network created, we need to identify the nearest node on the network for 
-the start and end points of each identified segment. The `prt_nearestnode()` function
-relies on the `{nabor}` package for fast determination of the nearest nodes.
-
 ```{r}
 vis_graph <- prt_visgraph(land_barrier, buffer = 150)
-segs_tbl <- segs_tbl %>% prt_nearestnode(vis_graph)
 ```
 
-Notice, we pass `segs_tbl` as input to `prt_nearestnode()`. Each of these steps simply 
-modifies the data stored in the original tibble output from `get_barrier_segments()`. We
-now have all the information we need to calculate our shortest path routes around the 
-barrier for each segment.
+In previous development versions of {pathroutr} we relied on the {stplanr} package. Now,
+we rely on {sfnetworks} and one advantage of this approach is that we can use the 
+`sfnetworks::st_network_blend()` function to integrate our segment start and end points
+into the network. Previously, the nearest existing network node to the start/end points
+was used as the start and end of the shortest path calculation. A straight line was, then,
+drawn between the start/end points to the start and end of the path to complete the
+re-routed track segment. The `sfnetworks::st_network_blend()` function provides a more
+robust solution by creating new network nodes on an existing edge at the closest point
+from the provided segment start and end points. These new network nodes serve as start
+and end points for the shortest path. And, as before, we extend the path to include the
+segment start and end points.
 
-```{r}
+Additionally, we now also conduct an integrity check of the newly created `LINESTRING` to
+ensure the directionality is consistent (e.g. the first node in the `LINESTRING` is the
+segment start point). This should resolve any previous issues that created spurious line
+segments that diverged from the determined shortest path.
+
+```{r, message=FALSE}
 segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
 
 ggplot() + 
@@ -148,11 +155,10 @@ ggplot() +
 This process of 
 
 1. `get_barrier_segments()`
-2. `prt_nearestnode()`
 3. `prt_shortpath()`
 
 are likely to be the same across most workflows. So, the `prt_reroute()` function exists
-to simply the process for the user. In short, this function calls the three functions
+to simplify the process for the user. In short, this function calls the two functions
 above along with some error handling and data checking. In the example code below
 `prt_reroute()` is followed up with a call to `prt_update_points()`. For even more
 efficient coding, the `%>%` function could be used to pipe the result from `prt_reroute()`
@@ -161,7 +167,7 @@ geometry updated in place. Users may want to construct their own function for up
 points while also tracking which rows were updated and adjusting other column values
 as needed.
 
-```{r}
+```{r, message=FALSE}
 track_pts_fix <- prt_reroute(track_pts, land_barrier, vis_graph)
 
 track_pts_fix <- prt_update_points(track_pts_fix, track_pts)
