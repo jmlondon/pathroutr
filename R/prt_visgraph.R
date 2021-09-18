@@ -132,7 +132,7 @@ prt_visgraph <- function(barrier,
   sln <- suppressWarnings(
     sfnetworks::as_sfnetwork(edges,
                              directed = FALSE,
-                             length_as_weight = TRUE)
+                             length_as_weight = FALSE)
   )
 
   return(sln)
