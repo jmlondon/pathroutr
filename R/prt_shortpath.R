@@ -24,7 +24,7 @@ prt_shortpath <- function(segs_tbl, vis_graph) {
                     slice(unlist(edge_paths)) %>%
                     prt_extend_path(start_pt, end_pt)
     )
-toc()
+
   segs_tbl <- cbind(segs_tbl, edge_tbl %>% select(geometry))
 
   return(segs_tbl)
