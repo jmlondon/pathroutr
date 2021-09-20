@@ -19,6 +19,7 @@ prt_shortpath <- function(segs_tbl, vis_graph) {
     unlist(igraph::shortest_paths(graph = vis_graph,
                                   from = segs_tbl$start_node[i],
                                   to = segs_tbl$end_node[i],
+                                  weights = NULL,
                                   output = "epath")$epath)
   })
 
