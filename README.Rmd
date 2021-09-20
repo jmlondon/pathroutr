@@ -41,13 +41,16 @@ routing. However, three sources were of key importance to developing the approac
 
 In addition, both the `{sf}` and `{sfnetworks}` R packages are of key importance to the 
 functionality within `{pathroutr}`. A special acknowledgement for the {stplanr} package
-is also warranted as early development versions relied on {stplanr} functions.
+is also warranted as early development versions relied on {stplanr} functions. And,
+of course, all of this would not be possible without the {igraph} package
 
 1. Lucas van der Meer, Lorena Abad, Andrea Gilardi and Robin Lovelace (2021).
 sfnetworks: Tidy Geospatial Networks. R package version 0.5.2.
 https://CRAN.R-project.org/package=sfnetworks
 2. Pebesma, E., 2018. Simple Features for R: Standardized Support for Spatial Vector 
 Data. The R Journal 10 (1), 439-446, https://doi.org/10.32614/RJ-2018-009
+3. Lovelace, R. and Ellison, R., 2017. stplanr: A Package for Transport Planning. The R Journal. https://doi.org/10.32614/RJ-2018-053
+4. Csardi G, Nepusz T: The igraph software package for complex network research, InterJournal, Complex Systems 1695. 2006. https://igraph.org
 
 
 ## Installation

@@ -1,3 +1,8 @@
+# pathroutr 0.2.1
+
+* now calls igraph::shortest_path() directly instead of {sfnetworks} wrappers
+* additional updates aimed at improving speed
+
 # pathroutr 0.2.0
 
 * switched from {stplanr} to {sfnetworks} for network creation and shortest path calc
