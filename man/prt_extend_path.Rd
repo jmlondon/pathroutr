@@ -4,14 +4,14 @@
 \alias{prt_extend_path}
 \title{Extend a path to include given start and end points}
 \usage{
-prt_extend_path(p, start_pt, end_pt)
+prt_extend_path(l_geom, start_pt, end_pt)
 }
 \arguments{
-\item{p}{sfnetwork representing a single path}
-
 \item{start_pt}{start point}
 
 \item{end_pt}{end point}
+
+\item{p}{sfnetwork representing a single path}
 }
 \value{
 linestring

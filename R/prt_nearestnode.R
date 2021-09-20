@@ -8,7 +8,6 @@
 #' @export
 
 prt_nearestnode <- function(segs_tbl, vis_graph) {
-  tidygraph::activate(vis_graph,"nodes") %>% st_geometry()
   segs_tbl <- segs_tbl %>% ungroup() %>%
     dplyr::mutate(
       start_node = nabor::knn(sf::st_coordinates(sfnetworks::activate(vis_graph,"nodes")),

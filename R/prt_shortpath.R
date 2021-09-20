@@ -15,17 +15,22 @@ prt_shortpath <- function(segs_tbl, vis_graph) {
   })
   segs_tbl <- prt_nearestnode(segs_tbl,vis_graph)
 
-  edge_tbl <- segs_tbl %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate(edge_paths = sfnetworks::st_network_paths(vis_graph,
-                                             from = start_node,
-                                             to = end_node, weights = NA) %>% pull(edge_paths),
-                  geometry = vis_graph %>%
-                    slice(unlist(edge_paths)) %>%
-                    prt_extend_path(start_pt, end_pt)
-    )
+  route_edges <- lapply(1:length(segs_tbl$start_node), function(i) {
+    unlist(igraph::shortest_paths(graph = vis_graph,
+                                  from = segs_tbl$start_node[i],
+                                  to = segs_tbl$end_node[i],
+                                  output = "epath")$epath)
+  })
 
-  segs_tbl <- cbind(segs_tbl, edge_tbl %>% select(geometry))
+  edge_geom <- lapply(route_edges, function(e) {
+    vis_graph %>% slice(e) %>% sf::st_geometry()})
+
+  path_geom <- sapply(1:length(edge_geom), function(i) {
+    prt_extend_path(edge_geom[[i]], segs_tbl$start_pt[i], segs_tbl$end_pt[i])
+  })
+  segs_tbl <- segs_tbl %>%
+    mutate(geometry = st_sfc(path_geom, crs = sf::st_crs(vis_graph)))
 
   return(segs_tbl)
+
 }
