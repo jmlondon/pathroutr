@@ -15,11 +15,12 @@ knitr::opts_chunk$set(
 ```
 
 This vignette demonstrates the basic concept within the `{pathroutr}` package for
-re-routing paths that cross a barrier around the barrier using the shortest path
-through a visibility graph.
+re-routing paths that cross a barrier around said barrier using the shortest path
+(weighted by distance) through a visibility graph.
 
 The larger intent is to use this approach for adjusting the movement tracks of marine
-animals through water when estimated paths incorrectly cross land.
+animals through water when estimated paths from movement models or other
+estimation approaches incorrectly cross land.
 
 ```{r setup}
 library(pathroutr)
@@ -86,7 +87,7 @@ ggplot() +
 
 ## Re-route the path
 
-The first function we'll use fromm the `{pathroutr}` package is `get_barrier_segments()`
+The first function we'll use from the `{pathroutr}` package is `get_barrier_segments()`
 which identifies all of the consecutive track points that intersect with the land
 barrier. The result of this function is a tibble that stores the key metadata about
 each of the segments identified to cross land. The *start_idx* and *end_idx* columns
@@ -107,7 +108,8 @@ Our next step is to create a visibility graph. This is, essentially, a road netw
 our marine environment. In simple terms, we connect all of the vertices for our barrier 
 polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. 
 Our `prt_visgraph()` function returns an undirected graph of type _sfnetwork_ created with 
-the `{sfnetworks}` package.
+the `{sfnetworks}` package. Edge lengths are stored as a weight attribute for our
+visibility graph.
 
 The most computationally intensive step is likely to be identification of which edges
 intersect with the barrier polygon. We try to minimize this by, first, buffering the 

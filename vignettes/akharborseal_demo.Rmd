@@ -14,16 +14,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Alaska Harbor Seal Example
+# Alaska Harbor Seal Example
 
-```{r setup}
-library(pathroutr)
-#devtools::load_all(here::here())
-```
 
 ## Essential Packages
 
-This example relies on two non-release packages of `{stplanr}` and `{crawl}`
+This example relies on a non-release version of `{crawl}`
 
 ```{r eval=FALSE}
 # not run
@@ -34,6 +30,7 @@ install_github('NMML/crawl@devel')
 ```{r, message=FALSE}
 library(crawl)
 library(sfnetworks)
+library(pathroutr)
 ```
 
 Additional packages we'll want to load
@@ -61,9 +58,9 @@ create a set of possible predicted paths that span model uncertainty
 For our land data, we will source in the Alaska 1:250000 coastal data polygon. This
 is provided by the Alaska Department of Natural Resources and was obtained from their
 open data portal (https://gis.data.alaska.gov/datasets/alaska-1250000). The commented
-code provides a query to 
-pull the data directly from the portal API. Note, only those polygons that intersect
-with the bounding box of our harbor seal movement are included.
+code provides a query to pull the data directly from the portal API. Note, only 
+those polygons that intersect with the bounding box of our harbor seal movement 
+are included.
 
 NOTE: because this step is time consuming, we will load directly from package data
 
@@ -185,9 +182,6 @@ land. So, we need to identify the segments of consecutive points on land and, al
 points in water that bookend each segment. We will use this information to calculate
 our shortest path through our network and create an updated series of point features.
 
-Since our bookend points were not used to create our visibility graph, we need to also
-determine the closest network node to each point. Our `prt_nearestnode()` function relies
-on the `nabor::knn()` function for this.
 
 ```{r}
 track_pts <- harborSeal_sf %>% dplyr::filter(!sf::st_is_empty(.))
@@ -197,10 +191,18 @@ segs_tbl
 
 ### Determine Re-routed Track via Shortest Path
 
+Since our bookend points were not used to create our visibility graph, we need to also
+determine the closest network node to each point. Our `prt_nearestnode()` function relies
+on the `nabor::knn()` function for this. The user does not need to call this
+explicitly as it is handled within the `prt_shortpath()` function.
+
 Now, we have all the information we need to calculate the shortest path through our
-network for each segment. The `stplanr::sum_network_routes()` function only calculates
-the LINESTRING from start node to end node. So, the `prt_shortpath()` function extends
-each end to connect with our bookend points for each segment.
+network for each segment. The `igraph::shortest_paths()` function calculates and
+returns the series of edges that make up the shortest path (by distance) from 
+the start node to the end node. The `prt_shortpath()` function wraps in 
+additional functionality (e.g. blending the network, identifying the nearest
+nodes to our start and end points, assembling the path, extending the path at
+each end to connect with our bookend points).
 
 ```{r, fig.cap="Segments that were identified to cross land have been re-routed along the shortest path throught visibility network"}
 segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
@@ -393,11 +395,6 @@ hex_grid <- sf::st_make_grid(
 ) %>% st_sf() %>% 
   st_filter(st_union(land_region), .predicate = pathroutr:::not_within) %>% 
   tibble::rowid_to_column(var = "hexid")
-
-ggplot() +
-  ggspatial::annotation_spatial(land_region, fill = "cornsilk3", size = 0) +
-  ggspatial::layer_spatial(hex_grid, color = "deepskyblue", size = 0.25, fill = NA) + 
-  theme_void()
 ```
 
 Now, we need to join our fixed points from our imputations (`imputes$pts_fix`) to our
