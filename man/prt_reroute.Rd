@@ -4,7 +4,7 @@
 \alias{prt_reroute}
 \title{Re-route track points around barrier feature}
 \usage{
-prt_reroute(trkpts, barrier, vis_graph)
+prt_reroute(trkpts, barrier, vis_graph, blend = TRUE)
 }
 \arguments{
 \item{trkpts}{Simple Feature points ('sf', 'sfc_POINT'/'sfc_MULTIPOINT') that represent
@@ -15,7 +15,9 @@ the bounding box of the barrier polygon.}
 representing the barrier feature. Should be the same barrier as supplied to the
 \code{prt_visgraph()} function.}
 
-\item{vis_graph}{SpatialLinesNetwork from prt_visgraph()}
+\item{vis_graph}{sfnetwork from prt_visgraph()}
+
+\item{blend}{boolean whether to blend start/end points into network}
 }
 \value{
 a two-column tibble with column \emph{fid} representing the row index in trkpts

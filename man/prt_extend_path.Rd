@@ -7,11 +7,11 @@
 prt_extend_path(l_geom, start_pt, end_pt)
 }
 \arguments{
+\item{l_geom}{geometry passed from inside prt_shortpath()}
+
 \item{start_pt}{start point}
 
 \item{end_pt}{end point}
-
-\item{p}{sfnetwork representing a single path}
 }
 \value{
 linestring

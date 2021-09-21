@@ -12,14 +12,15 @@
 #' @param barrier Simple Feature polygon ('sf', 'sfc_POLYGON'/'sfc_MULTIPOLYGON')
 #' representing the barrier feature. Should be the same barrier as supplied to the
 #' `prt_visgraph()` function.
-#' @param vis_graph SpatialLinesNetwork from prt_visgraph()
+#' @param vis_graph sfnetwork from prt_visgraph()
+#' @param blend boolean whether to blend start/end points into network
 #'
 #' @return a two-column tibble with column *fid* representing the row index in trkpts
 #' to be replaced by the new geometry in *geometry* column. If trkpts and barrier do not
 #' spatially intersect and empty tibble is returned.
 #' @export
 #'
-prt_reroute <- function(trkpts, barrier, vis_graph) {
+prt_reroute <- function(trkpts, barrier, vis_graph, blend=TRUE) {
   stopifnot(
     "barrier must be a simple feature collection with geometry type 'POLYGON' or 'MULTIPOLYGON" =
       inherits(barrier %>% st_geometry(), 'sfc_POLYGON') |
@@ -45,7 +46,7 @@ prt_reroute <- function(trkpts, barrier, vis_graph) {
   }
 
   segs_tbl <- get_barrier_segments(trkpts, barrier) %>%
-    prt_shortpath(vis_graph)
+    prt_shortpath(vis_graph,blend=blend)
 
   pts_list <- vector(mode = "list", length = nrow(segs_tbl))
 

@@ -4,15 +4,17 @@
 \alias{prt_shortpath}
 \title{Calculate the shortest path through a visibility network between two points}
 \usage{
-prt_shortpath(segs_tbl, vis_graph)
+prt_shortpath(segs_tbl, vis_graph, blend = TRUE)
 }
 \arguments{
-\item{segs_tbl}{tbl from \code{prt_nearestnode()}}
+\item{segs_tbl}{tbl from \code{get_barrier_segments()}}
 
-\item{vis_graph}{SpatialLinesNetwork from prt_visgraph()}
+\item{vis_graph}{sfnetwork from prt_visgraph()}
+
+\item{blend}{boolean whether to blend start/end points into network}
 }
 \value{
-data frame with added geometry column for shortest path LINESTRING that
+segs_tbl data frame with added geometry column for shortest path LINESTRING that
 connects the \emph{start_pt} and \emph{end_pt} coordinates
 }
 \description{

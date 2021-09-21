@@ -2,17 +2,20 @@
 #'
 #' @param segs_tbl tbl from `get_barrier_segments()`
 #' @param vis_graph sfnetwork from prt_visgraph()
+#' @param blend boolean whether to blend start/end points into network
 #'
 #' @return segs_tbl data frame with added geometry column for shortest path LINESTRING that
 #' connects the *start_pt* and *end_pt* coordinates
 #' @export
 #'
-prt_shortpath <- function(segs_tbl, vis_graph) {
+prt_shortpath <- function(segs_tbl, vis_graph, blend = TRUE) {
+  if(blend) {
   suppressWarnings({
   vis_graph <- vis_graph %>%
-    sfnetworks::st_network_blend(c(segs_tbl$start_pt,segs_tbl$end_pt)) %>%
-    sfnetworks::activate("edges")
+    sfnetworks::st_network_blend(c(segs_tbl$start_pt,segs_tbl$end_pt))
   })
+  }
+  vis_graph <- sfnetworks::activate(vis_graph,"edges")
 
   segs_tbl <- prt_nearestnode(segs_tbl,vis_graph)
 

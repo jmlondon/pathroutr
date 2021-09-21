@@ -339,7 +339,9 @@ picture of uncertainty.
 
 We will use the `crawl::crwSimulator()` and `crawl::crwPostIS()` functions to create our 
 imputed paths. The code below is a more tidyverse-centric approach that relies on
-`dplyr::rowwise()` and `dplyr::mutate()` to draw and, then, re-route 5 imputed paths.
+`dplyr::rowwise()` and `dplyr::mutate()` to draw and, then, re-route 5 imputed paths. Note,
+here, we set `blend = FALSE` for the `prt_reroute()` function call. This is just
+to save some computation time for this example.
 
 
 ```{r}
@@ -349,7 +351,7 @@ imputes <- tibble::tibble(.rows = 5) %>%
   dplyr::rowwise() %>% 
   mutate(postis = list(crwPostIS(crw_sim, fullPost = FALSE)),
          pts = list(crw_as_sf(postis, locType = "p", ftype = "POINT")),
-         rrt_pts = list(prt_reroute(pts, land_region, vis_graph)),
+         rrt_pts = list(prt_reroute(pts, land_region, vis_graph, blend = FALSE)),
          pts_fix = list(prt_update_points(rrt_pts, pts)),
          lines_fix = list(pts_fix %>% summarise(do_union = FALSE) %>% st_cast('LINESTRING'))
          )

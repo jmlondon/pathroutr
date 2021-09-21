@@ -145,7 +145,7 @@ segment start point). This should resolve any previous issues that created spuri
 segments that diverged from the determined shortest path.
 
 ```{r, message=FALSE}
-segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph)
+segs_tbl <- segs_tbl %>% prt_shortpath(vis_graph, blend = TRUE)
 
 ggplot() + 
   ggspatial::annotation_spatial(land_barrier, fill = "cornsilk3", size = 0) +
@@ -170,7 +170,7 @@ points while also tracking which rows were updated and adjusting other column va
 as needed.
 
 ```{r, message=FALSE}
-track_pts_fix <- prt_reroute(track_pts, land_barrier, vis_graph)
+track_pts_fix <- prt_reroute(track_pts, land_barrier, vis_graph, blend = TRUE)
 
 track_pts_fix <- prt_update_points(track_pts_fix, track_pts)
 ```
