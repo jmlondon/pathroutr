@@ -13,6 +13,7 @@ prt_shortpath <- function(segs_tbl, vis_graph) {
     sfnetworks::st_network_blend(c(segs_tbl$start_pt,segs_tbl$end_pt)) %>%
     sfnetworks::activate("edges")
   })
+
   segs_tbl <- prt_nearestnode(segs_tbl,vis_graph)
 
   route_edges <- lapply(1:length(segs_tbl$start_node), function(i) {
@@ -23,8 +24,13 @@ prt_shortpath <- function(segs_tbl, vis_graph) {
                                   output = "epath")$epath)
   })
 
+  # edge_geom <- lapply(route_edges, function(e) {
+  #   vis_graph %>% slice(e) %>% sf::st_geometry()})
+
   edge_geom <- lapply(route_edges, function(e) {
-    vis_graph %>% slice(e) %>% sf::st_geometry()})
+    g <- vis_graph %>% as_tibble(spatial = FALSE)
+    g[e,"geometry"]
+  })
 
   path_geom <- sapply(1:length(edge_geom), function(i) {
     prt_extend_path(edge_geom[[i]], segs_tbl$start_pt[i], segs_tbl$end_pt[i])
