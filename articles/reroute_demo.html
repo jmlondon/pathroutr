@@ -142,20 +142,20 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_barrier</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 25 × 6</span>
+<span class="co">#&gt; # A tibble: 34 × 6</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1        26      49    22 (81491.47 953574.7)</span>
-<span class="co">#&gt;  2     2       112     118     5  (80741.4 952420.3)</span>
-<span class="co">#&gt;  3     3       138     140     1 (80521.88 952066.6)</span>
-<span class="co">#&gt;  4     4       637     744   106 (76308.89 945279.1)</span>
-<span class="co">#&gt;  5     5      1107    1247   139  (75358.3 942381.6)</span>
-<span class="co">#&gt;  6     6      1829    1878    48   (79890.25 944810)</span>
-<span class="co">#&gt;  7     7      1942    2664   721 (81487.79 944492.2)</span>
-<span class="co">#&gt;  8     8      2755    2892   136 (88711.74 953862.9)</span>
-<span class="co">#&gt;  9     9      3045    3096    50  (84307.2 955331.1)</span>
-<span class="co">#&gt; 10    10      3164    3257    92   (82884.06 955236)</span>
-<span class="co">#&gt; # … with 15 more rows, and 1 more variable: end_pt &lt;POINT [m]&gt;</span></code></pre></div>
+<span class="co">#&gt;  1     1       149     348   198 (94282.31 952035.1)</span>
+<span class="co">#&gt;  2     2       416     741   324 (90006.17 947619.5)</span>
+<span class="co">#&gt;  3     3       776     787    10 (84240.59 941665.9)</span>
+<span class="co">#&gt;  4     4       909    1074   164    (82766 943847.4)</span>
+<span class="co">#&gt;  5     5      1289    1341    51 (78785.92 951637.8)</span>
+<span class="co">#&gt;  6     6      1351    1382    30 (78247.48 952913.7)</span>
+<span class="co">#&gt;  7     7      1420    1462    41  (78841.7 954386.9)</span>
+<span class="co">#&gt;  8     8      2052    2123    70 (71364.61 946275.8)</span>
+<span class="co">#&gt;  9     9      2456    2710   253 (75358.86 942408.9)</span>
+<span class="co">#&gt; 10    10      2733    2843   109 (81554.07 940897.2)</span>
+<span class="co">#&gt; # … with 24 more rows, and 1 more variable: end_pt &lt;POINT [m]&gt;</span></code></pre></div>
 <p>Our next step is to create a visibility graph. This is, essentially, a road network for our marine environment. In simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns a <em>SpatialLinesNetwork</em> created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package.</p>
 <p>The most computationally intensive step is likely to be identification of which edges intersect with the barrier polygon. We try to minimize this by, first, buffering the barrier by -1 meter and then calling <code>sf::st_intersect()</code>. Because all of the nodes in our network are also vertices in our barrier polygon, all edges intersect with the barrier polygon. By buffering by -1 meter, we disconnect the nodes. If we didn’t do this, we would need to evaluate two spatial predicate functions (<code><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">sf::st_crosses()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">sf::st_within()</a></code>). With the negative buffer adjustment, we can rely solely on <code>sf::st_intersect()</code>. The other step we do to minimize compute time is to NOT evaluate which edges intersect with the barrier polygon feature. Instead we evaluate which polygon features intersect with which edges. Because <code>sf::st_intersect()</code> evaluates row wise, this minimizes the number of evaluations since the number of polygon features in barrier is always going to be much much smaller than the number of edges.</p>
 <p>With our network created, we need to identify the nearest node on the network for the start and end points of each identified segment. The <code><a href="../reference/prt_nearestnode.html">prt_nearestnode()</a></code> function relies on the <a href="https://github.com/jefferis/nabor">nabor</a> package for fast determination of the nearest nodes.</p>
