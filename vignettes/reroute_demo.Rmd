@@ -35,7 +35,6 @@ library(dplyr)
 library(ggplot2)
 library(sf)
 library(ggspatial)
-library(tictoc)
 ```
 
 
