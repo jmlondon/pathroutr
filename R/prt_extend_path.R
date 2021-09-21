@@ -19,19 +19,15 @@ prt_extend_path<- function(l_geom, start_pt, end_pt) {
   l_start <- lwgeom::st_startpoint(l)
   l_end <- lwgeom::st_endpoint(l)
   # check if line needs to be reversed
-  # start2start <- sf::st_distance(start_pt, l_start)
-  # start2end <- sf::st_distance(start_pt, l_end)
-  # if(start2start > start2end) {
-  #   l <- sf::st_reverse(l)
-  # }
+
   if(nabor::knn(sf::st_coordinates(c(start_pt,end_pt)),
                 sf::st_coordinates(l_start),
                 k = 1)$nn.idx[,1] == 2) {
     l <- sf::st_reverse(l)
+    l_start <- lwgeom::st_startpoint(l)
+    l_end <- lwgeom::st_endpoint(l)
   }
 
-  l_start <- lwgeom::st_startpoint(l)
-  l_end <- lwgeom::st_endpoint(l)
   l1 <- c(start_pt,l_start) %>% st_combine() %>% st_cast('LINESTRING')
   l2 <- c(end_pt, l_end) %>% st_combine() %>% st_cast('LINESTRING')
 
