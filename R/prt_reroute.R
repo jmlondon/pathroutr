@@ -6,6 +6,16 @@
 #' process to replace the original geometry. Or, provide the output tibble directly to
 #' `prt_update_points()` along with *trkpts* for simply updating in place.
 #'
+#' The `blend = TRUE` argument will blend all of the *start_pt* / *end_pt*
+#' geometries in *segs_tbl* into the *vis_graph* network via the
+#' `sfnetworks::st_network_blend()` function. This process creates new nodes
+#' within *vis_graph* that are positioned at the perpendicular intersection
+#' between each point and the nearest edge. With `blend = FALSE` the nearest
+#' existing node is used. In highly complex coastlines, the use of `blend = FALSE`
+#' could result in re-routed paths that still intersect land or do not
+#' accurately represent the intended result. For less complex situations and
+#' when computational speed is important, `blend = FALSE` may be appropriate.
+#'
 #' @param trkpts Simple Feature points ('sf', 'sfc_POINT'/'sfc_MULTIPOINT') that represent
 #' track points. Order is accepted as is and the bounding box of trkpts should be within
 #' the bounding box of the barrier polygon.

@@ -4,7 +4,7 @@
 #' @param segs_tbl output from `get_barrier_segments()`
 #' @param vis_graph sfnetwork output from `prt_visgraph()`
 #'
-#' @return data frame with updated columns for nearest start and end nodes
+#' @return segs_tbl tibble with updated columns for nearest start and end nodes
 #' @export
 
 prt_nearestnode <- function(segs_tbl, vis_graph) {

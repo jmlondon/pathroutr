@@ -6,7 +6,7 @@
 #' @param centroid_limit integer minimum size (m^2) for adding centroid to triangles
 #' @param aug_points simple feature 'POINT' or 'MULTIPOINT' as additional nodes
 #'
-#' @return SpatialLinesNetwork
+#' @return sfnetwork
 #' @export
 #'
 prt_visgraph <- function(barrier,
