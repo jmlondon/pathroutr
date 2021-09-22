@@ -142,20 +142,20 @@
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_barrier</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 31 × 6</span>
+<span class="co">#&gt; # A tibble: 36 × 6</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1         9     399   389 (81886.75 941529.2)</span>
-<span class="co">#&gt;  2     2       487     879   391 (85940.41 936099.7)</span>
-<span class="co">#&gt;  3     3      1067    1113    45 (80346.08 944524.6)</span>
-<span class="co">#&gt;  4     4      1177    1242    64 (79641.53 946122.7)</span>
-<span class="co">#&gt;  5     5      1510    1577    66 (82846.67 950964.3)</span>
-<span class="co">#&gt;  6     6      1636    1717    80 (84059.42 952796.2)</span>
-<span class="co">#&gt;  7     7      1864    1928    63 (86253.93 956111.1)</span>
-<span class="co">#&gt;  8     8      2010    2079    68 (87328.88 956976.3)</span>
-<span class="co">#&gt;  9     9      2134    2851   716 (87482.37 954819.7)</span>
-<span class="co">#&gt; 10    10      2919    2978    58 (88454.06 941166.6)</span>
-<span class="co">#&gt; # … with 21 more rows, and 1 more variable: end_pt &lt;POINT [m]&gt;</span></code></pre></div>
+<span class="co">#&gt;  1     1       207     232    24 (84042.91 955596.9)</span>
+<span class="co">#&gt;  2     2       288     412   123 (83254.78 955147.1)</span>
+<span class="co">#&gt;  3     3       432     944   511 (84358.09 952328.5)</span>
+<span class="co">#&gt;  4     4      1005    1047    41 (88748.34 941112.8)</span>
+<span class="co">#&gt;  5     5      1316    1414    97  (88174.2 940015.8)</span>
+<span class="co">#&gt;  6     6      1449    1799   349 (86380.23 942159.9)</span>
+<span class="co">#&gt;  7     7      2081    2232   150 (82052.27 951965.1)</span>
+<span class="co">#&gt;  8     8      2341    2351     9 (86705.53 954831.3)</span>
+<span class="co">#&gt;  9     9      2432    2590   157 (88334.17 955834.5)</span>
+<span class="co">#&gt; 10    10      2648    2865   216 (92199.96 958215.6)</span>
+<span class="co">#&gt; # … with 26 more rows, and 1 more variable: end_pt &lt;POINT [m]&gt;</span></code></pre></div>
 <p>Our next step is to create a visibility graph. This is, essentially, a road network for our marine environment. In simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns an undirected graph of type <em>sfnetwork</em> created with the <a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a> package. Edge lengths are stored as a weight attribute for our visibility graph.</p>
 <p>The most computationally intensive step is likely to be identification of which edges intersect with the barrier polygon. We try to minimize this by, first, buffering the barrier by -1 meter and then calling <code>sf::st_intersect()</code>. Because all of the nodes in our network are also vertices in our barrier polygon, all edges intersect with the barrier polygon. By buffering by -1 meter, we disconnect the nodes. If we didn’t do this, we would need to evaluate two spatial predicate functions (<code><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">sf::st_crosses()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">sf::st_within()</a></code>). With the negative buffer adjustment, we can rely solely on <code>sf::st_intersect()</code>. The other step we do to minimize compute time is to NOT evaluate which edges intersect with the barrier polygon feature. Instead we evaluate which polygon features intersect with which edges. Because <code>sf::st_intersect()</code> evaluates row wise, this minimizes the number of evaluations since the number of polygon features in barrier is always going to be much much smaller than the number of edges.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
