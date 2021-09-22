@@ -9,7 +9,7 @@
 #'
 prt_extend_path<- function(l_geom, start_pt, end_pt) {
 
-  if(length(l_geom) == 0) {
+  if(nrow(l_geom) == 0) {
     l <- c(start_pt,end_pt) %>% st_combine() %>% st_cast('LINESTRING')
     return(l)
   }
