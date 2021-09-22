@@ -1,5 +1,10 @@
 #' Extend a path to include given start and end points
 #'
+#' This function extends the calculated shortest path to start and end with
+#' the provided *start_pt* and *end_pt* geometries. This ensures that the
+#' final sample of new points along the re-routed path include the portion
+#' of the line from the *start_pt*/*end_pt* to the nearest network node.
+#'
 #' @param l_geom geometry passed from inside prt_shortpath()
 #' @param start_pt start point
 #' @param end_pt end point
