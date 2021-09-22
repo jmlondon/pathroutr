@@ -8,7 +8,7 @@
 ![r-universe](https://r-lib.r-universe.dev/badges/cpp11)
 [![DOI](https://zenodo.org/badge/187112343.svg)](https://zenodo.org/badge/latestdoi/187112343)
 [![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R build
 status](https://github.com/jmlondon/pathroutr/workflows/R-CMD-check/badge.svg)](https://github.com/jmlondon/pathroutr/actions)
 <!-- badges: end -->
