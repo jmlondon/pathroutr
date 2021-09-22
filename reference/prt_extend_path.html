@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Trim tracks to start and end outside barrier — prt_trim • pathroutr</title>
+<title>Extend a path to include given start and end points — prt_extend_path • pathroutr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Trim tracks to start and end outside barrier — prt_trim" />
-<meta property="og:description" content="Trim tracks to start and end outside barrier" />
+<meta property="og:title" content="Extend a path to include given start and end points — prt_extend_path" />
+<meta property="og:description" content="Extend a path to include given start and end points" />
 
 
 
@@ -121,39 +121,37 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Trim tracks to start and end outside barrier</h1>
+    <h1>Extend a path to include given start and end points</h1>
     
-    <div class="hidden name"><code>prt_trim.Rd</code></div>
+    <div class="hidden name"><code>prt_extend_path.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Trim tracks to start and end outside barrier</p>
+    <p>Extend a path to include given start and end points</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prt_trim</span><span class='op'>(</span><span class='va'>trkpts</span>, <span class='va'>barrier</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>prt_extend_path</span><span class='op'>(</span><span class='va'>l_geom</span>, <span class='va'>start_pt</span>, <span class='va'>end_pt</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>trkpts</th>
-      <td><p>Simple Feature points ('sf', 'sfc_POINT'/'sfc_MULTIPOINT') that represent
-track points. Order is accepted as is and the bounding box of trkpts should be within
-the bounding box of the barrier polygon.</p></td>
+      <th>l_geom</th>
+      <td><p>geometry passed from inside prt_shortpath()</p></td>
     </tr>
     <tr>
-      <th>barrier</th>
-      <td><p>Simple Feature polygon ('sf', 'sfc_POLYGON'/'sfc_MULTIPOLYGON')
-representing the barrier feature. Should be the same barrier as supplied to the
-<code><a href='prt_visgraph.html'>prt_visgraph()</a></code> function.</p></td>
+      <th>start_pt</th>
+      <td><p>start point</p></td>
+    </tr>
+    <tr>
+      <th>end_pt</th>
+      <td><p>end point</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    
-
-
+    <p>linestring</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

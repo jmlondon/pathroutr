@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pathroutr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
       </span>
     </div>
 
@@ -88,8 +88,8 @@
 
     
     
-<p>This vignette demonstrates the basic concept within the <code>{pathroutr}</code> package for re-routing paths that cross a barrier around the barrier using the shortest path through a visibility graph.</p>
-<p>The larger intent is to use this approach for adjusting the movement tracks of marine animals through water when estimated paths incorrectly cross land.</p>
+<p>This vignette demonstrates the basic concept within the <code>{pathroutr}</code> package for re-routing paths that cross a barrier around said barrier using the shortest path (weighted by distance) through a visibility graph.</p>
+<p>The larger intent is to use this approach for adjusting the movement tracks of marine animals through water when estimated paths from movement models or other estimation approaches incorrectly cross land.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">pathroutr</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">land_barrier</span><span class="op">)</span>
@@ -138,33 +138,32 @@
 <div id="re-route-the-path" class="section level2">
 <h2 class="hasAnchor">
 <a href="#re-route-the-path" class="anchor"></a>Re-route the path</h2>
-<p>The first function we’ll use fromm the <code>{pathroutr}</code> package is <code><a href="../reference/get_barrier_segments.html">get_barrier_segments()</a></code> which identifies all of the consecutive track points that intersect with the land barrier. The result of this function is a tibble that stores the key metadata about each of the segments identified to cross land. The <em>start_idx</em> and <em>end_idx</em> columns store the row index of the two points that bookend each stretch of consecutive points that intersect with the barrier polygon. These points DO NOT intersect with the barrier. The <em>n_pts</em> column is the number of consecutive points that intersect with the barrier. Lastly, the <em>start_pt</em> and <em>end_pt</em> columns store the Simple Feature geometry for the bookend points represented by <em>start_idx</em> and <em>end_idx</em>. Later, these geometries will be used to identify the nearest node in our network for shortest path routing and the final, updated path will start and end with these geometries.</p>
+<p>The first function we’ll use from the <code>{pathroutr}</code> package is <code><a href="../reference/get_barrier_segments.html">get_barrier_segments()</a></code> which identifies all of the consecutive track points that intersect with the land barrier. The result of this function is a tibble that stores the key metadata about each of the segments identified to cross land. The <em>start_idx</em> and <em>end_idx</em> columns store the row index of the two points that bookend each stretch of consecutive points that intersect with the barrier polygon. These points DO NOT intersect with the barrier. The <em>n_pts</em> column is the number of consecutive points that intersect with the barrier. Lastly, the <em>start_pt</em> and <em>end_pt</em> columns store the Simple Feature geometry for the bookend points represented by <em>start_idx</em> and <em>end_idx</em>. Later, these geometries will be used to identify the nearest node in our network for shortest path routing and the final, updated path will start and end with these geometries.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_barrier</span><span class="op">)</span>
 <span class="va">segs_tbl</span>
-<span class="co">#&gt; # A tibble: 34 × 6</span>
+<span class="co">#&gt; # A tibble: 31 × 6</span>
 <span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt</span>
 <span class="co">#&gt;    &lt;int&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;         &lt;POINT [m]&gt;</span>
-<span class="co">#&gt;  1     1       149     348   198 (94282.31 952035.1)</span>
-<span class="co">#&gt;  2     2       416     741   324 (90006.17 947619.5)</span>
-<span class="co">#&gt;  3     3       776     787    10 (84240.59 941665.9)</span>
-<span class="co">#&gt;  4     4       909    1074   164    (82766 943847.4)</span>
-<span class="co">#&gt;  5     5      1289    1341    51 (78785.92 951637.8)</span>
-<span class="co">#&gt;  6     6      1351    1382    30 (78247.48 952913.7)</span>
-<span class="co">#&gt;  7     7      1420    1462    41  (78841.7 954386.9)</span>
-<span class="co">#&gt;  8     8      2052    2123    70 (71364.61 946275.8)</span>
-<span class="co">#&gt;  9     9      2456    2710   253 (75358.86 942408.9)</span>
-<span class="co">#&gt; 10    10      2733    2843   109 (81554.07 940897.2)</span>
-<span class="co">#&gt; # … with 24 more rows, and 1 more variable: end_pt &lt;POINT [m]&gt;</span></code></pre></div>
-<p>Our next step is to create a visibility graph. This is, essentially, a road network for our marine environment. In simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns a <em>SpatialLinesNetwork</em> created with the <a href="https://docs.ropensci.org/stplanr">stplanr</a> package.</p>
+<span class="co">#&gt;  1     1         9     399   389 (81886.75 941529.2)</span>
+<span class="co">#&gt;  2     2       487     879   391 (85940.41 936099.7)</span>
+<span class="co">#&gt;  3     3      1067    1113    45 (80346.08 944524.6)</span>
+<span class="co">#&gt;  4     4      1177    1242    64 (79641.53 946122.7)</span>
+<span class="co">#&gt;  5     5      1510    1577    66 (82846.67 950964.3)</span>
+<span class="co">#&gt;  6     6      1636    1717    80 (84059.42 952796.2)</span>
+<span class="co">#&gt;  7     7      1864    1928    63 (86253.93 956111.1)</span>
+<span class="co">#&gt;  8     8      2010    2079    68 (87328.88 956976.3)</span>
+<span class="co">#&gt;  9     9      2134    2851   716 (87482.37 954819.7)</span>
+<span class="co">#&gt; 10    10      2919    2978    58 (88454.06 941166.6)</span>
+<span class="co">#&gt; # … with 21 more rows, and 1 more variable: end_pt &lt;POINT [m]&gt;</span></code></pre></div>
+<p>Our next step is to create a visibility graph. This is, essentially, a road network for our marine environment. In simple terms, we connect all of the vertices for our barrier polygon with a Delaunay triangle mesh and, then, remove any of the edges that cross land. Our <code><a href="../reference/prt_visgraph.html">prt_visgraph()</a></code> function returns an undirected graph of type <em>sfnetwork</em> created with the <a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a> package. Edge lengths are stored as a weight attribute for our visibility graph.</p>
 <p>The most computationally intensive step is likely to be identification of which edges intersect with the barrier polygon. We try to minimize this by, first, buffering the barrier by -1 meter and then calling <code>sf::st_intersect()</code>. Because all of the nodes in our network are also vertices in our barrier polygon, all edges intersect with the barrier polygon. By buffering by -1 meter, we disconnect the nodes. If we didn’t do this, we would need to evaluate two spatial predicate functions (<code><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">sf::st_crosses()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/geos_binary_pred.html">sf::st_within()</a></code>). With the negative buffer adjustment, we can rely solely on <code>sf::st_intersect()</code>. The other step we do to minimize compute time is to NOT evaluate which edges intersect with the barrier polygon feature. Instead we evaluate which polygon features intersect with which edges. Because <code>sf::st_intersect()</code> evaluates row wise, this minimizes the number of evaluations since the number of polygon features in barrier is always going to be much much smaller than the number of edges.</p>
-<p>With our network created, we need to identify the nearest node on the network for the start and end points of each identified segment. The <code><a href="../reference/prt_nearestnode.html">prt_nearestnode()</a></code> function relies on the <a href="https://github.com/jefferis/nabor">nabor</a> package for fast determination of the nearest nodes.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">vis_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_visgraph.html">prt_visgraph</a></span><span class="op">(</span><span class="va">land_barrier</span>, buffer <span class="op">=</span> <span class="fl">150</span><span class="op">)</span>
-<span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_nearestnode.html">prt_nearestnode</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span></code></pre></div>
-<p>Notice, we pass <code>segs_tbl</code> as input to <code><a href="../reference/prt_nearestnode.html">prt_nearestnode()</a></code>. Each of these steps simply modifies the data stored in the original tibble output from <code><a href="../reference/get_barrier_segments.html">get_barrier_segments()</a></code>. We now have all the information we need to calculate our shortest path routes around the barrier for each segment.</p>
+<code class="sourceCode R"><span class="va">vis_graph</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_visgraph.html">prt_visgraph</a></span><span class="op">(</span><span class="va">land_barrier</span>, buffer <span class="op">=</span> <span class="fl">150</span><span class="op">)</span></code></pre></div>
+<p>In previous development versions of {pathroutr} we relied on the {stplanr} package. Now, we rely on {sfnetworks} and one advantage of this approach is that we can use the <code><a href="https://luukvdmeer.github.io/sfnetworks/reference/st_network_blend.html">sfnetworks::st_network_blend()</a></code> function to integrate our segment start and end points into the network. Previously, the nearest existing network node to the start/end points was used as the start and end of the shortest path calculation. A straight line was, then, drawn between the start/end points to the start and end of the path to complete the re-routed track segment. The <code><a href="https://luukvdmeer.github.io/sfnetworks/reference/st_network_blend.html">sfnetworks::st_network_blend()</a></code> function provides a more robust solution by creating new network nodes on an existing edge at the closest point from the provided segment start and end points. These new network nodes serve as start and end points for the shortest path. And, as before, we extend the path to include the segment start and end points.</p>
+<p>Additionally, we now also conduct an integrity check of the newly created <code>LINESTRING</code> to ensure the directionality is consistent (e.g. the first node in the <code>LINESTRING</code> is the segment start point). This should resolve any previous issues that created spurious line segments that diverged from the determined shortest path.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_shortpath.html">prt_shortpath</a></span><span class="op">(</span><span class="va">vis_graph</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="va">segs_tbl</span> <span class="op">%&gt;%</span> <span class="fu"><a href="../reference/prt_shortpath.html">prt_shortpath</a></span><span class="op">(</span><span class="va">vis_graph</span>, blend <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggspatial</span><span class="fu">::</span><span class="fu"><a href="https://paleolimbot.github.io/ggspatial/reference/layer_spatial.html">annotation_spatial</a></span><span class="op">(</span><span class="va">land_barrier</span>, fill <span class="op">=</span> <span class="st">"cornsilk3"</span>, size <span class="op">=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">+</span>
@@ -174,12 +173,11 @@
 <p>This process of</p>
 <ol style="list-style-type: decimal">
 <li><code><a href="../reference/get_barrier_segments.html">get_barrier_segments()</a></code></li>
-<li><code><a href="../reference/prt_nearestnode.html">prt_nearestnode()</a></code></li>
 <li><code><a href="../reference/prt_shortpath.html">prt_shortpath()</a></code></li>
 </ol>
-<p>are likely to be the same across most workflows. So, the <code><a href="../reference/prt_reroute.html">prt_reroute()</a></code> function exists to simply the process for the user. In short, this function calls the three functions above along with some error handling and data checking. In the example code below <code><a href="../reference/prt_reroute.html">prt_reroute()</a></code> is followed up with a call to <code><a href="../reference/prt_update_points.html">prt_update_points()</a></code>. For even more efficient coding, the <code><a href="../reference/%&gt;%.html">%&gt;%</a></code> function could be used to pipe the result from <code><a href="../reference/prt_reroute.html">prt_reroute()</a></code> into <code><a href="../reference/prt_update_points.html">prt_update_points()</a></code>. The result will be a version of <code>track_pts</code> with the re-routed geometry updated in place. Users may want to construct their own function for updating points while also tracking which rows were updated and adjusting other column values as needed.</p>
+<p>are likely to be the same across most workflows. So, the <code><a href="../reference/prt_reroute.html">prt_reroute()</a></code> function exists to simplify the process for the user. In short, this function calls the two functions above along with some error handling and data checking. In the example code below <code><a href="../reference/prt_reroute.html">prt_reroute()</a></code> is followed up with a call to <code><a href="../reference/prt_update_points.html">prt_update_points()</a></code>. For even more efficient coding, the <code><a href="../reference/%&gt;%.html">%&gt;%</a></code> function could be used to pipe the result from <code><a href="../reference/prt_reroute.html">prt_reroute()</a></code> into <code><a href="../reference/prt_update_points.html">prt_update_points()</a></code>. The result will be a version of <code>track_pts</code> with the re-routed geometry updated in place. Users may want to construct their own function for updating points while also tracking which rows were updated and adjusting other column values as needed.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_reroute.html">prt_reroute</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">land_barrier</span>, <span class="va">vis_graph</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_reroute.html">prt_reroute</a></span><span class="op">(</span><span class="va">track_pts</span>, <span class="va">land_barrier</span>, <span class="va">vis_graph</span>, blend <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
 <span class="va">track_pts_fix</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prt_update_points.html">prt_update_points</a></span><span class="op">(</span><span class="va">track_pts_fix</span>, <span class="va">track_pts</span><span class="op">)</span></code></pre></div>
 </div>

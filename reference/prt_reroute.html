@@ -76,7 +76,7 @@ prt_update_points() along with trkpts for simply updating in place." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pathroutr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
       </span>
     </div>
 
@@ -138,7 +138,7 @@ process to replace the original geometry. Or, provide the output tibble directly
 <code><a href='prt_update_points.html'>prt_update_points()</a></code> along with <em>trkpts</em> for simply updating in place.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prt_reroute</span><span class='op'>(</span><span class='va'>trkpts</span>, <span class='va'>barrier</span>, <span class='va'>vis_graph</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>prt_reroute</span><span class='op'>(</span><span class='va'>trkpts</span>, <span class='va'>barrier</span>, <span class='va'>vis_graph</span>, blend <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -157,14 +157,19 @@ representing the barrier feature. Should be the same barrier as supplied to the
     </tr>
     <tr>
       <th>vis_graph</th>
-      <td><p>SpatialLinesNetwork from prt_visgraph()</p></td>
+      <td><p>sfnetwork from prt_visgraph()</p></td>
+    </tr>
+    <tr>
+      <th>blend</th>
+      <td><p>boolean whether to blend start/end points into network</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>a two-column tibble with column <em>fid</em> representing the row index in trkpts
-to be replaced by the new geometry in <em>geometry</em> column.</p>
+to be replaced by the new geometry in <em>geometry</em> column. If trkpts and barrier do not
+spatially intersect and empty tibble is returned.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

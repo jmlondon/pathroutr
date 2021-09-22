@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pathroutr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
       </span>
     </div>
 
@@ -130,24 +130,28 @@
     <p>Calculate the shortest path through a visibility network between two points</p>
     </div>
 
-    <pre class="usage"><span class='fu'>prt_shortpath</span><span class='op'>(</span><span class='va'>segs_tbl</span>, <span class='va'>vis_graph</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>prt_shortpath</span><span class='op'>(</span><span class='va'>segs_tbl</span>, <span class='va'>vis_graph</span>, blend <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>segs_tbl</th>
-      <td><p>tbl from <code><a href='prt_nearestnode.html'>prt_nearestnode()</a></code></p></td>
+      <td><p>tbl from <code><a href='get_barrier_segments.html'>get_barrier_segments()</a></code></p></td>
     </tr>
     <tr>
       <th>vis_graph</th>
-      <td><p>SpatialLinesNetwork from prt_visgraph()</p></td>
+      <td><p>sfnetwork from prt_visgraph()</p></td>
+    </tr>
+    <tr>
+      <th>blend</th>
+      <td><p>boolean whether to blend start/end points into network</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>data frame with added geometry column for shortest path LINESTRING that
+    <p>segs_tbl data frame with added geometry column for shortest path LINESTRING that
 connects the <em>start_pt</em> and <em>end_pt</em> coordinates</p>
 
   </div>
