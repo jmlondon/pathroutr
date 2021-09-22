@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+![r-universe](https://r-lib.r-universe.dev/badges/cpp11)
 [![DOI](https://zenodo.org/badge/187112343.svg)](https://zenodo.org/badge/latestdoi/187112343)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
@@ -60,6 +61,31 @@ of this would not be possible without the {igraph} package
 &gt;= 4.0. Please upgrade your version of R, if needed, before
 proceeding. Future versions of `{pathroutr}` may support pre-4.0
 versions of R. But, for now, only 4.0+ is supported.
+
+### Install via R-Universe
+
+Starting with v0.2.1, `{pathroutr}` is available via R-Universe.
+
+``` r
+# Install new pathroutr version from my R-Universe repository
+install.packages("pathroutr", repos = "https://jmlondon.r-universe.dev")
+```
+
+You can also add my repository to your local list of repositories in
+your *.Rprofile* and this will ensure `update.packages()` pulls any new
+releases of `{pathroutr}`
+
+``` r
+#install.packages("usethis")
+usethis::edit_r_profile()
+
+# add the following text or replace existing repos option
+
+options(repos = c(jmlondon = 'https://jmlondon.r-universe.dev',
+                  CRAN = 'https://cloud.r-project.org'))
+```
+
+### Install via Github
 
 The development version of `{pathroutr}` is available from
 [GitHub](https://github.com/jmlondon/pathroutr) with:

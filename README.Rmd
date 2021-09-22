@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 # pathroutr
 
 <!-- badges: start -->
+![r-universe](https://r-lib.r-universe.dev/badges/cpp11)
 [![DOI](https://zenodo.org/badge/187112343.svg)](https://zenodo.org/badge/latestdoi/187112343)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![R build status](https://github.com/jmlondon/pathroutr/workflows/R-CMD-check/badge.svg)](https://github.com/jmlondon/pathroutr/actions)
@@ -59,13 +60,39 @@ Data. The R Journal 10 (1), 439-446, https://doi.org/10.32614/RJ-2018-009
 upgrade your version of R, if needed, before proceeding. Future versions of 
 `{pathroutr}` may support pre-4.0 versions of R. But, for now, only 4.0+ is supported.
 
+### Install via R-Universe
+
+Starting with v0.2.1, `{pathroutr}` is available via R-Universe.
+
+```{r, eval = FALSE}
+# Install new pathroutr version from my R-Universe repository
+install.packages("pathroutr", repos = "https://jmlondon.r-universe.dev")
+```
+
+You can also add my repository to your local list of repositories in your
+*.Rprofile* and this will ensure `update.packages()` pulls any new releases
+of `{pathroutr}`
+
+```{r, eval = FALSE}
+#install.packages("usethis")
+usethis::edit_r_profile()
+
+# add the following text or replace existing repos option
+
+options(repos = c(jmlondon = 'https://jmlondon.r-universe.dev',
+                  CRAN = 'https://cloud.r-project.org'))
+```
+
+### Install via Github
+
 The development version  of `{pathroutr}` is available from
 [GitHub](https://github.com/jmlondon/pathroutr) with:
 
-``` r
+```{r, eval = FALSE}
 # install.packages("remotes")
 remotes::install_github("jmlondon/pathroutr")
 ```
+
 
 ## Package Dependencies
 
