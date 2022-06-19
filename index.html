@@ -4,14 +4,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="The `pathroutr` package aims to provide a set of tools for routing marine
+    animal tracks around land barriers based on the shortest path through a visibility
+    graph network. The foundation of the package is a graph network created from a 
+    Delaunay Triangle mesh created from the vertices of land polygons within the study 
+    area. Any network edges that cross or fall completely within the land (barrier)
+    polygons are removed. ">
 <title>An R Package for (Re-)Routing Paths Around Barriers • pathroutr</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
-<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="deps/bootstrap-5.1.0/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="An R Package for (Re-)Routing Paths Around Barriers">
+<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="An R Package for (Re-)Routing Paths Around Barriers">
 <meta property="og:description" content="The `pathroutr` package aims to provide a set of tools for routing marine
     animal tracks around land barriers based on the shortest path through a visibility
     graph network. The foundation of the package is a graph network created from a 
@@ -23,191 +28,177 @@
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body data-spy="scroll" data-target="#toc">
-    <div class="container template-home">
-      <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <span class="navbar-brand">
-        <a class="navbar-link" href="index.html">pathroutr</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.2.1</span>
-      </span>
-    </div>
+<body>
+    <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
+    
 
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    
+    <a class="navbar-brand me-2" href="index.html">pathroutr</a>
+
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
+
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar" class="collapse navbar-collapse ms-3">
+      <ul class="navbar-nav me-auto">
+<li class="nav-item">
+  <a class="nav-link" href="reference/index.html">Reference</a>
 </li>
-<li>
-  <a href="reference/index.html">Reference</a>
+<li class="nav-item dropdown">
+  <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
+  <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="articles/akharborseal_demo.html">Re-routing Harbor Seal Movement Tracks Around Land with {pathroutr}</a>
+    <a class="dropdown-item" href="articles/reroute_demo.html">Re-routing Straight Line Paths Around Barriers - A Visibility Graph Demo</a>
+  </div>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="articles/akharborseal_demo.html">Re-routing Harbor Seal Movement Tracks Around Land with {pathroutr}</a>
-    </li>
-    <li>
-      <a href="articles/reroute_demo.html">Re-routing Straight Line Paths Around Barriers - A Visibility Graph Demo</a>
-    </li>
-  </ul>
-</li>
-<li>
-  <a href="news/index.html">Changelog</a>
+<li class="nav-item">
+  <a class="nav-link" href="news/index.html">Changelog</a>
 </li>
       </ul>
-<ul class="nav navbar-nav navbar-right"></ul>
+<form class="form-inline my-2 my-lg-0" role="search">
+        <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
+</form>
+
+      <ul class="navbar-nav"></ul>
 </div>
-<!--/.nav-collapse -->
+
+    
   </div>
-<!--/.container -->
-</div>
-<!--/.navbar -->
-
-      
-
-      </header><div class="row">
-  <div class="contents col-md-9">
-<div id="pathroutr" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#pathroutr" class="anchor"></a>pathroutr</h1></div>
+</nav><div class="container template-home">
+<div class="row">
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header"><h1 id="pathroutr">pathroutr<a class="anchor" aria-label="anchor" href="#pathroutr"></a>
+</h1></div>
 <!-- badges: start -->
-
 <p>The goal of <code>{pathroutr}</code> is to provide functions for re-routing paths that cross land around barrier polygons. The use case in mind is movement paths derived from location estimates of marine animals. Due to error associated with these locations it is not uncommon for these tracks to cross land. The <code>{pathroutr}</code> package aims to provide a pragmatic and fast solution for re-routing these paths around land and along an efficient path. It is important to note any re-routed paths are not statistical models and may have unintended consequences and biases associated with them that depends on the study animal, study area, and error nature of the original data. Re-routed paths may also exceed the speed or physiological capabilities of the study species.</p>
-<div id="credit-where-credit-is-due" class="section level2">
-<h2 class="hasAnchor">
-<a href="#credit-where-credit-is-due" class="anchor"></a>Credit Where Credit is Due</h2>
+<div class="section level2">
+<h2 id="credit-where-credit-is-due">Credit Where Credit is Due<a class="anchor" aria-label="anchor" href="#credit-where-credit-is-due"></a>
+</h2>
 <p>We believe this is the first implementation of visibility graphs within R for spatial routing. However, three sources were of key importance to developing the approach</p>
-<ol>
+<ol style="list-style-type: decimal">
 <li>Seaway distances with PostgreSQL by Angus Cameron (24 Apr, 2016)</li>
 <li>Pyvisgraph Python package by Christian Reksten-Monsen</li>
 <li>Jan, Gene Eu, et al. “An $ $ Shortest Path Algorithm Based on Delaunay Triangulation.” IEEE/ASME Transactions On Mechatronics 19.2 (2013): 660-666. DOI: 10.1109/TMECH.2013.2252076</li>
 </ol>
-<p>In addition, both the <a href="https://r-spatial.github.io/sf/">sf</a> and <a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a> R packages are of key importance to the functionality within <code>{pathroutr}</code>. A special acknowledgement for the {stplanr} package is also warranted as early development versions relied on {stplanr} functions. And, of course, all of this would not be possible without the {igraph} package</p>
-<ol>
-<li>Lucas van der Meer, Lorena Abad, Andrea Gilardi and Robin Lovelace (2021). sfnetworks: Tidy Geospatial Networks. R package version 0.5.2. <a href="https://CRAN.R-project.org/package=sfnetworks" class="uri">https://CRAN.R-project.org/package=sfnetworks</a>
+<p>In addition, both the <a href="https://r-spatial.github.io/sf/" class="external-link">sf</a> and <a href="https://luukvdmeer.github.io/sfnetworks/" class="external-link">sfnetworks</a> R packages are of key importance to the functionality within <code>{pathroutr}</code>. A special acknowledgement for the {stplanr} package is also warranted as early development versions relied on {stplanr} functions. And, of course, all of this would not be possible without the {igraph} package</p>
+<ol style="list-style-type: decimal">
+<li>Lucas van der Meer, Lorena Abad, Andrea Gilardi and Robin Lovelace (2021). sfnetworks: Tidy Geospatial Networks. R package version 0.5.2. <a href="https://CRAN.R-project.org/package=sfnetworks" class="external-link uri">https://CRAN.R-project.org/package=sfnetworks</a>
 </li>
-<li>Pebesma, E., 2018. Simple Features for R: Standardized Support for Spatial Vector Data. The R Journal 10 (1), 439-446, <a href="https://doi.org/10.32614/RJ-2018-009" class="uri">https://doi.org/10.32614/RJ-2018-009</a>
+<li>Pebesma, E., 2018. Simple Features for R: Standardized Support for Spatial Vector Data. The R Journal 10 (1), 439-446, <a href="https://doi.org/10.32614/RJ-2018-009" class="external-link uri">https://doi.org/10.32614/RJ-2018-009</a>
 </li>
-<li>Lovelace, R. and Ellison, R., 2017. stplanr: A Package for Transport Planning. The R Journal. <a href="https://doi.org/10.32614/RJ-2018-053" class="uri">https://doi.org/10.32614/RJ-2018-053</a>
+<li>Lovelace, R. and Ellison, R., 2017. stplanr: A Package for Transport Planning. The R Journal. <a href="https://doi.org/10.32614/RJ-2018-053" class="external-link uri">https://doi.org/10.32614/RJ-2018-053</a>
 </li>
-<li>Csardi G, Nepusz T: The igraph software package for complex network research, InterJournal, Complex Systems 1695. 2006. <a href="https://igraph.org" class="uri">https://igraph.org</a>
+<li>Csardi G, Nepusz T: The igraph software package for complex network research, InterJournal, Complex Systems 1695. 2006. <a href="https://igraph.org" class="external-link uri">https://igraph.org</a>
 </li>
 </ol>
 </div>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <p><code>{pathroutr}</code> is currently not available on CRAN and also requires R &gt;= 4.0. Please upgrade your version of R, if needed, before proceeding. Future versions of <code>{pathroutr}</code> may support pre-4.0 versions of R. But, for now, only 4.0+ is supported.</p>
-<div id="install-via-r-universe" class="section level3">
-<h3 class="hasAnchor">
-<a href="#install-via-r-universe" class="anchor"></a>Install via R-Universe</h3>
+<div class="section level3">
+<h3 id="install-via-r-universe">Install via R-Universe<a class="anchor" aria-label="anchor" href="#install-via-r-universe"></a>
+</h3>
 <p>Starting with v0.2.1, <code>{pathroutr}</code> is available via R-Universe.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># Install new pathroutr version from my R-Universe repository</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"pathroutr"</span>, repos <span class="op">=</span> <span class="st">"https://jmlondon.r-universe.dev"</span><span class="op">)</span></code></pre></div>
-<p>You can also add my repository to your local list of repositories in your <em>.Rprofile</em> and this will ensure <code><a href="https://rdrr.io/r/utils/update.packages.html">update.packages()</a></code> pulls any new releases of <code>{pathroutr}</code></p>
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"pathroutr"</span>, repos <span class="op">=</span> <span class="st">"https://jmlondon.r-universe.dev"</span><span class="op">)</span></code></pre></div>
+<p>You can also add my repository to your local list of repositories in your <em>.Rprofile</em> and this will ensure <code><a href="https://rdrr.io/r/utils/update.packages.html" class="external-link">update.packages()</a></code> pulls any new releases of <code>{pathroutr}</code></p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co">#install.packages("usethis")</span>
 <span class="fu">usethis</span><span class="fu">::</span><span class="fu">edit_r_profile</span><span class="op">(</span><span class="op">)</span>
 
 <span class="co"># add the following text or replace existing repos option</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>jmlondon <span class="op">=</span> <span class="st">'https://jmlondon.r-universe.dev'</span>,
+<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>repos <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>jmlondon <span class="op">=</span> <span class="st">'https://jmlondon.r-universe.dev'</span>,
                   CRAN <span class="op">=</span> <span class="st">'https://cloud.r-project.org'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="install-via-github" class="section level3">
-<h3 class="hasAnchor">
-<a href="#install-via-github" class="anchor"></a>Install via Github</h3>
-<p>The development version of <code>{pathroutr}</code> is available from <a href="https://github.com/jmlondon/pathroutr">GitHub</a> with:</p>
+<div class="section level3">
+<h3 id="install-via-github">Install via Github<a class="anchor" aria-label="anchor" href="#install-via-github"></a>
+</h3>
+<p>The development version of <code>{pathroutr}</code> is available from <a href="https://github.com/jmlondon/pathroutr" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("remotes")</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"jmlondon/pathroutr"</span><span class="op">)</span></code></pre></div>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"jmlondon/pathroutr"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
-<div id="package-dependencies" class="section level2">
-<h2 class="hasAnchor">
-<a href="#package-dependencies" class="anchor"></a>Package Dependencies</h2>
-<p><code>{pathroutr}</code> is highly dependent upon the <a href="https://luukvdmeer.github.io/sfnetworks/">sfnetworks</a> and <a href="https://r-spatial.github.io/sf/">sf</a> packages.</p>
+<div class="section level2">
+<h2 id="package-dependencies">Package Dependencies<a class="anchor" aria-label="anchor" href="#package-dependencies"></a>
+</h2>
+<p><code>{pathroutr}</code> is highly dependent upon the <a href="https://luukvdmeer.github.io/sfnetworks/" class="external-link">sfnetworks</a> and <a href="https://r-spatial.github.io/sf/" class="external-link">sf</a> packages.</p>
 <p>Both are available on CRAN.</p>
-<p>Please note that the minimum supported version of <a href="https://r-spatial.github.io/sf/">sf</a> is 0.9. So, this might also be a good time to check and update your <a href="https://r-spatial.github.io/sf/">sf</a> package versions.</p>
-<p>Core packages from the <code>tidyverse</code> (<a href="https://dplyr.tidyverse.org">dplyr</a>, <a href="http://purrr.tidyverse.org">purrr</a>, and <a href="https://tibble.tidyverse.org/">tibble</a>) are also required.</p>
+<p>Please note that the minimum supported version of <a href="https://r-spatial.github.io/sf/" class="external-link">sf</a> is 0.9. So, this might also be a good time to check and update your <a href="https://r-spatial.github.io/sf/" class="external-link">sf</a> package versions.</p>
+<p>Core packages from the <code>tidyverse</code> (<a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a>, <a href="http://purrr.tidyverse.org" class="external-link">purrr</a>, and <a href="https://tibble.tidyverse.org/" class="external-link">tibble</a>) are also required.</p>
 </div>
-<div id="questions-contributions--code-of-conduct" class="section level2">
-<h2 class="hasAnchor">
-<a href="#questions-contributions--code-of-conduct" class="anchor"></a>Questions, Contributions, &amp; Code of Conduct</h2>
-<p>Please note that the pathroutr project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
-<p>We strongly encourage you to file <a href="https://github.com/jmlondon/pathroutr/issues">Issues</a> and submit <a href="https://github.com/jmlondon/pathroutr/pulls">Pull Requests</a> so we can ensure the package meets the community needs and functions reliably. Please, please, please do your best to create a reproducible example and use the <code>{reprex}</code> <a href="https://reprex.tidyverse.org/">package</a> to share code within your Issue.</p>
-<p>Also, we have enabled the <a href="https://github.com/jmlondon/pathroutr/discussions">Discussion</a> option within the GitHub repository for questions, thoughts, and ideas that may not qualify as an Issue or Pull Request.</p>
+<div class="section level2">
+<h2 id="questions-contributions--code-of-conduct">Questions, Contributions, &amp; Code of Conduct<a class="anchor" aria-label="anchor" href="#questions-contributions--code-of-conduct"></a>
+</h2>
+<p>Please note that the pathroutr project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html" class="external-link">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
+<p>We strongly encourage you to file <a href="https://github.com/jmlondon/pathroutr/issues" class="external-link">Issues</a> and submit <a href="https://github.com/jmlondon/pathroutr/pulls" class="external-link">Pull Requests</a> so we can ensure the package meets the community needs and functions reliably. Please, please, please do your best to create a reproducible example and use the <a href="https://reprex.tidyverse.org" class="external-link">reprex</a> <a href="https://reprex.tidyverse.org/" class="external-link">package</a> to share code within your Issue.</p>
+<p>Also, we have enabled the <a href="https://github.com/jmlondon/pathroutr/discussions" class="external-link">Discussion</a> option within the GitHub repository for questions, thoughts, and ideas that may not qualify as an Issue or Pull Request.</p>
 </div>
 </div>
-  </div>
-
-  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-    <div class="license">
-<h2>License</h2>
+  </main><aside class="col-md-3"><div class="license">
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>CC0</li>
 </ul>
 </div>
+
 <div class="community">
-<h2>Community</h2>
+<h2 data-toc-skip>Community</h2>
 <ul class="list-unstyled">
 <li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
 </ul>
 </div>
+
 <div class="citation">
-<h2>Citation</h2>
+<h2 data-toc-skip>Citation</h2>
 <ul class="list-unstyled">
-<li><a href="authors.html">Citing pathroutr</a></li>
+<li><a href="authors.html#citation">Citing pathroutr</a></li>
 </ul>
 </div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Josh London <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3647-5046" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Josh London <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-3647-5046" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://zenodo.org/badge/latestdoi/187112343"><img src="https://zenodo.org/badge/187112343.svg" alt="DOI"></a></li>
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable"><img src="https://img.shields.io/badge/lifecycle-stable-green.svg" alt="Lifecycle: stable"></a></li>
-<li><a href="https://github.com/jmlondon/pathroutr/actions"><img src="https://github.com/jmlondon/pathroutr/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://zenodo.org/badge/latestdoi/187112343" class="external-link"><img src="https://zenodo.org/badge/187112343.svg" alt="DOI"></a></li>
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-green.svg" alt="Lifecycle: stable"></a></li>
+<li><a href="https://github.com/jmlondon/pathroutr/actions" class="external-link"><img src="https://github.com/jmlondon/pathroutr/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 </ul>
 </div>
-</div>
-</div>
 
-
-      <footer><div class="copyright">
-  <p>Developed by Josh London.</p>
+  </aside>
 </div>
 
-<div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+
+    <footer><div class="pkgdown-footer-left">
+  <p></p>
+<p>Developed by Josh London.</p>
 </div>
 
-      </footer>
+<div class="pkgdown-footer-right">
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+</div>
+
+    </footer>
 </div>
 
   
 
+  
 
   </body>
 </html>
