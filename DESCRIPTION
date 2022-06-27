@@ -35,7 +35,8 @@ Suggests:
     crawl,
     knitr,
     markdown,
-    rmarkdown
+    rmarkdown,
+    remotes
 Remotes:
     NMML/crawl@devel
 Depends: 
