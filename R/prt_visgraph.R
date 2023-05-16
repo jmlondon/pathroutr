@@ -83,7 +83,7 @@ prt_visgraph <- function(barrier,
       buf_poly %>%
         sf::st_cast('MULTIPOINT') %>%
         sf::st_cast('POINT'),
-      ctr_pts, aug_pts
+      ctr_pts, aug_points
     ) %>%
       sf::st_union() %>%
       sf::st_triangulate(bOnlyEdges = TRUE) %>%
@@ -105,7 +105,7 @@ prt_visgraph <- function(barrier,
       buf_poly %>%
         sf::st_cast('MULTIPOINT') %>%
         sf::st_cast('POINT'),
-      aug_pts
+      aug_points
     ) %>%
       sf::st_union() %>%
       sf::st_triangulate(bOnlyEdges = TRUE) %>%
