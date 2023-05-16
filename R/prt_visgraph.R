@@ -36,7 +36,7 @@ prt_visgraph <- function(barrier,
                 inherits(aug_points %>% st_geometry(), 'sfc_POINT')
     )
     augment <- TRUE
-    aug_points <- aug_points %>%
+    aug_pts <- aug_points %>%
       st_geometry()
 
   } else {
@@ -86,7 +86,7 @@ prt_visgraph <- function(barrier,
       buf_poly %>%
         sf::st_cast('MULTIPOINT') %>%
         sf::st_cast('POINT'),
-      ctr_pts, aug_points
+      ctr_pts, aug_pts
     ) %>%
       sf::st_union() %>%
       sf::st_triangulate(bOnlyEdges = TRUE) %>%
@@ -108,7 +108,7 @@ prt_visgraph <- function(barrier,
       buf_poly %>%
         sf::st_cast('MULTIPOINT') %>%
         sf::st_cast('POINT'),
-      aug_points
+      aug_pts
     ) %>%
       sf::st_union() %>%
       sf::st_triangulate(bOnlyEdges = TRUE) %>%
