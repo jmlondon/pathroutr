@@ -11,6 +11,7 @@
 stable](https://img.shields.io/badge/lifecycle-stable-green.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
 [![R build
 status](https://github.com/jmlondon/pathroutr/workflows/R-CMD-check/badge.svg)](https://github.com/jmlondon/pathroutr/actions)
+[![R-CMD-check](https://github.com/jmlondon/pathroutr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jmlondon/pathroutr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 The goal of `{pathroutr}` is to provide functions for re-routing paths
@@ -33,7 +34,7 @@ developing the approach
 
 1.  Seaway distances with PostgreSQL by Angus Cameron (24 Apr, 2016)
 2.  Pyvisgraph Python package by Christian Reksten-Monsen
-3.  Jan, Gene Eu, et al. “An $ $ Shortest Path Algorithm Based on
+3.  Jan, Gene Eu, et al. “An \$ \$ Shortest Path Algorithm Based on
     Delaunay Triangulation.” IEEE/ASME Transactions On Mechatronics 19.2
     (2013): 660-666. DOI: 10.1109/TMECH.2013.2252076
 
@@ -57,10 +58,10 @@ of this would not be possible without the {igraph} package
 
 ## Installation
 
-`{pathroutr}` is currently not available on CRAN and also requires R
-&gt;= 4.0. Please upgrade your version of R, if needed, before
-proceeding. Future versions of `{pathroutr}` may support pre-4.0
-versions of R. But, for now, only 4.0+ is supported.
+`{pathroutr}` is currently not available on CRAN and also requires R \>=
+4.0. Please upgrade your version of R, if needed, before proceeding.
+Future versions of `{pathroutr}` may support pre-4.0 versions of R. But,
+for now, only 4.0+ is supported.
 
 ### Install via R-Universe
 
