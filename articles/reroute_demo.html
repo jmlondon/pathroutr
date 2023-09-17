@@ -156,20 +156,20 @@ with these geometries.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">segs_tbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_barrier_segments.html">get_barrier_segments</a></span><span class="op">(</span><span class="va">track_pts</span>,<span class="va">land_barrier</span><span class="op">)</span></span>
 <span><span class="va">segs_tbl</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 42 × 6</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 39 × 6</span></span></span>
 <span><span class="co">#&gt;      sid start_idx end_idx n_pts            start_pt</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;POINT [m]&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>     1        33     218   184 (85824.04 935894.4)</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>     2       245     283    37 (82196.32 938837.6)</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>     3       296     331    34 (81323.61 939545.7)</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>     4       381     390     8 (81376.99 940367.8)</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>     5       406     509   102 (81915.14 940485.5)</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>     6       579     638    58 (85639.15 941300.5)</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>     7       955    <span style="text-decoration: underline;">1</span>176   220  (88924.9 942735.2)</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     8      <span style="text-decoration: underline;">1</span>613    <span style="text-decoration: underline;">1</span>726   112 (77856.78 946399.8)</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>     9      <span style="text-decoration: underline;">1</span>771    <span style="text-decoration: underline;">2</span>382   610 (81205.59 947352.1)</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>    10      <span style="text-decoration: underline;">2</span>416    <span style="text-decoration: underline;">2</span>922   505 (94147.97 951111.3)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 32 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>     1        23      54    30  (92649.8 960024.5)</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>     2       209     304    94 (89719.68 957268.6)</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>     3       370     410    39 (87183.39 954883.2)</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>     4       419     453    33 (86411.47 954157.2)</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>     5       537     550    12 (84552.58 952408.8)</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>     6       869     949    79 (79322.47 947489.8)</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>     7      <span style="text-decoration: underline;">1</span>035    <span style="text-decoration: underline;">1</span>118    82 (76707.42 945030.2)</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>     8      <span style="text-decoration: underline;">1</span>254    <span style="text-decoration: underline;">1</span>382   127 (73257.44 941785.4)</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>     9      <span style="text-decoration: underline;">1</span>433    <span style="text-decoration: underline;">1</span>567   133 (70437.59 939133.3)</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>    10      <span style="text-decoration: underline;">1</span>918    <span style="text-decoration: underline;">2</span>176   257 (74970.83 938551.9)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 29 more rows</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: end_pt &lt;POINT [m]&gt;</span></span></span></code></pre></div>
 <p>Our next step is to create a visibility graph. This is, essentially,
 a road network for our marine environment. In simple terms, we connect
