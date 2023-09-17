@@ -36,6 +36,9 @@ prt_visgraph <- function(barrier,
                 inherits(aug_points %>% st_geometry(), 'sfc_POINT')
     )
     augment <- TRUE
+    aug_pts <- aug_points %>%
+      st_geometry()
+
   } else {
     augment <- FALSE
   }
