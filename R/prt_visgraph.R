@@ -16,8 +16,8 @@ prt_visgraph <- function(barrier,
                          aug_points = NULL) {
   # check barrier is of the proper geometry type
   stopifnot("barrier must be a simple feature collection with geometry type 'POLYGON' or 'MULTIPOLYGON" =
-              inherits(barrier %>% st_geometry(), 'sfc_POLYGON') |
-              inherits(barrier %>% st_geometry(), 'sfc_MULTIPOLYGON')
+              inherits(barrier %>% sf::st_geometry(), 'sfc_POLYGON') |
+              inherits(barrier %>% sf::st_geometry(), 'sfc_MULTIPOLYGON')
             )
 
   # cast barrier into polygons and union into a single MULTIPOLYGON feature
@@ -33,11 +33,11 @@ prt_visgraph <- function(barrier,
 
   if (!is.null(aug_points)) {
     stopifnot("aug_points must be a simple feature collection with geometry type 'POINT'" =
-                inherits(aug_points %>% st_geometry(), 'sfc_POINT')
+                inherits(aug_points %>% sf::st_geometry(), 'sfc_POINT')
     )
     augment <- TRUE
     aug_pts <- aug_points %>%
-      st_geometry()
+      sf::st_geometry()
 
   } else {
     augment <- FALSE
@@ -65,7 +65,7 @@ prt_visgraph <- function(barrier,
       sf::st_triangulate(bOnlyEdges = TRUE) %>%
       sf::st_cast('LINESTRING') %>%
       sf::st_sf()
-    crosses <- do.call(c, st_intersects(st_buffer(barrier,-1), edges))
+    crosses <- do.call(c, sf::st_intersects(sf::st_buffer(barrier,-1), edges))
 
     edges <- edges[-crosses,]
   }
@@ -92,7 +92,7 @@ prt_visgraph <- function(barrier,
       sf::st_triangulate(bOnlyEdges = TRUE) %>%
       sf::st_cast('LINESTRING') %>%
       sf::st_sf()
-    crosses <- do.call(c, st_intersects(st_buffer(barrier,-1), edges))
+    crosses <- do.call(c, sf::st_intersects(sf::st_buffer(barrier,-1), edges))
 
     edges <- edges[-crosses,]
   }
@@ -114,7 +114,7 @@ prt_visgraph <- function(barrier,
       sf::st_triangulate(bOnlyEdges = TRUE) %>%
       sf::st_cast('LINESTRING') %>%
       sf::st_sf()
-    crosses <- do.call(c, st_intersects(st_buffer(barrier,-1), edges))
+    crosses <- do.call(c, sf::st_intersects(sf::st_buffer(barrier,-1), edges))
 
     edges <- edges[-crosses,]
   }
@@ -127,7 +127,7 @@ prt_visgraph <- function(barrier,
       sf::st_cast('LINESTRING') %>%
       sf::st_sf()
 
-    crosses <- do.call(c, st_intersects(st_buffer(barrier,-1), edges))
+    crosses <- do.call(c, sf::st_intersects(sf::st_buffer(barrier,-1), edges))
 
     edges <- edges[-crosses,]
   }

@@ -33,13 +33,13 @@
 prt_reroute <- function(trkpts, barrier, vis_graph, blend=TRUE) {
   stopifnot(
     "barrier must be a simple feature collection with geometry type 'POLYGON' or 'MULTIPOLYGON" =
-      inherits(barrier %>% st_geometry(), 'sfc_POLYGON') |
-      inherits(barrier %>% st_geometry(), 'sfc_MULTIPOLYGON')
+      inherits(barrier %>% sf::st_geometry(), 'sfc_POLYGON') |
+      inherits(barrier %>% sf::st_geometry(), 'sfc_MULTIPOLYGON')
   )
   stopifnot(
     "trkpts must be a simple feature collection with geometry type 'POINT' or 'MULTIPOINT" =
-      inherits(trkpts %>% st_geometry(), 'sfc_POINT') |
-      inherits(trkpts %>% st_geometry(), 'sfc_MULTIPOINT')
+      inherits(trkpts %>% sf::st_geometry(), 'sfc_POINT') |
+      inherits(trkpts %>% sf::st_geometry(), 'sfc_MULTIPOINT')
   )
   stopifnot(
     "trkpts and barrier must have the same CRS" =

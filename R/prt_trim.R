@@ -7,13 +7,12 @@
 #' representing the barrier feature. Should be the same barrier as supplied to the
 #' `prt_visgraph()` function.
 #'
-#' @return
 #' @export
 #'
 prt_trim <- function(trkpts, barrier) {
   stopifnot("trkpts must be a simple feature collection with geometry type 'POINT' or 'MULTIPOINT" =
-              inherits(trkpts %>% st_geometry(), 'sfc_POINT') |
-              inherits(trkpts %>% st_geometry(), 'sfc_MULTIPOINT')
+              inherits(trkpts %>% sf::st_geometry(), 'sfc_POINT') |
+              inherits(trkpts %>% sf::st_geometry(), 'sfc_MULTIPOINT')
   )
   trkpts <- sf::st_cast(trkpts, 'POINT')
   barrier_intersect <- sf::st_intersects(trkpts, barrier) %>%

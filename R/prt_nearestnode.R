@@ -8,7 +8,7 @@
 #' @export
 
 prt_nearestnode <- function(segs_tbl, vis_graph) {
-  segs_tbl <- segs_tbl %>% ungroup() %>%
+  segs_tbl <- segs_tbl %>% dplyr::ungroup() %>%
     dplyr::mutate(
       start_node = nabor::knn(sf::st_coordinates(sfnetworks::activate(vis_graph,"nodes")),
                               sf::st_coordinates(.$start_pt),

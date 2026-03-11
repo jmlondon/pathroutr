@@ -15,9 +15,6 @@ the bounding box of the barrier polygon.}
 representing the barrier feature. Should be the same barrier as supplied to the
 \code{prt_visgraph()} function.}
 }
-\value{
-
-}
 \description{
 Trim tracks to start and end outside barrier
 }

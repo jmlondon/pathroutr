@@ -15,11 +15,11 @@
 prt_extend_path<- function(l_geom, start_pt, end_pt) {
 
   if(nrow(l_geom) == 0) {
-    l <- c(start_pt,end_pt) %>% st_combine() %>% st_cast('LINESTRING')
+    l <- c(start_pt,end_pt) %>% sf::st_combine() %>% sf::st_cast('LINESTRING')
     return(l)
   }
-  l <- st_sf(l_geom) %>% summarise(do_union=FALSE) %>%
-    st_line_merge() %>% st_geometry()
+  l <- sf::st_sf(l_geom) %>% dplyr::summarise(do_union=FALSE) %>%
+    sf::st_line_merge() %>% sf::st_geometry()
   l_start <- lwgeom::st_startpoint(l)
   l_end <- lwgeom::st_endpoint(l)
 
@@ -33,10 +33,10 @@ prt_extend_path<- function(l_geom, start_pt, end_pt) {
     l_end <- lwgeom::st_endpoint(l)
   }
 
-  l1 <- c(start_pt,l_start) %>% st_combine() %>% st_cast('LINESTRING')
-  l2 <- c(end_pt, l_end) %>% st_combine() %>% st_cast('LINESTRING')
+  l1 <- c(start_pt,l_start) %>% sf::st_combine() %>% sf::st_cast('LINESTRING')
+  l2 <- c(end_pt, l_end) %>% sf::st_combine() %>% sf::st_cast('LINESTRING')
 
-  l <- c(l1,l,l2) %>% st_combine() %>% st_line_merge()
+  l <- c(l1,l,l2) %>% sf::st_combine() %>% sf::st_line_merge()
 
   return(l)
 }

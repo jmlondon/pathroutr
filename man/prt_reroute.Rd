@@ -31,3 +31,14 @@ the \code{prt_visgraph()} function. The output can be used as a starting point f
 process to replace the original geometry. Or, provide the output tibble directly to
 \code{prt_update_points()} along with \emph{trkpts} for simply updating in place.
 }
+\details{
+The \code{blend = TRUE} argument will blend all of the \emph{start_pt} / \emph{end_pt}
+geometries in \emph{segs_tbl} into the \emph{vis_graph} network via the
+\code{sfnetworks::st_network_blend()} function. This process creates new nodes
+within \emph{vis_graph} that are positioned at the perpendicular intersection
+between each point and the nearest edge. With \code{blend = FALSE} the nearest
+existing node is used. In highly complex coastlines, the use of \code{blend = FALSE}
+could result in re-routed paths that still intersect land or do not
+accurately represent the intended result. For less complex situations and
+when computational speed is important, \code{blend = FALSE} may be appropriate.
+}
