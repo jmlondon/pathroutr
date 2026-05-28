@@ -7,7 +7,7 @@
 prt_shortpath(segs_tbl, vis_graph, blend = TRUE)
 }
 \arguments{
-\item{segs_tbl}{tbl from \code{get_barrier_segments()}}
+\item{segs_tbl}{tibble from \code{get_barrier_segments()}}
 
 \item{vis_graph}{sfnetwork from prt_visgraph()}
 
@@ -18,5 +18,22 @@ segs_tbl data frame with added geometry column for shortest path LINESTRING that
 connects the \emph{start_pt} and \emph{end_pt} coordinates
 }
 \description{
-Calculate the shortest path through a visibility network between two points
+Given a \emph{segs_tbl} tibble created by \code{get_barrier_segments()} and a
+\emph{vis_graph} created by \code{prt_visgraph()}, this function adds a geometry
+column to \emph{segs_tbl} that is the shortest path from the POINT geometries
+provided in the \emph{start_pt} / \emph{end_pt} columns of \emph{segs_tbl}.
+}
+\details{
+The \code{blend = TRUE} argument will blend all of the \emph{start_pt} / \emph{end_pt}
+geometries in \emph{segs_tbl} into the \emph{vis_graph} network via the
+\code{sfnetworks::st_network_blend()} function. This process creates new nodes
+within \emph{vis_graph} that are positioned at the perpendicular intersection
+between each point and the nearest edge. With \code{blend = FALSE} the nearest
+existing node is used. In highly complex coastlines, the use of \code{blend = FALSE}
+could result in re-routed paths that still intersect land or do not
+accurately represent the intended result. For less complex situations and
+when computational speed is important, \code{blend = FALSE} may be appropriate.
+
+This function is typically called directly by \code{prt_reroute} and users are
+discouraged from using this function directly.
 }

@@ -46,7 +46,7 @@ prt_shortpath <- function(segs_tbl, vis_graph, blend = TRUE) {
   })
 
   edge_geom <- lapply(route_edges, function(e) {
-    g <- vis_graph %>% as_tibble(spatial = FALSE)
+    g <- vis_graph %>% tibble::as_tibble(spatial = FALSE)
     g[e,"geometry"]
   })
 
@@ -54,7 +54,7 @@ prt_shortpath <- function(segs_tbl, vis_graph, blend = TRUE) {
     prt_extend_path(edge_geom[[i]], segs_tbl$start_pt[i], segs_tbl$end_pt[i])
   })
   segs_tbl <- segs_tbl %>%
-    mutate(geometry = st_sfc(path_geom, crs = sf::st_crs(vis_graph)))
+    dplyr::mutate(geometry = sf::st_sfc(path_geom, crs = sf::st_crs(vis_graph)))
 
   return(segs_tbl)
 

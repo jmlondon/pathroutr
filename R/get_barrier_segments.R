@@ -19,15 +19,15 @@
 
 get_barrier_segments = function(trkpts, barrier) {
   stopifnot("barrier must be a simple feature collection with geometry type 'POLYGON' or 'MULTIPOLYGON" =
-              inherits(barrier %>% st_geometry(), 'sfc_POLYGON') |
-              inherits(barrier %>% st_geometry(), 'sfc_MULTIPOLYGON')
+              inherits(barrier %>% sf::st_geometry(), 'sfc_POLYGON') |
+              inherits(barrier %>% sf::st_geometry(), 'sfc_MULTIPOLYGON')
   )
   stopifnot("trkpts must be a simple feature collection with geometry type 'POINT' or 'MULTIPOINT" =
-              inherits(trkpts %>% st_geometry(), 'sfc_POINT') |
-              inherits(trkpts %>% st_geometry(), 'sfc_MULTIPOINT')
+              inherits(trkpts %>% sf::st_geometry(), 'sfc_POINT') |
+              inherits(trkpts %>% sf::st_geometry(), 'sfc_MULTIPOINT')
   )
 
-  trkpts <- sf::st_cast(trkpts, 'POINT') %>% st_geometry()
+  trkpts <- sf::st_cast(trkpts, 'POINT') %>% sf::st_geometry()
 
   barrier_intersect <- sf::st_intersects(trkpts, barrier) %>%
     purrr::map_lgl(~ length(.x) > 0)

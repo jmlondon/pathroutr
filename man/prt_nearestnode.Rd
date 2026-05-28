@@ -12,7 +12,7 @@ prt_nearestnode(segs_tbl, vis_graph)
 \item{vis_graph}{sfnetwork output from \code{prt_visgraph()}}
 }
 \value{
-data frame with updated columns for nearest start and end nodes
+segs_tbl tibble with updated columns for nearest start and end nodes
 }
 \description{
 Find the nearest node for start and end points in segs_tbl

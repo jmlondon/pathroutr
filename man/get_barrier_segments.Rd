@@ -16,14 +16,13 @@ representing the barrier feature. Should be the same barrier as supplied to the
 \code{prt_visgraph()} function.}
 }
 \value{
-data.frame representing segments of consecutive points that intersect with
-barrier feature. the \emph{start_pt} and \emph{end_pt} geometry columns represent the bookend
+tibble representing segments of consecutive points that intersect with
+the barrier feature. the \emph{start_pt} and \emph{end_pt} geometry columns represent the bookend
 points for each segment that do not intersect with the barrier feature. The \emph{n_pts}
 column is the number of points to be re-routed.
 }
 \description{
 This function identifies the segments of consecutive points that intersect with the
-barrier polygon feature. The result is a data frame of segment records that identify
-portions of the track that will need to be re-routed. The result from this function
-can be directly passed into the \code{prt_nearestnode()}.
+barrier polygon feature. The result is a tibble of segment records that identify
+portions of the track that will need to be re-routed.
 }

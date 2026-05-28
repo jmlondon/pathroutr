@@ -17,5 +17,8 @@ prt_extend_path(l_geom, start_pt, end_pt)
 linestring
 }
 \description{
-Extend a path to include given start and end points
+This function extends the calculated shortest path to start and end with
+the provided \emph{start_pt} and \emph{end_pt} geometries. This ensures that the
+final sample of new points along the re-routed path include the portion
+of the line from the \emph{start_pt}/\emph{end_pt} to the nearest network node.
 }

@@ -24,7 +24,7 @@ prt_visgraph(
 \item{aug_points}{simple feature 'POINT' or 'MULTIPOINT' as additional nodes}
 }
 \value{
-SpatialLinesNetwork
+sfnetwork
 }
 \description{
 Create a visibility graph
