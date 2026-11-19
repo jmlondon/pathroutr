@@ -35,9 +35,11 @@ Suggests:
     knitr,
     markdown,
     rmarkdown,
-    remotes
+    remotes,
+    testthat (>= 3.0.0)
 Remotes:
     NMML/crawl@devel
 Depends: 
     R (>= 4.0)
 VignetteBuilder: knitr
+Config/testthat/edition: 3
