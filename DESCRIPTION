@@ -1,6 +1,6 @@
 Package: pathroutr
 Title: An R Package for (Re-)Routing Paths Around Barriers
-Version: 0.2.2
+Version: 0.2.3
 Authors@R: 
     person(given = "Josh",
            family = "London",
@@ -26,7 +26,6 @@ Imports:
     units,
     sfnetworks,
     igraph,
-    lwgeom,
     tibble,
     nabor
 Suggests: 
